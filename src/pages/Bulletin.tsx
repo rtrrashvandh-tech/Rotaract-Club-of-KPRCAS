@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button';
 import AnimationWrapper from '@/components/AnimationWrapper';
 import { FileText, Download, Maximize2, Minimize2, X } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/entry.vite'; // ✅ use this for Vite
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
 
-
-// ✅ PDF.js worker setup
+// ✅ Correct worker setup
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 // --- Google Drive PDF file IDs ---
@@ -18,9 +18,9 @@ const pdfFiles = {
   'October-2025': '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1',
 };
 
-// ✅ Use download endpoint for direct binary access
+// --- Helper functions ---
 const getPdfViewerUrl = (fileId: string) =>
-  `https://drive.google.com/uc?export=download&id=${fileId}`;
+  `https://drive.google.com/uc?export=view&id=${fileId}`;
 
 const getPdfDownloadUrl = (fileId: string) =>
   `https://drive.google.com/uc?export=download&id=${fileId}`;
@@ -34,7 +34,7 @@ const Bulletin = () => {
 
   useEffect(() => {
     document.title = 'Bulletin | Rotaract KPRCAS';
-    pageTurnSound.load();
+    pageTurnSound.load(); // preload audio for smoother UX
   }, []);
 
   const bulletins = [
@@ -174,10 +174,6 @@ const PDFViewer = ({ currentPdf, setIsViewerOpen, pageTurnSound }: PDFViewerProp
       if (e.key === 'Escape') {
         setIsViewerOpen(false);
         if (document.fullscreenElement) document.exitFullscreen();
-      } else if (e.key === 'ArrowRight' && pageNumber < numPages) {
-        setPageNumber((p) => p + 1);
-      } else if (e.key === 'ArrowLeft' && pageNumber > 1) {
-        setPageNumber((p) => p - 1);
       }
     };
 
@@ -192,7 +188,7 @@ const PDFViewer = ({ currentPdf, setIsViewerOpen, pageTurnSound }: PDFViewerProp
       window.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
-  }, [numPages, pageNumber]);
+  }, []);
 
   return (
     <div
@@ -294,7 +290,7 @@ const PDFViewer = ({ currentPdf, setIsViewerOpen, pageTurnSound }: PDFViewerProp
         {/* Footer */}
         <div className="bg-gray-100 p-3 flex justify-end border-t">
           <a
-            href={currentPdf}
+            href={currentPdf.replace('/preview', '')}
             download
             onClick={(e) => {
               e.stopPropagation();
