@@ -3,12 +3,6 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import AnimationWrapper from '@/components/AnimationWrapper';
 import { FileText, Download, Maximize2, Minimize2, X } from 'lucide-react';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
-
-// ✅ Correct worker setup
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 // --- Google Drive PDF file IDs ---
 const pdfFiles = {
@@ -20,7 +14,7 @@ const pdfFiles = {
 
 // --- Helper functions ---
 const getPdfViewerUrl = (fileId: string) =>
-  `https://drive.google.com/uc?export=view&id=${fileId}`;
+  `https://drive.google.com/file/d/${fileId}/preview`;
 
 const getPdfDownloadUrl = (fileId: string) =>
   `https://drive.google.com/uc?export=download&id=${fileId}`;
@@ -151,9 +145,6 @@ interface PDFViewerProps {
 const PDFViewer = ({ currentPdf, setIsViewerOpen, pageTurnSound }: PDFViewerProps) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isPdfLoading, setIsPdfLoading] = useState(true);
-  const [numPages, setNumPages] = useState<number>(0);
-  const [pageNumber, setPageNumber] = useState<number>(1);
-  const [zoom, setZoom] = useState<number>(1.2);
 
   const playPageTurnSound = () => {
     pageTurnSound.currentTime = 0;
@@ -225,69 +216,26 @@ const PDFViewer = ({ currentPdf, setIsViewerOpen, pageTurnSound }: PDFViewerProp
           </div>
         </div>
 
-        {/* --- React PDF Viewer --- */}
-        <div className="flex-1 flex flex-col items-center justify-center bg-gray-100 p-4 relative">
+        {/* PDF Viewer */}
+        <div className="flex-1 relative bg-gray-100">
+          <iframe
+            src={currentPdf}
+            className="w-full h-full border-0"
+            title="PDF Viewer"
+            allowFullScreen
+            allow="autoplay"
+            onLoad={() => setIsPdfLoading(false)}
+            style={{ height: '85vh' }}
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+          />
           {isPdfLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-              <p className="text-gray-600 animate-pulse">Loading PDF...</p>
+              <p className="text-gray-600 animate-pulse">Loading PDF viewer...</p>
             </div>
           )}
-
-          <Document
-            file={currentPdf}
-            onLoadSuccess={({ numPages }) => {
-              setNumPages(numPages);
-              setIsPdfLoading(false);
-            }}
-            onLoadError={(error) => {
-              console.error('Error loading PDF:', error);
-              setIsPdfLoading(false);
-            }}
-            className="flex flex-col items-center"
-          >
-            <Page
-              pageNumber={pageNumber}
-              scale={zoom}
-              renderAnnotationLayer={false}
-              renderTextLayer={false}
-            />
-          </Document>
-
-          {/* Controls */}
-          <div className="mt-4 flex flex-wrap justify-center gap-3 bg-white px-4 py-2 rounded-lg shadow-md">
-            <button
-              onClick={() => pageNumber > 1 && setPageNumber(pageNumber - 1)}
-              className="px-3 py-1 bg-primary text-white rounded hover:bg-primary/80"
-            >
-              Previous
-            </button>
-            <span className="text-gray-700 text-sm">
-              Page {pageNumber} of {numPages || '?'}
-            </span>
-            <button
-              onClick={() => pageNumber < numPages && setPageNumber(pageNumber + 1)}
-              className="px-3 py-1 bg-primary text-white rounded hover:bg-primary/80"
-            >
-              Next
-            </button>
-
-            <button
-              onClick={() => setZoom((z) => Math.max(0.6, z - 0.2))}
-              className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-200"
-            >
-              -
-            </button>
-            <span className="text-gray-700 text-sm">{Math.round(zoom * 100)}%</span>
-            <button
-              onClick={() => setZoom((z) => Math.min(3, z + 0.2))}
-              className="px-3 py-1 border rounded text-gray-700 hover:bg-gray-200"
-            >
-              +
-            </button>
-          </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer Controls */}
         <div className="bg-gray-100 p-3 flex justify-end border-t">
           <a
             href={currentPdf.replace('/preview', '')}
