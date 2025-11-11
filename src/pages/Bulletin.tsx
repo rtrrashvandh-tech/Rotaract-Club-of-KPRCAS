@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import AnimationWrapper from '@/components/AnimationWrapper';
 import { FileText, Download, Maximize2, Minimize2, X } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
+import 'react-pdf/dist/esm/entry.vite'; // ✅ use this for Vite
+
 
 // ✅ PDF.js worker setup
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;

@@ -120,6 +120,25 @@ All colors MUST be HSL.
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+  /* --- PDF Styles Fix for react-pdf v7+ --- */
+.react-pdf__Page {
+  display: flex;
+  justify-content: center;
+}
+
+.react-pdf__Page canvas {
+  max-width: 100%;
+  height: auto !important;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 }
 
 @layer base {
