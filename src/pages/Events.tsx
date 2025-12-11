@@ -14,6 +14,8 @@ type EventType = {
   description: string;
 };
 
+const placeholderImage = 'https://placehold.co/800x400?text=Event+Poster';
+
 // ✅ Event list
 const events: EventType[] = [
   {
@@ -148,6 +150,177 @@ const events: EventType[] = [
     image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760285361/IMG-20250926-WA0064_knpsv9.jpg',
     description: 'Innovision is an initiative to unlock insights for SQL and enhance data understanding.'
   },
+  // October events
+  {
+    title: 'Nalam oru Padhai',
+    date: '2025-10-07',
+    platform: 'In-person',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765467685/10_Oct_Nalam_Oru_Pathai_Club_jijdhv.jpg",
+    location:"15-Vellampalyam Government School, Tiruppur",
+    description: 'Health and wellness outreach to build a stronger, healthier community.'
+  },
+  {
+    title: 'Feed the Future',
+    date: '2025-10-10',
+    platform: 'In-person',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/IMG-20251006-WA0012_tfllwk.jpg",
+    location:"Family for Children, Vellalore, Coimbatore",
+    description: 'Food distribution drive to support families in need.'
+  },
+  {
+    title: 'Anbin maru Uruvam',
+    date: '2025-10-10',
+    platform: 'In-person',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765464462/IMG-20251126-WA0007_c88v2i.jpg',
+    location: 'Family for Children, Vellalore, Coimbatore',
+    description: 'A compassion-led visit to spread kindness and support.'
+  },
+  {
+    title: 'Nambikkai Siragugal',
+    date: '2025-10-13',
+    platform: 'In-person',
+    image: placeholderImage,
+    description: 'Inspiration session to empower students with hope and confidence.'
+  },
+  {
+    title: 'Paasathin Pakkangal',
+    date: '2025-10-13',
+    platform: 'In-person',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/IMG-20251009-WA0003_b93rpj.jpg",
+    location:"Universal Peace Foundation,Pogallur",
+    description: 'Celebrating the many facets of empathy and togetherness.'
+  },
+  {
+    title: 'One Day Police',
+    date: '2025-10-16',
+    platform: 'In-person',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468126/WhatsApp_Image_2025-12-11_at_8.46.45_PM_ufqwj2.jpg",
+    location:"Coimbatore",
+    description: 'Immersive policing experience for youth (runs Oct 16 – Oct 20).'
+  },
+  {
+    title: 'Crewfinity',
+    date: '2025-10-17',
+    platform: 'In-person',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468126/WhatsApp_Image_2025-12-11_at_8.46.45_PM_ufqwj2.jpg",
+    location:"Coimbatore",
+    description: 'Team-building challenge to strengthen collaboration and leadership.'
+  },
+  {
+    title: 'Glow and Give',
+    date: '2025-10-22',
+    platform: 'In-person',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/Photo_from_Monisha_n0whms.jpg",
+    location:"SRCAS,Coimbatore",
+    description: 'Evening fundraiser combining art, light, and community giving.'
+  },
+  {
+    title: 'Help in Soul',
+    date: '2025-10-26',
+    platform: 'In-person',
+    image:"https://res.cloudinary.com/drmwtmeg3/image/upload/v1765467842/10_Oct_Help_in_Soul_Club_limuzn.jpg",
+    location:"Annur Old Town Panchyath,Annur",
+    description: 'Mental health support circle focused on listening and care.'
+  },
+  {
+    title: 'We are with you',
+    date: '2025-10-27',
+    platform: 'In-person',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765467987/10_Oct_We_are_with_you_Club_dazmz4.jpg",
+    location:"Avinashi Old Bus Stand,Tiruppur",
+    description: 'Solidarity event to stand with those facing challenges.'
+  },
+  {
+    title: 'Dude Dayout',
+    date: '2025-10-29',
+    platform: 'In-person',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468130/PHOTO-2025-10-24-21-44-38_d0g4j1.jpg",
+    location:"Mirage cinema",
+    description: 'Fun social outing to unwind and build friendships.'
+  },
+  {
+    title: 'Mattai Pandhu 3.O',
+    date: '2025-10-29',
+    platform: 'In-person',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468127/PHOTO-2025-10-24-21-44-38_1_ogc2cj.jpg",
+    location:"Karumathampatti",
+    description: 'Street cricket 3.0—friendly matches that bring the community together.'
+  },
+  // Late October additions
+  {
+    title: 'Rotaween',
+    date: '2025-10-31',
+    platform: 'In-person',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470143/IMG-20251103-WA0009_knttmi.jpg",
+    location:"Sathya Jeevan Home",
+    description: 'Halloween-themed celebration with the club.'
+  },
+  {
+    title: 'Vaathi Raid 4.0',
+    date: '2025-10-31',
+    platform: 'In-person',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470133/PHOTO-2025-12-02-15-23-50_t3jjan.jpg",
+    location:"KPRCAS Campus",
+    description: 'The fourth edition of Vaathi Raid.'
+  },
+  // November events
+  {
+    title: 'Rotaract Fusion Fiesta',
+    date: '2025-11-02',
+    platform: 'Gmeet',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470132/IMG-20251028-WA0043_1_duvk0h.jpg",
+    description: 'Fusion Fiesta celebrating international service.'
+  },
+  {
+    title: 'Cyber Security Awareness',
+    date: '2025-11-08',
+    platform: 'Professional Service',
+    image: placeholderImage,
+    description: 'Workshop on staying safe online.'
+  },
+  {
+    title: 'Eegai',
+    date: '2025-11-12',
+    platform: 'Gmeet',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470134/IMG-20251125-WA0012_tsdstk.jpg",
+    description: 'Service initiative focused on giving back.'
+  },
+  {
+    title: 'Cleanfluence',
+    date: '2025-11-12',
+    platform: 'In-person',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470132/IMG-20251113-WA0001_scb5pg.jpg",
+    location:"Tinkle sevaa Tribal School",
+    description: 'Cleanliness drive with international collaboration.'
+  },
+  {
+    title: 'Bouncing Back',
+    date: '2025-11-12',
+    platform: 'Gmeet',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470790/IMG-20251108-WA0073_lnkx5c.jpg",
+    description: 'Session on resilience and professional growth.'
+  },
+  {
+    title: 'Pair and Share',
+    date: '2025-11-13',
+    platform: 'Gmeet',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765471195/PHOTO-2025-11-09-18-16-29_bpbevr.jpg",
+    description: 'Club service activity focused on collaboration.'
+  },
+  {
+    title: 'Mind and Me',
+    date: '2025-11-13',
+    platform: 'Gmeet',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470131/IMG-20251112-WA0011_yxsck9.jpg",
+    description: 'Mental wellness and professional development session.'
+  },
+  {
+    title: 'View Point',
+    date: '2025-11-21',
+    platform: 'Gmeet',
+    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470134/IMG-20251120-WA0013_iu5vtf.jpg",
+    description: 'Media,Mindset and Screen Cluture.'
+  }
 ];
 
 const Events = () => {
@@ -187,7 +360,7 @@ const Events = () => {
       <div className="container mx-auto py-12 px-4">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {events.map((event, index) => (
-            <AnimationWrapper key={index} delay={index * 100}>
+            <AnimationWrapper key={index} delay={index * 50}>
               <Card className="h-full bg-white border-none shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
                 {event.image && (
                   <div className="relative h-48 w-full overflow-hidden">
@@ -207,7 +380,7 @@ const Events = () => {
                   <div className="flex justify-between items-start mb-2">
                     <CardTitle className="text-lg font-semibold">{event.title}</CardTitle>
                     {event.date && (
-                      <div className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">
+                      <div className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full whitespace-nowrap">
                         {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </div>
                     )}

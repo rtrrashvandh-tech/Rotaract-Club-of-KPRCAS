@@ -32,6 +32,12 @@ const Contact = () => {
       url: 'https://www.instagram.com/rac_kprcas',
       color: 'hover:text-pink-600'
     },
+    {
+      icon: Linkedin,
+      name: 'LinkedIn',
+      url: 'https://www.linkedin.com/company/rotaract-club-of-kprcas/',
+      color: 'hover:text-blue-600'
+    },
   ];
 
 
@@ -128,7 +134,7 @@ const Contact = () => {
                             href={social.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`p-3 rounded-full border border-gray-200 hover:border-transparent transition-all duration-300 ${social.color} hover:scale-110 hover-rotate`}
+                            className={`p-3 rounded-full transition-all duration-300 ${social.color} hover:scale-110 hover-rotate hover:bg-secondary/30`}
                           >
                             <social.icon className="h-6 w-6" />
                           </a>

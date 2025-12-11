@@ -17,40 +17,40 @@ const AnimationWrapper = ({
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const currentRef = ref.current;
+    if (!currentRef) return;
+
+    let timerId: number | null = null;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // Ensure delay is an integer (in milliseconds)
           const delayMs = Math.max(0, Math.floor(delay));
-          const timer = setTimeout(() => {
-            setIsVisible(true);
-          }, delayMs);
-          
-          return () => clearTimeout(timer);
+          timerId = window.setTimeout(() => setIsVisible(true), delayMs);
+          // Unobserve after first reveal so we don't re-trigger on scroll
+          observer.unobserve(entry.target);
         }
       },
       {
         threshold: 0.1,
-        rootMargin: '50px',
+        rootMargin: '120px', // trigger slightly earlier for snappier feel
       }
     );
 
-    const currentRef = ref.current;
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
+    observer.observe(currentRef);
 
     return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
+      if (timerId) {
+        clearTimeout(timerId);
       }
+      observer.disconnect();
     };
   }, [delay]);
 
   return (
     <div
       ref={ref}
-      className={`transition-all duration-700 ease-out ${
+      className={`transition-all duration-300 ease-out ${
         isVisible 
           ? 'opacity-100 translate-y-0 translate-x-0 scale-100' 
           : animation === 'fade-in' 
