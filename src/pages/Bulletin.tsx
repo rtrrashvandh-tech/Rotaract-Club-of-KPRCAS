@@ -36,6 +36,7 @@ const Bulletin = () => {
     { id: 2, title: 'August 2025', date: 'August-2025', content: 'Bulletin for August 2025' },
     { id: 3, title: 'September 2025', date: 'September-2025', content: 'Bulletin for September 2025' },
     { id: 4, title: 'October 2025', date: 'October-2025', content: 'Bulletin for October 2025' },
+    { id: 5, title: 'November 2025', date: 'November-2025', content: 'Bulletin for November 2025' }
   ];
 
   const playSound = () => {
