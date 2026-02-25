@@ -1,3 +1,14 @@
+import { db } from "@/lib/firebase";
+import {
+    collection,
+    addDoc,
+    getDocs,
+    deleteDoc,
+    doc,
+    query,
+    orderBy,
+    Timestamp
+} from "firebase/firestore";
 
 export const ADMIN_PASSWORD = "rotaractkprcas";
 
@@ -11,52 +22,87 @@ export interface AdminEvent {
     image: string;
     description: string;
     isCustom?: boolean;
+    createdAt?: any;
 }
 
 export interface AdminBulletin {
-    id: string | number;
+    id: string;
     title: string;
     date: string;
     content: string;
     fileId: string;
     isCustom?: boolean;
+    createdAt?: any;
 }
 
-const STORAGE_KEYS = {
-    EVENTS: 'rac_kprcas_custom_events',
-    BULLETINS: 'rac_kprcas_custom_bulletins',
+export const getCustomEvents = async (): Promise<AdminEvent[]> => {
+    try {
+        const q = query(collection(db, "events"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({
+            ...doc.data(),
+            id: doc.id
+        })) as AdminEvent[];
+    } catch (e) {
+        console.error("Error fetching events: ", e);
+        return [];
+    }
 };
 
-export const getCustomEvents = (): AdminEvent[] => {
-    const data = localStorage.getItem(STORAGE_KEYS.EVENTS);
-    return data ? JSON.parse(data) : [];
+export const saveCustomEvent = async (event: AdminEvent) => {
+    try {
+        await addDoc(collection(db, "events"), {
+            ...event,
+            isCustom: true,
+            createdAt: Timestamp.now()
+        });
+    } catch (e) {
+        console.error("Error adding event: ", e);
+        throw e;
+    }
 };
 
-export const saveCustomEvent = (event: AdminEvent) => {
-    const events = getCustomEvents();
-    events.push({ ...event, id: Date.now().toString(), isCustom: true });
-    localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(events));
+export const deleteCustomEvent = async (id: string) => {
+    try {
+        await deleteDoc(doc(db, "events", id));
+    } catch (e) {
+        console.error("Error deleting event: ", e);
+        throw e;
+    }
 };
 
-export const deleteCustomEvent = (id: string) => {
-    const events = getCustomEvents();
-    const filtered = events.filter(e => e.id !== id);
-    localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(filtered));
+export const getCustomBulletins = async (): Promise<AdminBulletin[]> => {
+    try {
+        const q = query(collection(db, "bulletins"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({
+            ...doc.data(),
+            id: doc.id
+        })) as AdminBulletin[];
+    } catch (e) {
+        console.error("Error fetching bulletins: ", e);
+        return [];
+    }
 };
 
-export const getCustomBulletins = (): AdminBulletin[] => {
-    const data = localStorage.getItem(STORAGE_KEYS.BULLETINS);
-    return data ? JSON.parse(data) : [];
+export const saveCustomBulletin = async (bulletin: AdminBulletin) => {
+    try {
+        await addDoc(collection(db, "bulletins"), {
+            ...bulletin,
+            isCustom: true,
+            createdAt: Timestamp.now()
+        });
+    } catch (e) {
+        console.error("Error adding bulletin: ", e);
+        throw e;
+    }
 };
 
-export const saveCustomBulletin = (bulletin: AdminBulletin) => {
-    const bulletins = getCustomBulletins();
-    bulletins.push({ ...bulletin, id: Date.now().toString(), isCustom: true });
-    localStorage.setItem(STORAGE_KEYS.BULLETINS, JSON.stringify(bulletins));
-};
-
-export const deleteCustomBulletin = (id: string | number) => {
-    const bulletins = getCustomBulletins();
-    const filtered = bulletins.filter(b => b.id.toString() !== id.toString());
-    localStorage.setItem(STORAGE_KEYS.BULLETINS, JSON.stringify(filtered));
+export const deleteCustomBulletin = async (id: string) => {
+    try {
+        await deleteDoc(doc(db, "bulletins", id.toString()));
+    } catch (e) {
+        console.error("Error deleting bulletin: ", e);
+        throw e;
+    }
 };

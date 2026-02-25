@@ -18,7 +18,8 @@ import {
     Settings,
     Image as ImageIcon,
     CheckCircle2,
-    AlertCircle
+    AlertCircle,
+    Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import AnimationWrapper from '@/components/AnimationWrapper';
@@ -38,6 +39,7 @@ const Admin = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
     const [activeTab, setActiveTab] = useState('events');
+    const [isLoading, setIsLoading] = useState(false);
 
     // Form States
     const [eventForm, setEventForm] = useState<Partial<AdminEvent>>({
@@ -61,10 +63,17 @@ const Admin = () => {
     const [customBulletins, setCustomBulletins] = useState<AdminBulletin[]>([]);
 
     useEffect(() => {
-        if (isAuthenticated) {
-            setCustomEvents(getCustomEvents());
-            setCustomBulletins(getCustomBulletins());
-        }
+        const fetchData = async () => {
+            if (isAuthenticated) {
+                setIsLoading(true);
+                const events = await getCustomEvents();
+                const bulletins = await getCustomBulletins();
+                setCustomEvents(events);
+                setCustomBulletins(bulletins);
+                setIsLoading(false);
+            }
+        };
+        fetchData();
     }, [isAuthenticated]);
 
     const handleLogin = (e: React.FormEvent) => {
@@ -77,40 +86,72 @@ const Admin = () => {
         }
     };
 
-    const handleAddEvent = (e: React.FormEvent) => {
+    const handleAddEvent = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!eventForm.title || !eventForm.image) {
             toast.error('Please fill in required fields');
             return;
         }
-        saveCustomEvent(eventForm as AdminEvent);
-        setCustomEvents(getCustomEvents());
-        setEventForm({ title: '', date: '', time: '', location: '', platform: 'In-person', image: '', description: '' });
-        toast.success('Event published successfully!');
+        setIsLoading(true);
+        try {
+            await saveCustomEvent(eventForm as AdminEvent);
+            const events = await getCustomEvents();
+            setCustomEvents(events);
+            setEventForm({ title: '', date: '', time: '', location: '', platform: 'In-person', image: '', description: '' });
+            toast.success('Event published successfully!');
+        } catch (error) {
+            toast.error('Failed to save event');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handleAddBulletin = (e: React.FormEvent) => {
+    const handleAddBulletin = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!bulletinForm.title || !bulletinForm.fileId) {
             toast.error('Please fill in required fields');
             return;
         }
-        saveCustomBulletin(bulletinForm as AdminBulletin);
-        setCustomBulletins(getCustomBulletins());
-        setBulletinForm({ title: '', date: '', content: '', fileId: '' });
-        toast.success('Bulletin uploaded successfully!');
+        setIsLoading(true);
+        try {
+            await saveCustomBulletin(bulletinForm as AdminBulletin);
+            const bulletins = await getCustomBulletins();
+            setCustomBulletins(bulletins);
+            setBulletinForm({ title: '', date: '', content: '', fileId: '' });
+            toast.success('Bulletin uploaded successfully!');
+        } catch (error) {
+            toast.error('Failed to save bulletin');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handleDeleteEvent = (id: string) => {
-        deleteCustomEvent(id);
-        setCustomEvents(getCustomEvents());
-        toast.info('Event removed');
+    const handleDeleteEvent = async (id: string) => {
+        setIsLoading(true);
+        try {
+            await deleteCustomEvent(id);
+            const events = await getCustomEvents();
+            setCustomEvents(events);
+            toast.info('Event removed');
+        } catch (error) {
+            toast.error('Failed to delete event');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handleDeleteBulletin = (id: string | number) => {
-        deleteCustomBulletin(id);
-        setCustomBulletins(getCustomBulletins());
-        toast.info('Bulletin removed');
+    const handleDeleteBulletin = async (id: string) => {
+        setIsLoading(true);
+        try {
+            await deleteCustomBulletin(id);
+            const bulletins = await getCustomBulletins();
+            setCustomBulletins(bulletins);
+            toast.info('Bulletin removed');
+        } catch (error) {
+            toast.error('Failed to delete bulletin');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     if (!isAuthenticated) {
@@ -211,9 +252,10 @@ const Admin = () => {
                         {activeTab === 'events' ? 'Strategic Events' : 'Monthly Bulletins'} Control
                     </h2>
                     <div className="flex items-center gap-4">
+                        {isLoading && <Loader2 className="w-5 h-5 animate-spin text-[#800000]" />}
                         <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-600 rounded-full border border-green-100">
                             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                            <span className="text-[10px] font-black uppercase">Core Online</span>
+                            <span className="text-[10px] font-black uppercase">Cloud Sync Active</span>
                         </div>
                     </div>
                 </header>
@@ -286,7 +328,8 @@ const Admin = () => {
                                                 onChange={e => setEventForm({ ...eventForm, description: e.target.value })}
                                             />
                                         </div>
-                                        <Button type="submit" className="w-full h-12 bg-[#111] hover:bg-[#222] text-white rounded-xl shadow-lg shadow-black/10">
+                                        <Button type="submit" disabled={isLoading} className="w-full h-12 bg-[#111] hover:bg-[#222] text-white rounded-xl shadow-lg shadow-black/10">
+                                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                             Deploy Intelligence
                                         </Button>
                                     </form>
@@ -300,7 +343,7 @@ const Admin = () => {
 
                                     <ScrollArea className="h-[600px] pr-4">
                                         <div className="space-y-4">
-                                            {customEvents.length === 0 && (
+                                            {customEvents.length === 0 && !isLoading && (
                                                 <div className="p-12 border-2 border-dashed border-gray-100 rounded-3xl flex flex-col items-center text-center">
                                                     <AlertCircle className="w-10 h-10 text-gray-200 mb-4" />
                                                     <p className="text-gray-400 text-sm italic">No custom events registered in current ledger.</p>
@@ -317,6 +360,7 @@ const Admin = () => {
                                                                 <h4 className="font-bold text-[#111] truncate">{e.title}</h4>
                                                                 <button
                                                                     onClick={() => handleDeleteEvent(e.id)}
+                                                                    disabled={isLoading}
                                                                     className="text-gray-300 hover:text-red-500 transition-colors p-1"
                                                                 >
                                                                     <Trash2 className="w-4 h-4" />
@@ -387,7 +431,8 @@ const Admin = () => {
                                                 onChange={e => setBulletinForm({ ...bulletinForm, content: e.target.value })}
                                             />
                                         </div>
-                                        <Button type="submit" className="w-full h-12 bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-lg shadow-amber-600/20">
+                                        <Button type="submit" disabled={isLoading} className="w-full h-12 bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-lg shadow-amber-600/20">
+                                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                             Commit to Archive
                                         </Button>
                                     </form>
@@ -401,7 +446,7 @@ const Admin = () => {
 
                                     <ScrollArea className="h-[600px] pr-4">
                                         <div className="space-y-4">
-                                            {customBulletins.length === 0 && (
+                                            {customBulletins.length === 0 && !isLoading && (
                                                 <div className="p-12 border-2 border-dashed border-gray-100 rounded-3xl flex flex-col items-center text-center">
                                                     <AlertCircle className="w-10 h-10 text-gray-200 mb-4" />
                                                     <p className="text-gray-400 text-sm italic">No custom bulletins archived.</p>
@@ -420,6 +465,7 @@ const Admin = () => {
                                                     </div>
                                                     <button
                                                         onClick={() => handleDeleteBulletin(b.id)}
+                                                        disabled={isLoading}
                                                         className="text-gray-300 hover:text-red-500 transition-colors p-2"
                                                     >
                                                         <Trash2 className="w-5 h-5" />
@@ -437,7 +483,7 @@ const Admin = () => {
                     <section className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-10">
                         {[
                             { label: 'Intelligence Nodes', val: 'Active', icon: CheckCircle2, color: 'text-green-500' },
-                            { label: 'Active Memory', val: 'LocalStorage', icon: Eye, color: 'text-blue-500' },
+                            { label: 'Active Memory', val: 'Firebase Cloud', icon: Eye, color: 'text-blue-500' },
                             { label: 'System Uptime', val: '99.9%', icon: LayoutDashboard, color: 'text-purple-500' },
                             { label: 'Security Layer', val: 'Auth Gate', icon: Lock, color: 'text-[#800000]' },
                         ].map((s, i) => (

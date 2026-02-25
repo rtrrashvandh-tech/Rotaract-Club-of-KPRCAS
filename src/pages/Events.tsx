@@ -82,23 +82,26 @@ const Events = () => {
   const autoRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    const custom = getCustomEvents();
-    const combined = [...events, ...custom];
+    const fetchEvents = async () => {
+      const custom = await getCustomEvents();
+      const combined = [...events, ...custom];
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-    const sorted = combined.sort((a, b) => {
-      const da = a.date ? new Date(a.date).getTime() : Infinity;
-      const db = b.date ? new Date(b.date).getTime() : Infinity;
-      const aIsPast = a.date ? new Date(a.date) < today : false;
-      const bIsPast = b.date ? new Date(b.date) < today : false;
-      if (aIsPast !== bIsPast) return aIsPast ? 1 : -1;
-      if (!aIsPast && !bIsPast) return da - db;
-      return db - da;
-    });
+      const sorted = combined.sort((a, b) => {
+        const da = a.date ? new Date(a.date).getTime() : Infinity;
+        const db = b.date ? new Date(b.date).getTime() : Infinity;
+        const aIsPast = a.date ? new Date(a.date) < today : false;
+        const bIsPast = b.date ? new Date(b.date) < today : false;
+        if (aIsPast !== bIsPast) return aIsPast ? 1 : -1;
+        if (!aIsPast && !bIsPast) return da - db;
+        return db - da;
+      });
 
-    setAllEvents(sorted);
+      setAllEvents(sorted);
+    };
+    fetchEvents();
   }, []);
 
   const goTo = useCallback((idx: number, dir: 'left' | 'right' = 'right') => {

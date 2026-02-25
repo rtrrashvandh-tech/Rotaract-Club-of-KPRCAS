@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { FileText, Download, X, Maximize2, Minimize2, ChevronRight } from 'lucide-react';
+import { getCustomBulletins, AdminBulletin } from '@/utils/adminData';
 
 // --- Google Drive PDF file IDs ---
 const pdfFiles: Record<string, string> = {
@@ -14,18 +15,20 @@ const getPdfDownloadUrl = (fileId: string) => `https://drive.google.com/uc?expor
 
 const pageTurnSound = typeof Audio !== 'undefined' ? new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3') : null;
 
-const bulletins = [
-  { id: 1, title: 'July', year: '2025', date: 'July-2025', issue: 'Issue 01', color: '#FF6B35' },
-  { id: 2, title: 'August', year: '2025', date: 'August-2025', issue: 'Issue 02', color: '#F7931E' },
-  { id: 3, title: 'September', year: '2025', date: 'September-2025', issue: 'Issue 03', color: '#C0392B' },
-  { id: 4, title: 'October', year: '2025', date: 'October-2025', issue: 'Issue 04', color: '#8E44AD' },
+const staticBulletins = [
+  { id: '1', title: 'July', year: '2025', date: 'July-2025', issue: 'Issue 01', color: '#FF6B35' },
+  { id: '2', title: 'August', year: '2025', date: 'August-2025', issue: 'Issue 02', color: '#F7931E' },
+  { id: '3', title: 'September', year: '2025', date: 'September-2025', issue: 'Issue 03', color: '#C0392B' },
+  { id: '4', title: 'October', year: '2025', date: 'October-2025', issue: 'Issue 04', color: '#8E44AD' },
 ];
 
 export default function Bulletin() {
   const [currentPdf, setCurrentPdf] = useState<string | null>(null);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [allBulletins, setAllBulletins] = useState<any[]>(staticBulletins);
+  const [combinedPdfFiles, setCombinedPdfFiles] = useState<Record<string, string>>(pdfFiles);
   const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,6 +39,32 @@ export default function Bulletin() {
       setMousePos({ x: e.clientX, y: e.clientY });
     };
     window.addEventListener('mousemove', handleMouse);
+
+    const fetchCustom = async () => {
+      const custom = await getCustomBulletins();
+      if (custom && custom.length > 0) {
+        const formattedCustom = custom.map(b => ({
+          id: b.id,
+          title: b.title.split(' ')[0],
+          year: b.title.split(' ')[1] || '2025',
+          date: b.date,
+          issue: 'Custom Issue',
+          color: '#2C3E50',
+          fileId: b.fileId
+        }));
+
+        setAllBulletins([...staticBulletins, ...formattedCustom]);
+
+        const newPdfFiles = { ...pdfFiles };
+        formattedCustom.forEach(cb => {
+          newPdfFiles[cb.date] = cb.fileId;
+        });
+        setCombinedPdfFiles(newPdfFiles);
+      }
+    };
+
+    fetchCustom();
+
     return () => window.removeEventListener('mousemove', handleMouse);
   }, []);
 
@@ -47,7 +76,7 @@ export default function Bulletin() {
   };
 
   const handlePdfClick = (date: string) => {
-    const fileId = pdfFiles[date];
+    const fileId = combinedPdfFiles[date];
     if (fileId) {
       setCurrentPdf(getPdfViewerUrl(fileId));
       setIsViewerOpen(true);
@@ -57,7 +86,7 @@ export default function Bulletin() {
 
   const handleDownload = (date: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const fileId = pdfFiles[date];
+    const fileId = combinedPdfFiles[date];
     if (fileId) {
       const a = document.createElement('a');
       a.href = getPdfDownloadUrl(fileId);
@@ -660,14 +689,14 @@ export default function Bulletin() {
         {/* Section header */}
         <div className="section-header">
           <span className="section-label">Archive · 2025 Season</span>
-          <span className="section-count">0{bulletins.length}</span>
+          <span className="section-count">0{allBulletins.length}</span>
         </div>
 
         {/* Cards Grid */}
-        <div className="grid-container">
-          {bulletins.map((b, i) => {
-            const hasPdf = !!pdfFiles[b.date];
+        <div className="bulletin-grid">
+          {allBulletins.map((b, i) => {
             const isHovered = hoveredCard === b.id;
+            const hasPdf = !!combinedPdfFiles[b.date];
 
             return (
               <div
