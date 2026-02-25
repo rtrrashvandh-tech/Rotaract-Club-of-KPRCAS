@@ -263,8 +263,9 @@ export default function Bulletin() {
         .section-count {
           font-family: 'Bebas Neue', cursive;
           font-size: 48px;
-          color: #1A1A1A;
+          color: #F0EDE6;
           letter-spacing: 2px;
+          opacity: 0.2;
         }
 
         .bulletin-grid {
