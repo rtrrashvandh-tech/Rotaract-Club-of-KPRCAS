@@ -596,9 +596,10 @@ export default function Bulletin() {
           font-family: 'Bebas Neue', cursive;
           font-size: 14px;
           letter-spacing: 6px;
-          color: #1E1E1E;
+          color: #F0EDE6;
           white-space: nowrap;
           text-transform: uppercase;
+          opacity: 0.8;
         }
 
         .ticker-dot {
