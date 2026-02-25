@@ -35,7 +35,38 @@ import {
     AdminBulletin
 } from '@/utils/adminData';
 
+import { db } from '@/lib/firebase';
+
 const Admin = () => {
+    // If database connection is missing, show localized warning instead of blank screen
+    if (!db) {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+                <Card className="max-w-md w-full p-8 text-center shadow-2xl rounded-3xl border-none space-y-6">
+                    <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto">
+                        <AlertCircle className="w-8 h-8" />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-black text-gray-900 mb-2">Configuration Required</h2>
+                        <p className="text-gray-500 text-sm leading-relaxed">
+                            The Admin Dashboard requires **Firebase Environment Variables** to function on the live site.
+                            If you haven't added them to your Render dashboard yet, please do so now.
+                        </p>
+                    </div>
+                    <div className="bg-blue-50 p-4 rounded-xl text-left border border-blue-100">
+                        <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-1">Developer Note</p>
+                        <p className="text-xs text-blue-800">
+                            Check for `VITE_FIREBASE_API_KEY` and other credentials in your `.env` or Render settings.
+                        </p>
+                    </div>
+                    <Button onClick={() => window.location.reload()} variant="outline" className="w-full rounded-xl">
+                        Retry Connection
+                    </Button>
+                </Card>
+            </div>
+        );
+    }
+
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
     const [activeTab, setActiveTab] = useState('events');

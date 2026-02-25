@@ -12,6 +12,21 @@ const firebaseConfig = {
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+// Initialize Firebase only if API Key exists to prevent crash
+let app;
+let db: any = null;
+let analytics: any = null;
+
+if (firebaseConfig.apiKey) {
+    try {
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+    } catch (error) {
+        console.error("Firebase initialization failed:", error);
+    }
+} else {
+    console.warn("Firebase API Key is missing. Check your .env file or Render Environment Variables.");
+}
+
+export { db, analytics };

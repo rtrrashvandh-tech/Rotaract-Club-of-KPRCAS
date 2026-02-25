@@ -36,6 +36,7 @@ export interface AdminBulletin {
 }
 
 export const getCustomEvents = async (): Promise<AdminEvent[]> => {
+    if (!db) return [];
     try {
         const q = query(collection(db, "events"), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
@@ -50,6 +51,7 @@ export const getCustomEvents = async (): Promise<AdminEvent[]> => {
 };
 
 export const saveCustomEvent = async (event: AdminEvent) => {
+    if (!db) return;
     try {
         await addDoc(collection(db, "events"), {
             ...event,
@@ -72,6 +74,7 @@ export const deleteCustomEvent = async (id: string) => {
 };
 
 export const getCustomBulletins = async (): Promise<AdminBulletin[]> => {
+    if (!db) return [];
     try {
         const q = query(collection(db, "bulletins"), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
@@ -86,6 +89,7 @@ export const getCustomBulletins = async (): Promise<AdminBulletin[]> => {
 };
 
 export const saveCustomBulletin = async (bulletin: AdminBulletin) => {
+    if (!db) return;
     try {
         await addDoc(collection(db, "bulletins"), {
             ...bulletin,
