@@ -72,7 +72,7 @@ const getPlatformBg = (platform?: string) => {
 };
 
 const Events = () => {
-  const [allEvents, setAllEvents] = useState<EventType[]>([]);
+  const [allEvents, setAllEvents] = useState<EventType[]>(events);
   const [current, setCurrent] = useState(0);
   const [prev, setPrev] = useState<number | null>(null);
   const [direction, setDirection] = useState<'left' | 'right'>('right');
@@ -83,23 +83,27 @@ const Events = () => {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const custom = await getCustomEvents();
-      const combined = [...events, ...custom];
+      try {
+        const custom = await getCustomEvents();
+        const combined = [...events, ...custom];
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-      const sorted = combined.sort((a, b) => {
-        const da = a.date ? new Date(a.date).getTime() : Infinity;
-        const db = b.date ? new Date(b.date).getTime() : Infinity;
-        const aIsPast = a.date ? new Date(a.date) < today : false;
-        const bIsPast = b.date ? new Date(b.date) < today : false;
-        if (aIsPast !== bIsPast) return aIsPast ? 1 : -1;
-        if (!aIsPast && !bIsPast) return da - db;
-        return db - da;
-      });
+        const sorted = combined.sort((a, b) => {
+          const da = a.date ? new Date(a.date).getTime() : Infinity;
+          const db = b.date ? new Date(b.date).getTime() : Infinity;
+          const aIsPast = a.date ? new Date(a.date) < today : false;
+          const bIsPast = b.date ? new Date(b.date) < today : false;
+          if (aIsPast !== bIsPast) return aIsPast ? 1 : -1;
+          if (!aIsPast && !bIsPast) return da - db;
+          return db - da;
+        });
 
-      setAllEvents(sorted);
+        setAllEvents(sorted);
+      } catch (error) {
+        console.error("Failed to fetch custom events:", error);
+      }
     };
     fetchEvents();
   }, []);
@@ -146,7 +150,7 @@ const Events = () => {
 
   if (allEvents.length === 0) {
     return <div className="min-h-screen flex items-center justify-center bg-white">
-      <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="w-12 h-12 border-4 border-[#7c3aed] border-t-transparent rounded-full animate-spin" />
     </div>;
   }
 
@@ -268,7 +272,7 @@ const Events = () => {
             {/* Counter */}
             <div className="absolute top-5 right-6 text-white/60 text-xs font-medium tabular-nums"
               style={{ textShadow: '0 1px 8px rgba(0,0,0,0.7)' }}>
-              {current + 1} / {events.length}
+              {current + 1} / {allEvents.length}
             </div>
           </div>
 
@@ -351,7 +355,7 @@ const Events = () => {
                 transform: i === current ? 'scale(1.05)' : 'scale(1)',
               }}
             >
-              <img src={ev.image} alt={ev.title} className="w-full h-full object-cover" />
+              <img src={ev.image} alt={ev.title} className="w-full h-full object-cover" loading="lazy" />
               <div
                 className="absolute inset-0 flex items-end p-1.5"
                 style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 50%, transparent 100%)' }}
