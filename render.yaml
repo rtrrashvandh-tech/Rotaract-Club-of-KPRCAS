@@ -3,8 +3,8 @@ services:
     name: rotaract-kprcas-web
     env: static
     buildCommand: npm run build
-    staticPublishPath: ./dist
+    staticPublishPath: dist
     routes:
-      - source: /.*
+      - source: /*
         destination: /index.html
         type: rewrite
