@@ -267,7 +267,7 @@ export default function Bulletin() {
           letter-spacing: 2px;
         }
 
-        .grid-container {
+        .bulletin-grid {
           padding: 60px;
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
