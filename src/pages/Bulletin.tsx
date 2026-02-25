@@ -257,7 +257,7 @@ export default function Bulletin() {
           font-size: 11px;
           letter-spacing: 4px;
           text-transform: uppercase;
-          color: #555;
+          color: #888;
         }
 
         .section-count {
@@ -329,7 +329,7 @@ export default function Bulletin() {
           font-size: 10px;
           letter-spacing: 4px;
           text-transform: uppercase;
-          color: #444;
+          color: #666;
           margin-bottom: auto;
           transition: color 0.3s ease;
         }
@@ -354,7 +354,7 @@ export default function Bulletin() {
         .card-year {
           font-size: 11px;
           letter-spacing: 6px;
-          color: #333;
+          color: #555;
           text-transform: uppercase;
           margin-top: 8px;
           transition: color 0.3s ease;
@@ -560,7 +560,7 @@ export default function Bulletin() {
           font-size: 10px;
           letter-spacing: 3px;
           text-transform: uppercase;
-          color: #333;
+          color: #888;
         }
 
         .viewer-download-link {
@@ -570,7 +570,7 @@ export default function Bulletin() {
           font-size: 10px;
           letter-spacing: 3px;
           text-transform: uppercase;
-          color: #555;
+          color: #999;
           text-decoration: none;
           transition: color 0.2s ease;
         }
@@ -600,7 +600,7 @@ export default function Bulletin() {
           color: #F0EDE6;
           white-space: nowrap;
           text-transform: uppercase;
-          opacity: 0.8;
+          opacity: 1;
         }
 
         .ticker-dot {
