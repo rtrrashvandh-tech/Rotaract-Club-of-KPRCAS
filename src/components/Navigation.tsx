@@ -8,6 +8,8 @@ const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
 
+  if (location.pathname === '/admin') return null;
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -30,11 +32,10 @@ const Navigation = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled || isOpen
-          ? 'bg-background/95 backdrop-blur-md shadow-lg border-b border-border'
-          : 'bg-background/80 backdrop-blur-sm md:bg-transparent md:backdrop-blur-0'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isOpen
+        ? 'bg-background/95 backdrop-blur-md shadow-lg border-b border-border'
+        : 'bg-background/80 backdrop-blur-sm md:bg-transparent md:backdrop-blur-0'
+        }`}
     >
       <div className="container-custom">
         <div className="flex items-center justify-between h-16 md:h-20">
@@ -61,19 +62,17 @@ const Navigation = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`relative px-3 py-2 text-sm font-medium transition-colors duration-300 hover:text-primary group ${
-                  location.pathname === item.path
-                    ? 'text-primary'
-                    : 'text-foreground'
-                }`}
+                className={`relative px-3 py-2 text-sm font-medium transition-colors duration-300 hover:text-primary group ${location.pathname === item.path
+                  ? 'text-primary'
+                  : 'text-foreground'
+                  }`}
               >
                 {item.name}
                 <span
-                  className={`absolute bottom-0 left-0 w-full h-0.5 bg-primary transform transition-transform duration-300 ${
-                    location.pathname === item.path
-                      ? 'scale-x-100'
-                      : 'scale-x-0 group-hover:scale-x-100'
-                  }`}
+                  className={`absolute bottom-0 left-0 w-full h-0.5 bg-primary transform transition-transform duration-300 ${location.pathname === item.path
+                    ? 'scale-x-100'
+                    : 'scale-x-0 group-hover:scale-x-100'
+                    }`}
                 />
               </Link>
             ))}
@@ -91,9 +90,8 @@ const Navigation = () => {
 
         {/* Mobile Navigation */}
         <div
-          className={`md:hidden transition-all duration-300 overflow-hidden ${
-            isOpen ? 'max-h-96 pb-4' : 'max-h-0'
-          }`}
+          className={`md:hidden transition-all duration-300 overflow-hidden ${isOpen ? 'max-h-96 pb-4' : 'max-h-0'
+            }`}
         >
           <div className="space-y-3 pt-6 pb-4 border-t border-border">
             {navItems.map((item) => (
@@ -101,11 +99,10 @@ const Navigation = () => {
                 key={item.name}
                 to={item.path}
                 onClick={() => setIsOpen(false)}
-                className={`block px-6 py-4 text-base font-medium rounded-lg transition-colors duration-300 ${
-                  location.pathname === item.path
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-foreground hover:bg-secondary/50 active:bg-secondary/70'
-                }`}
+                className={`block px-6 py-4 text-base font-medium rounded-lg transition-colors duration-300 ${location.pathname === item.path
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground hover:bg-secondary/50 active:bg-secondary/70'
+                  }`}
               >
                 {item.name}
               </Link>

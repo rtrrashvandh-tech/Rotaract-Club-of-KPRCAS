@@ -12,6 +12,7 @@ import Gallery from "./pages/Gallery";
 import Bulletin from "./pages/Bulletin";
 import JoinUs from "./pages/JoinUs";
 import Contact from "./pages/Contact";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/bulletin" element={<Bulletin />} />
           <Route path="/join" element={<JoinUs />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
