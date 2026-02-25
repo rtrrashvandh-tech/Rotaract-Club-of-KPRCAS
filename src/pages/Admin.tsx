@@ -38,6 +38,32 @@ import {
 import { db } from '@/lib/firebase';
 
 const Admin = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [password, setPassword] = useState('');
+    const [activeTab, setActiveTab] = useState('events');
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Form States
+    const [eventForm, setEventForm] = useState<Partial<AdminEvent>>({
+        title: '',
+        date: '',
+        time: '',
+        location: '',
+        platform: 'In-person',
+        image: '',
+        description: ''
+    });
+
+    const [bulletinForm, setBulletinForm] = useState<Partial<AdminBulletin>>({
+        title: '',
+        date: '',
+        content: '',
+        fileId: ''
+    });
+
+    const [customEvents, setCustomEvents] = useState<AdminEvent[]>([]);
+    const [customBulletins, setCustomBulletins] = useState<AdminBulletin[]>([]);
+
     // If database connection is missing, show localized warning instead of blank screen
     if (!db) {
         return (
@@ -66,32 +92,6 @@ const Admin = () => {
             </div>
         );
     }
-
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [password, setPassword] = useState('');
-    const [activeTab, setActiveTab] = useState('events');
-    const [isLoading, setIsLoading] = useState(false);
-
-    // Form States
-    const [eventForm, setEventForm] = useState<Partial<AdminEvent>>({
-        title: '',
-        date: '',
-        time: '',
-        location: '',
-        platform: 'In-person',
-        image: '',
-        description: ''
-    });
-
-    const [bulletinForm, setBulletinForm] = useState<Partial<AdminBulletin>>({
-        title: '',
-        date: '',
-        content: '',
-        fileId: ''
-    });
-
-    const [customEvents, setCustomEvents] = useState<AdminEvent[]>([]);
-    const [customBulletins, setCustomBulletins] = useState<AdminBulletin[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
