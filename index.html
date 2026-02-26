@@ -1,75 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rotaract Club of KPRCAS</title>
+    <meta name="description" content="Official website of Rotaract Club of KPRCAS - Empowering youth through service and leadership" />
+    <meta name="author" content="Rotaract Club of KPRCAS" />
+    
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rotaract Club of KPRCAS</title>
-  <meta name="description"
-    content="Official website of Rotaract Club of KPRCAS - Empowering youth through service and leadership" />
-  <meta name="author" content="Rotaract Club of KPRCAS" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://rotaractkprcas.vercel.app/" />
+    <meta property="og:title" content="Rotaract Club of KPRCAS" />
+    <meta property="og:description" content="Empowering youth through service and leadership" />
+    <meta property="og:image" content="/opengraph-image.png" />
 
-  <!-- Preconnect to external resources -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://rotaractkprcas.vercel.app/" />
+    <meta property="twitter:title" content="Rotaract Club of KPRCAS" />
+    <meta property="twitter:description" content="Empowering youth through service and leadership" />
+    <meta property="twitter:image" content="/opengraph-image.png" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" as="style" href="/src/index.css" />
+    <link rel="stylesheet" href="/src/index.css" />
+  </head>
 
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://rotaractkprcas.onrender.com/" />
-  <meta property="og:title" content="Rotaract Club of KPRCAS" />
-  <meta property="og:description" content="Empowering youth through service and leadership" />
-  <meta property="og:image" content="/opengraph-image.png" />
-
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://rotaractkprcas.onrender.com/" />
-  <meta property="twitter:title" content="Rotaract Club of KPRCAS" />
-  <meta property="twitter:description" content="Empowering youth through service and leadership" />
-  <meta property="twitter:image" content="/opengraph-image.png" />
-
-  <!-- Preload critical resources -->
-  <script>
-    window.onerror = function (msg, url, lineNo, columnNo, error) {
-      var root = document.getElementById('root');
-      if (root) {
-        root.innerHTML = '<div style="padding: 20px; color: #ff0000; font-family: sans-serif;">' +
-          '<h2>Critical Startup Error</h2>' +
-          '<p>' + msg + '</p>' +
-          '<p>URL: ' + url + '</p>' +
-          '<p>Line: ' + lineNo + '</p>' +
-          '</div>';
-      }
-      return false;
-    };
-  </script>
-</head>
-
-<body>
-  <noscript>
-    <div style="text-align: center; padding: 2rem; font-family: Poppins, sans-serif;">
-      <h1>JavaScript is required to run this application</h1>
-      <p>Please enable JavaScript to continue.</p>
-    </div>
-  </noscript>
-  <div id="root"
-    style="height: 100vh; display: flex; align-items: center; justify-content: center; font-family: Poppins, sans-serif; background: #0A0A0A; color: #ffffff;">
-    <div style="text-align: center;">
-      <div
-        style="width: 40px; height: 40px; border: 3px solid #333; border-top-color: #FF6B35; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;">
+  <body>
+    <noscript>
+      <div style="text-align: center; padding: 2rem; font-family: Poppins, sans-serif;">
+        <h1>JavaScript is required to run this application</h1>
+        <p>Please enable JavaScript to continue.</p>
       </div>
-      <p style="letter-spacing: 2px; text-transform: uppercase; font-size: 10px; opacity: 0.5;">Loading Applications...
-      </p>
-    </div>
-  </div>
-  <style>
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
-  <script type="module" src="/src/main.tsx"></script>
-</body>
-
+    </noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

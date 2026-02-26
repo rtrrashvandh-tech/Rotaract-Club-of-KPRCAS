@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: "dist",
     assetsDir: "assets",
-    sourcemap: false,
+    sourcemap: true,
     // Ensure consistent hashing for better caching
     rollupOptions: {
       output: {

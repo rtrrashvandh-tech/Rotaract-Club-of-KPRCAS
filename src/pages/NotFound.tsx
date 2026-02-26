@@ -20,9 +20,6 @@ const NotFound = () => {
           Return to Home
         </a>
       </div>
-      <footer className="absolute bottom-8 w-full text-center text-sm text-gray-400">
-        <p>© 2025 · All Rights Reserved · Rotaract Club of KPRCAS</p>
-      </footer>
     </div>
   );
 };
