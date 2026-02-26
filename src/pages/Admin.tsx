@@ -32,7 +32,11 @@ import {
     deleteCustomBulletin,
     ADMIN_PASSWORD,
     AdminEvent,
-    AdminBulletin
+    AdminBulletin,
+    AdminGalleryItem,
+    getCustomGalleryItems,
+    saveCustomGalleryItem,
+    deleteCustomGalleryItem
 } from '@/utils/adminData';
 
 import { db } from '@/lib/firebase';
@@ -61,8 +65,16 @@ const Admin = () => {
         fileId: ''
     });
 
+    const [galleryForm, setGalleryForm] = useState<Partial<AdminGalleryItem>>({
+        title: '',
+        description: '',
+        category: 'club service',
+        src: ''
+    });
+
     const [customEvents, setCustomEvents] = useState<AdminEvent[]>([]);
     const [customBulletins, setCustomBulletins] = useState<AdminBulletin[]>([]);
+    const [customGallery, setCustomGallery] = useState<AdminGalleryItem[]>([]);
 
     // If database connection is missing, show localized warning instead of blank screen
     if (!db) {
@@ -99,8 +111,10 @@ const Admin = () => {
                 setIsLoading(true);
                 const events = await getCustomEvents();
                 const bulletins = await getCustomBulletins();
+                const gallery = await getCustomGalleryItems();
                 setCustomEvents(events);
                 setCustomBulletins(bulletins);
+                setCustomGallery(gallery);
                 setIsLoading(false);
             }
         };
@@ -185,6 +199,40 @@ const Admin = () => {
         }
     };
 
+    const handleAddGalleryItem = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!galleryForm.title || !galleryForm.src) {
+            toast.error('Please fill in required fields');
+            return;
+        }
+        setIsLoading(true);
+        try {
+            await saveCustomGalleryItem(galleryForm as AdminGalleryItem);
+            const gallery = await getCustomGalleryItems();
+            setCustomGallery(gallery);
+            setGalleryForm({ title: '', description: '', category: 'club service', src: '' });
+            toast.success('Gallery item added!');
+        } catch (error) {
+            toast.error('Failed to save gallery item');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDeleteGalleryItem = async (id: string) => {
+        setIsLoading(true);
+        try {
+            await deleteCustomGalleryItem(id);
+            const gallery = await getCustomGalleryItems();
+            setCustomGallery(gallery);
+            toast.info('Item removed from gallery');
+        } catch (error) {
+            toast.error('Failed to delete item');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     if (!isAuthenticated) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] p-4 font-inter">
@@ -244,10 +292,18 @@ const Admin = () => {
                     </button>
                     <button
                         onClick={() => setActiveTab('bulletins')}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'bulletins' ? 'bg-[#800000] text-white' : 'text-gray-400 hover:bg-[#222] hover:text-white'}`}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'bulletins' ? 'bg-[#800000] text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
                     >
-                        <FileText className="w-5 h-5" />
-                        <span className="text-sm font-semibold">Bulletin Hub</span>
+                        <FileText className="w-4 h-4" />
+                        <span className="text-sm font-medium">Bulletins</span>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveTab('gallery')}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'gallery' ? 'bg-[#800000] text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
+                    >
+                        <ImageIcon className="w-4 h-4" />
+                        <span className="text-sm font-medium">Gallery</span>
                     </button>
                     <div className="pt-4 mt-4 border-t border-[#222]">
                         <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition-all">
@@ -508,6 +564,108 @@ const Admin = () => {
                                 </div>
                             </div>
                         </TabsContent>
+
+                        <TabsContent value="gallery" className="mt-0 space-y-10">
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                                <Card className="lg:col-span-5 p-8 border-none shadow-xl bg-white rounded-3xl">
+                                    <div className="flex items-center gap-3 mb-8">
+                                        <div className="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center">
+                                            <ImageIcon className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-black text-[#111]">Add Gallery Moment</h3>
+                                            <p className="text-xs text-gray-400">Add new memories to the archive</p>
+                                        </div>
+                                    </div>
+
+                                    <form onSubmit={handleAddGalleryItem} className="space-y-5">
+                                        <div className="space-y-2">
+                                            <Label className="text-xs font-bold text-gray-500">Moment Title</Label>
+                                            <Input
+                                                placeholder="e.g. Charter Day Celebration"
+                                                value={galleryForm.title}
+                                                onChange={e => setGalleryForm({ ...galleryForm, title: e.target.value })}
+                                                className="bg-gray-50 border-gray-100 placeholder:text-gray-300 h-11"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-xs font-bold text-gray-500">Direct Image Link</Label>
+                                            <Input
+                                                placeholder="https://res.cloudinary.com/..."
+                                                value={galleryForm.src}
+                                                onChange={e => setGalleryForm({ ...galleryForm, src: e.target.value })}
+                                                className="bg-gray-50 border-gray-100 h-11"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-xs font-bold text-gray-500">Service Avenue (Category)</Label>
+                                            <select
+                                                className="w-full h-11 bg-gray-50 border border-gray-100 rounded-xl px-3 text-sm outline-none transition-all"
+                                                value={galleryForm.category}
+                                                onChange={e => setGalleryForm({ ...galleryForm, category: e.target.value })}
+                                            >
+                                                <option value="club service">Club Service</option>
+                                                <option value="community">Community Service</option>
+                                                <option value="professional service">Professional Service</option>
+                                                <option value="international service">International Service</option>
+                                                <option value="district priority projects">DPP</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-xs font-bold text-gray-500">Brief Description</Label>
+                                            <textarea
+                                                className="w-full h-24 bg-gray-50 border border-gray-100 rounded-xl p-3 text-sm focus:ring-1 focus:ring-purple-500 outline-none transition-all"
+                                                placeholder="What happened in this moment?"
+                                                value={galleryForm.description}
+                                                onChange={e => setGalleryForm({ ...galleryForm, description: e.target.value })}
+                                            />
+                                        </div>
+                                        <Button type="submit" disabled={isLoading} className="w-full h-12 bg-[#111] hover:bg-[#222] text-white rounded-xl">
+                                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                                            Archive Moment
+                                        </Button>
+                                    </form>
+                                </Card>
+
+                                <div className="lg:col-span-7 space-y-6">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="text-sm font-black uppercase text-gray-400 tracking-widest">Gallery Feed</h3>
+                                        <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{customGallery.length} Items</span>
+                                    </div>
+
+                                    <ScrollArea className="h-[600px] pr-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {customGallery.length === 0 && !isLoading && (
+                                                <div className="col-span-2 p-12 border-2 border-dashed border-gray-100 rounded-3xl flex flex-col items-center text-center">
+                                                    <ImageIcon className="w-10 h-10 text-gray-200 mb-4" />
+                                                    <p className="text-gray-400 text-sm italic">No custom gallery items found.</p>
+                                                </div>
+                                            )}
+                                            {customGallery.map((item) => (
+                                                <Card key={item.id} className="p-3 border-none shadow-sm hover:shadow-md transition-all group rounded-2xl bg-white overflow-hidden">
+                                                    <div className="aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50 relative">
+                                                        <img src={item.src} alt="" className="w-full h-full object-cover" />
+                                                        <button
+                                                            onClick={() => handleDeleteGalleryItem(item.id)}
+                                                            disabled={isLoading}
+                                                            className="absolute top-2 right-2 bg-black/50 hover:bg-red-500 text-white p-2 rounded-lg backdrop-blur-sm transition-all"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                    <h4 className="font-bold text-[#111] text-xs truncate px-1">{item.title}</h4>
+                                                    <div className="flex items-center gap-1 mt-1 px-1">
+                                                        <span className="text-[8px] font-black uppercase tracking-wider text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">
+                                                            {item.category}
+                                                        </span>
+                                                    </div>
+                                                </Card>
+                                            ))}
+                                        </div>
+                                    </ScrollArea>
+                                </div>
+                            </div>
+                        </TabsContent>
                     </Tabs>
 
                     {/* Quick Stats */}
@@ -532,6 +690,13 @@ const Admin = () => {
 
                 </div>
             </main>
+
+            <footer className="py-6 border-t border-gray-100 bg-white">
+                <div className="max-w-7xl mx-auto px-6 flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-gray-300">
+                    <span>© 2025 · All Rights Reserved</span>
+                    <span>Rotaract Club of KPRCAS</span>
+                </div>
+            </footer>
         </div>
     );
 };

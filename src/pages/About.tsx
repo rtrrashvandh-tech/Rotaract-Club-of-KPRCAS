@@ -894,11 +894,11 @@ export default function About() {
       <div className="ab-root">
 
         {/* ── EDITION BAR ── */}
-        <div className="ab-edition mt-16 md:mt-20">
+        <div className="ab-edition mt-20 md:mt-24">
           <span>Youth · Leadership · Service · Fellowship</span>
-          <span className="edition-tag">About Us</span>
           <span>Empowering Youth Since 2021</span>
         </div>
+
 
         {/* ── PAGE HERO ── */}
         <div className="ab-hero">
@@ -1130,8 +1130,8 @@ export default function About() {
         </div>
 
         <div className="ab-footer-bottom">
-          <div className="footer-bottom-text">© 2025 Rotaract Club of KPRCAS · All Rights Reserved</div>
-          <div className="footer-bottom-text">Service Above Self</div>
+          <div className="footer-bottom-text">© 2025 · All Rights Reserved</div>
+          <div className="footer-bottom-text">Rotaract Club of KPRCAS</div>
         </div>
       </div>
     </>

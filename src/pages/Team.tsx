@@ -656,6 +656,25 @@ const Team = () => (
         font-size: 0.68rem; font-weight: 600; color: #fca5a5; letter-spacing: 0.02em;
       }
     `}</style>
+
+    <footer
+      style={{
+        padding: '3rem 2rem',
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '0.75rem',
+        background: '#0a0000'
+      }}
+    >
+      <div style={{ fontSize: '0.7rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)' }}>
+        © 2025 · All Rights Reserved
+      </div>
+      <div style={{ fontFamily: "'Unbounded', sans-serif", fontSize: '0.85rem', fontWeight: 900, letterSpacing: '-0.02em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.15)' }}>
+        Rotaract Club of KPRCAS
+      </div>
+    </footer>
   </div>
 );
 

@@ -35,6 +35,16 @@ export interface AdminBulletin {
     createdAt?: any;
 }
 
+export interface AdminGalleryItem {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    src: string;
+    isCustom?: boolean;
+    createdAt?: any;
+}
+
 export const getCustomEvents = async (): Promise<AdminEvent[]> => {
     if (!db) return [];
     try {
@@ -107,6 +117,44 @@ export const deleteCustomBulletin = async (id: string) => {
         await deleteDoc(doc(db, "bulletins", id.toString()));
     } catch (e) {
         console.error("Error deleting bulletin: ", e);
+        throw e;
+    }
+};
+
+export const getCustomGalleryItems = async (): Promise<AdminGalleryItem[]> => {
+    if (!db) return [];
+    try {
+        const q = query(collection(db, "gallery"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({
+            ...doc.data(),
+            id: doc.id
+        })) as AdminGalleryItem[];
+    } catch (e) {
+        console.error("Error fetching gallery: ", e);
+        return [];
+    }
+};
+
+export const saveCustomGalleryItem = async (item: AdminGalleryItem) => {
+    if (!db) return;
+    try {
+        await addDoc(collection(db, "gallery"), {
+            ...item,
+            isCustom: true,
+            createdAt: Timestamp.now()
+        });
+    } catch (e) {
+        console.error("Error adding gallery item: ", e);
+        throw e;
+    }
+};
+
+export const deleteCustomGalleryItem = async (id: string) => {
+    try {
+        await deleteDoc(doc(db, "gallery", id));
+    } catch (e) {
+        console.error("Error deleting gallery item: ", e);
         throw e;
     }
 };

@@ -300,13 +300,19 @@ export default function Home() {
           align-items: center;
         }
 
+
         .sidebar-logo {
           width: 100%;
-          max-height: 44px;
+          max-height: 48px;
           object-fit: contain;
           filter: grayscale(1);
-          opacity: 0.55;
+          opacity: 0.7;
           transition: opacity 0.3s ease, filter 0.3s ease;
+        }
+
+        .sidebar-logo.kpr-spec {
+          max-height: 140px;
+          opacity: 1;
         }
 
         .sidebar-logo:hover { opacity: 1; filter: grayscale(0); }
@@ -769,11 +775,11 @@ export default function Home() {
       <div className="nx-root">
 
         {/* ── EDITION BAR ── */}
-        <div className="nx-edition mt-16 md:mt-20">
+        <div className="nx-edition mt-20 md:mt-24">
           <span>Youth · Leadership · Service · Fellowship</span>
-          <span className="edition-tag">● Live</span>
-          <span>Empowering Youth Since 2019</span>
+          <span>Empowering Youth Since 2021</span>
         </div>
+
 
         {/* ── HERO GRID ── */}
         <div className="nx-hero">
@@ -830,8 +836,10 @@ export default function Home() {
                 <div className="sidebar-sep" />
                 <img src={clubLogo} alt="Club" className="sidebar-logo" />
                 <div className="sidebar-sep" />
-                <img src={kprLogo} alt="KPR" className="sidebar-logo" />
+                <img src={kprLogo} alt="KPR" className="sidebar-logo kpr-spec" />
               </div>
+
+
             </div>
             <div className="sidebar-block" style={{ flex: 1 }}>
               <div className="sidebar-label">Our Vision</div>
@@ -987,8 +995,8 @@ export default function Home() {
         </div>
 
         <div className="footer-bottom">
-          <div className="footer-bottom-left">© 2025 Rotaract Club of KPRCAS · All Rights Reserved</div>
-          <div className="footer-bottom-right">Service Above Self</div>
+          <div className="footer-bottom-left">© 2025 · All Rights Reserved</div>
+          <div className="footer-bottom-right">Rotaract Club of KPRCAS</div>
         </div>
       </div>
     </>

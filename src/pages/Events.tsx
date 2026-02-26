@@ -399,6 +399,13 @@ const Events = () => {
             </div>
           ))}
         </div>
+
+        <footer
+          className="mt-12 py-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] tracking-widest uppercase text-gray-400"
+        >
+          <span>© 2025 · All Rights Reserved</span>
+          <span className="font-bold text-gray-900">Rotaract Club of KPRCAS</span>
+        </footer>
       </div>
 
       {/* CSS Animations */}

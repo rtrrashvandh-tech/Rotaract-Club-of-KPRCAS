@@ -770,7 +770,7 @@ export default function Bulletin() {
 
         {/* Footer */}
         <footer className="page-footer">
-          <div className="footer-brand">Rotaract KPRCAS</div>
+          <div className="footer-brand">Rotaract Club of KPRCAS</div>
           <div className="footer-note">© 2025 · All Rights Reserved</div>
         </footer>
 
