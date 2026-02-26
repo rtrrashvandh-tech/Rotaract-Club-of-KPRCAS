@@ -1,19 +1,7 @@
-import { db } from "@/lib/firebase";
-import {
-    collection,
-    addDoc,
-    getDocs,
-    deleteDoc,
-    doc,
-    query,
-    orderBy,
-    Timestamp
-} from "firebase/firestore";
-
 export const ADMIN_PASSWORD = "rotaractkprcas";
 
 export interface AdminEvent {
-    id: string;
+    id?: string;
     title: string;
     date: string;
     time?: string;
@@ -26,7 +14,7 @@ export interface AdminEvent {
 }
 
 export interface AdminBulletin {
-    id: string;
+    id?: string;
     title: string;
     date: string;
     content: string;
@@ -36,7 +24,7 @@ export interface AdminBulletin {
 }
 
 export interface AdminGalleryItem {
-    id: string;
+    id?: string;
     title: string;
     description: string;
     category: string;
@@ -45,15 +33,12 @@ export interface AdminGalleryItem {
     createdAt?: any;
 }
 
+const API_URL = ''; // Use empty string for relative paths in production
+
 export const getCustomEvents = async (): Promise<AdminEvent[]> => {
-    if (!db) return [];
     try {
-        const q = query(collection(db, "events"), orderBy("createdAt", "desc"));
-        const querySnapshot = await getDocs(q);
-        return querySnapshot.docs.map(doc => ({
-            ...doc.data(),
-            id: doc.id
-        })) as AdminEvent[];
+        const response = await fetch(`${API_URL}/api/events`);
+        return await response.json();
     } catch (e) {
         console.error("Error fetching events: ", e);
         return [];
@@ -61,12 +46,11 @@ export const getCustomEvents = async (): Promise<AdminEvent[]> => {
 };
 
 export const saveCustomEvent = async (event: AdminEvent) => {
-    if (!db) return;
     try {
-        await addDoc(collection(db, "events"), {
-            ...event,
-            isCustom: true,
-            createdAt: Timestamp.now()
+        await fetch(`${API_URL}/api/events`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(event)
         });
     } catch (e) {
         console.error("Error adding event: ", e);
@@ -76,7 +60,7 @@ export const saveCustomEvent = async (event: AdminEvent) => {
 
 export const deleteCustomEvent = async (id: string) => {
     try {
-        await deleteDoc(doc(db, "events", id));
+        await fetch(`${API_URL}/api/events/${id}`, { method: 'DELETE' });
     } catch (e) {
         console.error("Error deleting event: ", e);
         throw e;
@@ -84,14 +68,9 @@ export const deleteCustomEvent = async (id: string) => {
 };
 
 export const getCustomBulletins = async (): Promise<AdminBulletin[]> => {
-    if (!db) return [];
     try {
-        const q = query(collection(db, "bulletins"), orderBy("createdAt", "desc"));
-        const querySnapshot = await getDocs(q);
-        return querySnapshot.docs.map(doc => ({
-            ...doc.data(),
-            id: doc.id
-        })) as AdminBulletin[];
+        const response = await fetch(`${API_URL}/api/bulletins`);
+        return await response.json();
     } catch (e) {
         console.error("Error fetching bulletins: ", e);
         return [];
@@ -99,12 +78,11 @@ export const getCustomBulletins = async (): Promise<AdminBulletin[]> => {
 };
 
 export const saveCustomBulletin = async (bulletin: AdminBulletin) => {
-    if (!db) return;
     try {
-        await addDoc(collection(db, "bulletins"), {
-            ...bulletin,
-            isCustom: true,
-            createdAt: Timestamp.now()
+        await fetch(`${API_URL}/api/bulletins`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bulletin)
         });
     } catch (e) {
         console.error("Error adding bulletin: ", e);
@@ -114,7 +92,7 @@ export const saveCustomBulletin = async (bulletin: AdminBulletin) => {
 
 export const deleteCustomBulletin = async (id: string) => {
     try {
-        await deleteDoc(doc(db, "bulletins", id.toString()));
+        await fetch(`${API_URL}/api/bulletins/${id}`, { method: 'DELETE' });
     } catch (e) {
         console.error("Error deleting bulletin: ", e);
         throw e;
@@ -122,14 +100,9 @@ export const deleteCustomBulletin = async (id: string) => {
 };
 
 export const getCustomGalleryItems = async (): Promise<AdminGalleryItem[]> => {
-    if (!db) return [];
     try {
-        const q = query(collection(db, "gallery"), orderBy("createdAt", "desc"));
-        const querySnapshot = await getDocs(q);
-        return querySnapshot.docs.map(doc => ({
-            ...doc.data(),
-            id: doc.id
-        })) as AdminGalleryItem[];
+        const response = await fetch(`${API_URL}/api/gallery`);
+        return await response.json();
     } catch (e) {
         console.error("Error fetching gallery: ", e);
         return [];
@@ -137,12 +110,11 @@ export const getCustomGalleryItems = async (): Promise<AdminGalleryItem[]> => {
 };
 
 export const saveCustomGalleryItem = async (item: AdminGalleryItem) => {
-    if (!db) return;
     try {
-        await addDoc(collection(db, "gallery"), {
-            ...item,
-            isCustom: true,
-            createdAt: Timestamp.now()
+        await fetch(`${API_URL}/api/gallery`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(item)
         });
     } catch (e) {
         console.error("Error adding gallery item: ", e);
@@ -152,7 +124,7 @@ export const saveCustomGalleryItem = async (item: AdminGalleryItem) => {
 
 export const deleteCustomGalleryItem = async (id: string) => {
     try {
-        await deleteDoc(doc(db, "gallery", id));
+        await fetch(`${API_URL}/api/gallery/${id}`, { method: 'DELETE' });
     } catch (e) {
         console.error("Error deleting gallery item: ", e);
         throw e;
