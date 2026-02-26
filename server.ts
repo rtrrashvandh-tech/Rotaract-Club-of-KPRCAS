@@ -94,7 +94,7 @@ app.post('/api/bulletins', async (req: Request, res: Response) => {
 
 app.delete('/api/bulletins/:id', async (req: Request, res: Response) => {
     try {
-        await deleteDoc(doc(db, "bulletins", req.params.id));
+        await deleteDoc(doc(db, "bulletins", req.params.id as string));
         res.json({ success: true });
     } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -130,7 +130,7 @@ app.post('/api/gallery', async (req: Request, res: Response) => {
 
 app.delete('/api/gallery/:id', async (req: Request, res: Response) => {
     try {
-        await deleteDoc(doc(db, "gallery", req.params.id));
+        await deleteDoc(doc(db, "gallery", req.params.id as string));
         res.json({ success: true });
     } catch (error: any) {
         res.status(500).json({ error: error.message });
