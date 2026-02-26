@@ -11,6 +11,7 @@ import {
     ADMIN_PASSWORD, AdminEvent, AdminBulletin, AdminGalleryItem,
     getCustomGalleryItems, saveCustomGalleryItem, deleteCustomGalleryItem
 } from '@/utils/adminData';
+import { STATIC_EVENTS, STATIC_BULLETINS, STATIC_GALLERY } from '@/utils/staticData';
 import { db } from '@/lib/firebase';
 
 const adminStyles = `
@@ -483,9 +484,9 @@ const Admin = () => {
                         {/* STATS */}
                         <div className="ad-stats-row">
                             {[
-                                { label: 'Events', val: customEvents.length, icon: Calendar },
-                                { label: 'Bulletins', val: customBulletins.length, icon: FileText },
-                                { label: 'Gallery', val: customGallery.length, icon: ImageIcon },
+                                { label: 'Events', val: customEvents.length + STATIC_EVENTS.length, icon: Calendar },
+                                { label: 'Bulletins', val: customBulletins.length + STATIC_BULLETINS.length, icon: FileText },
+                                { label: 'Gallery', val: customGallery.length + STATIC_GALLERY.length, icon: ImageIcon },
                                 { label: 'Status', val: 'Online', icon: CheckCircle2 },
                             ].map((s, i) => (
                                 <div key={i} className="ad-stat-cell">
@@ -524,18 +525,25 @@ const Admin = () => {
                                         <div className="ad-list-count">{String(customEvents.length).padStart(2, '0')}</div>
                                     </div>
                                     <div className="ad-list">
-                                        {customEvents.length === 0 && !isLoading && <div className="ad-empty"><AlertCircle size={28} style={{ color: 'rgba(242,239,232,0.1)' }} /><div className="ad-empty-text">No events registered</div></div>}
-                                        {customEvents.map(ev => (
-                                            <div key={ev.id} className="ad-event-item">
-                                                <div className="ad-event-img"><img src={ev.image} alt={ev.title} /></div>
-                                                <div className="ad-event-info">
-                                                    <div className="ad-event-title">{ev.title}</div>
-                                                    <div className="ad-event-meta"><span className="ad-tag">{ev.date}</span><span>{ev.location || 'TBD'}</span></div>
-                                                    <div className="ad-event-desc">{ev.description}</div>
+                                        {[...STATIC_EVENTS, ...customEvents].length === 0 && !isLoading && <div className="ad-empty"><AlertCircle size={28} style={{ color: 'rgba(242,239,232,0.1)' }} /><div className="ad-empty-text">No events registered</div></div>}
+                                        {[...STATIC_EVENTS, ...customEvents].map(ev => {
+                                            const isStatic = ev.id?.startsWith('s-');
+                                            return (
+                                                <div key={ev.id} className="ad-event-item">
+                                                    <div className="ad-event-img"><img src={ev.image} alt={ev.title} /></div>
+                                                    <div className="ad-event-info">
+                                                        <div className="ad-event-title">{ev.title} {isStatic && <span style={{ opacity: 0.3, fontSize: '8px' }}>(SYSTEM)</span>}</div>
+                                                        <div className="ad-event-meta"><span className="ad-tag">{ev.date}</span><span>{ev.location || 'TBD'}</span></div>
+                                                        <div className="ad-event-desc">{ev.description}</div>
+                                                    </div>
+                                                    {!isStatic ? (
+                                                        <button className="ad-delete-btn" onClick={() => handleDeleteEvent(ev.id!)} disabled={isLoading}><Trash2 size={12} /></button>
+                                                    ) : (
+                                                        <div className="ad-delete-btn" style={{ cursor: 'default', opacity: 0.2 }}><Lock size={12} /></div>
+                                                    )}
                                                 </div>
-                                                <button className="ad-delete-btn" onClick={() => handleDeleteEvent(ev.id)} disabled={isLoading}><Trash2 size={12} /></button>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </div>
@@ -566,17 +574,24 @@ const Admin = () => {
                                         <div className="ad-list-count">{String(customBulletins.length).padStart(2, '0')}</div>
                                     </div>
                                     <div className="ad-list">
-                                        {customBulletins.length === 0 && !isLoading && <div className="ad-empty"><FileText size={28} style={{ color: 'rgba(242,239,232,0.1)' }} /><div className="ad-empty-text">No bulletins archived</div></div>}
-                                        {customBulletins.map(b => (
-                                            <div key={b.id} className="ad-bulletin-item">
-                                                <div className="ad-bulletin-icon"><FileText size={16} /></div>
-                                                <div className="ad-bulletin-info">
-                                                    <div className="ad-event-title">{b.title}</div>
-                                                    <div className="ad-bulletin-id">{b.fileId}</div>
+                                        {[...STATIC_BULLETINS, ...customBulletins].length === 0 && !isLoading && <div className="ad-empty"><FileText size={28} style={{ color: 'rgba(242,239,232,0.1)' }} /><div className="ad-empty-text">No bulletins archived</div></div>}
+                                        {[...STATIC_BULLETINS, ...customBulletins].map(b => {
+                                            const isStatic = b.id?.startsWith('static-');
+                                            return (
+                                                <div key={b.id} className="ad-bulletin-item">
+                                                    <div className="ad-bulletin-icon"><FileText size={16} /></div>
+                                                    <div className="ad-bulletin-info">
+                                                        <div className="ad-event-title">{b.title} {isStatic && <span style={{ opacity: 0.3, fontSize: '8px' }}>(SYSTEM)</span>}</div>
+                                                        <div className="ad-bulletin-id">{b.fileId}</div>
+                                                    </div>
+                                                    {!isStatic ? (
+                                                        <button className="ad-delete-btn" onClick={() => handleDeleteBulletin(b.id!)} disabled={isLoading}><Trash2 size={12} /></button>
+                                                    ) : (
+                                                        <div className="ad-delete-btn" style={{ cursor: 'default', opacity: 0.2 }}><Lock size={12} /></div>
+                                                    )}
                                                 </div>
-                                                <button className="ad-delete-btn" onClick={() => handleDeleteBulletin(b.id)} disabled={isLoading}><Trash2 size={12} /></button>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </div>
@@ -616,19 +631,26 @@ const Admin = () => {
                                         <div className="ad-list-count">{String(customGallery.length).padStart(2, '0')}</div>
                                     </div>
                                     <div className="ad-gallery-grid">
-                                        {customGallery.length === 0 && !isLoading && <div className="ad-empty" style={{ gridColumn: 'span 2' }}><ImageIcon size={28} style={{ color: 'rgba(242,239,232,0.1)' }} /><div className="ad-empty-text">No gallery items added</div></div>}
-                                        {customGallery.map(item => (
-                                            <div key={item.id} className="ad-gallery-card">
-                                                <div className="ad-gallery-img">
-                                                    <img src={item.src} alt={item.title} />
-                                                    <button className="ad-gallery-delete" onClick={() => handleDeleteGallery(item.id)} disabled={isLoading}><Trash2 size={11} /></button>
+                                        {[...STATIC_GALLERY, ...customGallery].length === 0 && !isLoading && <div className="ad-empty" style={{ gridColumn: 'span 2' }}><ImageIcon size={28} style={{ color: 'rgba(242,239,232,0.1)' }} /><div className="ad-empty-text">No gallery items added</div></div>}
+                                        {[...STATIC_GALLERY, ...customGallery].map(item => {
+                                            const isStatic = item.id?.startsWith('g-static-');
+                                            return (
+                                                <div key={item.id} className="ad-gallery-card">
+                                                    <div className="ad-gallery-img">
+                                                        <img src={item.src} alt={item.title} />
+                                                        {!isStatic ? (
+                                                            <button className="ad-gallery-delete" onClick={() => handleDeleteGallery(item.id!)} disabled={isLoading}><Trash2 size={11} /></button>
+                                                        ) : (
+                                                            <div className="ad-gallery-delete" style={{ cursor: 'default', opacity: 0.5, display: 'flex' }}><Lock size={10} /></div>
+                                                        )}
+                                                    </div>
+                                                    <div className="ad-gallery-info">
+                                                        <div className="ad-gallery-title">{item.title} {isStatic && <span style={{ opacity: 0.3, fontSize: '7px' }}>(SYSTEM)</span>}</div>
+                                                        <div className="ad-tag">{item.category}</div>
+                                                    </div>
                                                 </div>
-                                                <div className="ad-gallery-info">
-                                                    <div className="ad-gallery-title">{item.title}</div>
-                                                    <div className="ad-tag">{item.category}</div>
-                                                </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </div>

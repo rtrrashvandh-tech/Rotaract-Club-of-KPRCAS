@@ -1,26 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { FileText, Download, X, Maximize2, Minimize2, ChevronRight } from 'lucide-react';
 import { getCustomBulletins, AdminBulletin } from '@/utils/adminData';
+import { STATIC_BULLETINS } from '@/utils/staticData';
 
 // --- Google Drive PDF file IDs ---
-const pdfFiles: Record<string, string> = {
-  'July-2025': '1HRRqhiuJIrOzChxt-SfaaFnOWuq-jrdg',
-  'August-2025': '1wRTNBYPr2gLsgTdL-Cz4hsdbngBLDqHl',
-  'September-2025': '1Fy5mcdadNAo2_u4BOdRK19HCxo_4H5xN',
-  'October-2025': '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1',
-};
+const pdfFiles: Record<string, string> = {};
+STATIC_BULLETINS.forEach(b => {
+  if (b.date && b.fileId) pdfFiles[b.date] = b.fileId;
+});
 
 const getPdfViewerUrl = (fileId: string) => `https://drive.google.com/file/d/${fileId}/preview`;
 const getPdfDownloadUrl = (fileId: string) => `https://drive.google.com/uc?export=download&id=${fileId}`;
 
 const pageTurnSound = typeof Audio !== 'undefined' ? new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3') : null;
 
-const staticBulletins = [
-  { id: '1', title: 'July', year: '2025', date: 'July-2025', issue: 'Issue 01', color: '#FF6B35' },
-  { id: '2', title: 'August', year: '2025', date: 'August-2025', issue: 'Issue 02', color: '#F7931E' },
-  { id: '3', title: 'September', year: '2025', date: 'September-2025', issue: 'Issue 03', color: '#C0392B' },
-  { id: '4', title: 'October', year: '2025', date: 'October-2025', issue: 'Issue 04', color: '#8E44AD' },
-];
+const staticBulletins = STATIC_BULLETINS;
 
 export default function Bulletin() {
   const [currentPdf, setCurrentPdf] = useState<string | null>(null);

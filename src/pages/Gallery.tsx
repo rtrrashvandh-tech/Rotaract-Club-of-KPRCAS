@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Filter, X, Maximize2, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
 import { getCustomGalleryItems } from '@/utils/adminData';
+import { STATIC_GALLERY } from '@/utils/staticData';
 import { Link } from 'react-router-dom';
 
 const filters = [
@@ -12,21 +13,7 @@ const filters = [
   { id: 'district priority projects', label: 'DPP' },
 ];
 
-const galleryItems = [
-  { id: 1, type: 'image', src: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755328575/IMG_2630_lfgtit.jpg', category: 'club service', title: 'Charter Day', description: 'Charter Day celebration "Purpose Power Progress"' },
-  { id: 2, type: 'image', src: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755328351/IMG_2449_fig2hu.jpg', category: 'club service', title: 'Swap and Serve', description: 'An initiative to build a sustainable community through sharing.' },
-  { id: 3, type: 'image', src: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755331800/IMG-20250727-WA0011_1_avnbqn.jpg', category: 'district priority projects', title: 'Plates of Joy', description: 'Serving hot meals with love and compassion to those in need.' },
-  { id: 4, type: 'image', src: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755417179/WhatsApp_Image_2025-07-20_at_19.16.57_99f3161a_xktitp.jpg', category: 'professional service', title: 'Skill Up Summit', description: 'Empowering youth through motivational leadership sessions.' },
-  { id: 5, type: 'image', src: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755417387/WhatsApp_Image_2025-07-21_at_23.31.20_ca301d31_yh4q7o.jpg', category: 'professional service', title: 'Income Tax Insights', description: 'A deep dive into financial literacy and tax management.' },
-  { id: 6, type: 'image', src: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755417519/IMG_2547_deej97.jpg', category: 'professional service', title: 'Checkmate Challenge', description: 'Strategic thinking and sportsmanship at the annual chess tourney.' },
-  { id: 7, type: 'image', src: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755327320/IMG_2688_vkdcns.jpg', category: 'club service', title: 'Mattai Pandhu', description: 'Building sports fellowship through community cricket matches.' },
-  { id: 8, type: 'image', src: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760281257/PHOTO-2025-09-28-09-55-14_wodjhp.jpg', category: 'club service', title: 'Tharangam 3.0', description: 'Vibrant Onam celebrations filled with tradition and unity.' },
-  { id: 9, type: 'image', src: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1761841757/IMG_20250831_141950_ymbxjs.jpg', category: 'club service', title: 'Shuffle and Roll', description: 'An evening of fun, games, and member engagement.' },
-  { id: 10, type: 'image', src: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1761841998/IMG_20250916_115541_rftji2.jpg', category: 'club service', title: 'Verum Pen Illa', description: 'A special initiative focused on women empowerment and health.' },
-  { id: 11, type: 'image', src: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1761842038/Screenshot_2025-09-29-22-04-09-91_6012fa4d4ddec268fc5c7112cbb265e7_o0kocj.jpg', category: 'club service', title: 'Charity Drive', description: 'Mobilizing resources to support local community projects.' },
-  { id: 12, type: 'image', src: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760283874/IMG_5440_any3nm.jpg', category: 'club service', title: 'Navrang', description: 'A colorful celebration of Navratri and cultural diversity.' },
-  { id: 13, type: 'image', src: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1761842489/IMG-20250927-WA0100_zlndtq.jpg', category: 'professional service', title: 'Rac-a-thon', description: 'Harnessing innovation through our flagship 24-hour hackathon.' },
-];
+const galleryItems = STATIC_GALLERY as any[];
 
 export default function Gallery() {
   const [activeFilter, setActiveFilter] = useState('all');
