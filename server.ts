@@ -58,7 +58,7 @@ app.post('/api/events', async (req: Request, res: Response) => {
 
 app.delete('/api/events/:id', async (req: Request, res: Response) => {
     try {
-        await deleteDoc(doc(db, "events", req.params.id));
+        await deleteDoc(doc(db, "events", req.params.id as string));
         res.json({ success: true });
     } catch (error: any) {
         res.status(500).json({ error: error.message });
