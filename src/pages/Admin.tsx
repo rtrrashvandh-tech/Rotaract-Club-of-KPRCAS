@@ -331,6 +331,18 @@ const Admin = () => {
     const [customBulletins, setCustomBulletins] = useState<AdminBulletin[]>([]);
     const [customGallery, setCustomGallery] = useState<AdminGalleryItem[]>([]);
 
+
+    useEffect(() => {
+        if (!isAuthenticated) return;
+        const load = async () => {
+            setIsLoading(true);
+            const [e, b, g] = await Promise.all([getCustomEvents(), getCustomBulletins(), getCustomGalleryItems()]);
+            setCustomEvents(e); setCustomBulletins(b); setCustomGallery(g);
+            setIsLoading(false);
+        };
+        load();
+    }, [isAuthenticated]);
+
     if (!db) {
         return (
             <>
@@ -346,17 +358,6 @@ const Admin = () => {
             </>
         );
     }
-
-    useEffect(() => {
-        if (!isAuthenticated) return;
-        const load = async () => {
-            setIsLoading(true);
-            const [e, b, g] = await Promise.all([getCustomEvents(), getCustomBulletins(), getCustomGalleryItems()]);
-            setCustomEvents(e); setCustomBulletins(b); setCustomGallery(g);
-            setIsLoading(false);
-        };
-        load();
-    }, [isAuthenticated]);
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
