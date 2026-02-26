@@ -324,6 +324,10 @@ const Admin = () => {
     const [activeTab, setActiveTab] = useState('events');
     const [isLoading, setIsLoading] = useState(false);
 
+    useEffect(() => {
+        console.log("Admin Component Mounted. Firebase DB present:", !!db);
+    }, []);
+
     const [eventForm, setEventForm] = useState<Partial<AdminEvent>>({ title: '', date: '', time: '', location: '', platform: 'In-person', image: '', description: '' });
     const [bulletinForm, setBulletinForm] = useState<Partial<AdminBulletin>>({ title: '', date: '', content: '', fileId: '' });
     const [galleryForm, setGalleryForm] = useState<Partial<AdminGalleryItem>>({ title: '', description: '', category: 'club service', src: '' });
