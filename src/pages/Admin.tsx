@@ -1,45 +1,321 @@
-
 import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
-    LayoutDashboard,
-    Calendar,
-    FileText,
-    Plus,
-    Trash2,
-    LogOut,
-    Lock,
-    Eye,
-    Settings,
-    Image as ImageIcon,
-    CheckCircle2,
-    AlertCircle,
-    Loader2
+    LayoutDashboard, Calendar, FileText, Plus, Trash2, LogOut,
+    Lock, Settings, Image as ImageIcon, CheckCircle2,
+    AlertCircle, Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
-import AnimationWrapper from '@/components/AnimationWrapper';
 import {
-    getCustomEvents,
-    saveCustomEvent,
-    deleteCustomEvent,
-    getCustomBulletins,
-    saveCustomBulletin,
-    deleteCustomBulletin,
-    ADMIN_PASSWORD,
-    AdminEvent,
-    AdminBulletin,
-    AdminGalleryItem,
-    getCustomGalleryItems,
-    saveCustomGalleryItem,
-    deleteCustomGalleryItem
+    getCustomEvents, saveCustomEvent, deleteCustomEvent,
+    getCustomBulletins, saveCustomBulletin, deleteCustomBulletin,
+    ADMIN_PASSWORD, AdminEvent, AdminBulletin, AdminGalleryItem,
+    getCustomGalleryItems, saveCustomGalleryItem, deleteCustomGalleryItem
 } from '@/utils/adminData';
-
 import { db } from '@/lib/firebase';
+
+const adminStyles = `
+  @import url('https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Unbounded:wght@300;400;500;700;900&family=Instrument+Serif:ital@0;1&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0D0D0F; --paper: #F2EFE8; --red: #E8192C;
+    --lime: #C8FF00; --muted: #8A8680; --border: #D4D0C8;
+  }
+
+  .ad-root {
+    display: flex; min-height: 100vh;
+    background: var(--paper); color: var(--ink);
+    font-family: 'Fragment Mono', monospace;
+  }
+
+  /* ERROR */
+  .ad-error-card {
+    max-width: 440px; width: 100%;
+    border: 3px solid var(--ink); padding: 48px 40px;
+    background: var(--paper); text-align: center;
+  }
+  .ad-error-icon { color: var(--red); display: flex; justify-content: center; margin-bottom: 20px; }
+  .ad-error-title { font-family: 'Unbounded', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; margin-bottom: 12px; }
+  .ad-error-body { font-size: 11px; line-height: 1.8; color: var(--muted); margin-bottom: 28px; }
+
+  /* LOGIN */
+  .ad-login-root {
+    min-height: 100vh; width: 100%; display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    background: var(--paper);
+  }
+  .ad-login-left {
+    background: var(--ink); position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 56px 52px;
+  }
+  .ad-login-bg-word {
+    position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+    font-family: 'Unbounded', sans-serif; font-size: 160px; font-weight: 900;
+    color: rgba(255,255,255,0.03); letter-spacing: -10px; pointer-events: none;
+    line-height: 1; text-transform: uppercase;
+  }
+  .ad-login-left-content { position: relative; z-index: 2; }
+  .ad-login-eyebrow { font-size: 9px; letter-spacing: 5px; text-transform: uppercase; color: var(--lime); margin-bottom: 20px; }
+  .ad-login-h1 {
+    font-family: 'Unbounded', sans-serif; font-size: clamp(40px,7vw,90px);
+    font-weight: 900; letter-spacing: -4px; line-height: 0.9; text-transform: uppercase;
+    color: var(--paper); margin-bottom: 40px;
+  }
+  .ad-outline { -webkit-text-stroke: 1.5px var(--paper); color: transparent; }
+  .ad-accent { color: var(--lime); }
+  .ad-login-meta { display: flex; flex-direction: column; gap: 1px; background: rgba(255,255,255,0.06); }
+  .ad-meta-row {
+    display: flex; justify-content: space-between; padding: 12px 14px;
+    background: rgba(13,13,15,0.7); font-size: 9px; letter-spacing: 3px;
+    text-transform: uppercase; transition: background 0.25s;
+  }
+  .ad-meta-row:hover { background: rgba(200,255,0,0.08); }
+  .ad-meta-k { color: rgba(242,239,232,0.3); }
+  .ad-meta-v { font-weight: 700; color: var(--paper); transition: color 0.25s; }
+  .ad-meta-row:hover .ad-meta-v { color: var(--lime); }
+
+  .ad-login-div { background: rgba(242,239,232,0.1); }
+
+  .ad-login-right {
+    padding: 56px 52px; display: flex; flex-direction: column;
+    justify-content: center; gap: 16px;
+  }
+  .ad-login-icon-wrap {
+    width: 48px; height: 48px; background: var(--red);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; margin-bottom: 8px;
+  }
+  .ad-login-title {
+    font-family: 'Unbounded', sans-serif; font-size: clamp(24px,4vw,40px);
+    font-weight: 900; letter-spacing: -2px; text-transform: uppercase;
+    color: var(--ink); line-height: 1;
+  }
+  .ad-login-sub { font-size: 11px; line-height: 1.7; color: var(--muted); margin-bottom: 8px; }
+  .ad-login-form { display: flex; flex-direction: column; gap: 20px; }
+
+  /* SHARED */
+  .ad-field { display: flex; flex-direction: column; gap: 8px; }
+  .ad-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ad-label { font-size: 8px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); }
+  .ad-input {
+    width: 100%; background: var(--paper); border: 1px solid var(--border);
+    padding: 12px 14px; font-family: 'Fragment Mono', monospace; font-size: 12px;
+    color: var(--ink); outline: none; transition: border-color 0.2s;
+    -webkit-appearance: none; appearance: none; border-radius: 0;
+  }
+  .ad-input:focus { border-color: var(--ink); }
+  .ad-textarea {
+    width: 100%; background: var(--paper); border: 1px solid var(--border);
+    padding: 12px 14px; font-family: 'Fragment Mono', monospace; font-size: 12px;
+    color: var(--ink); outline: none; resize: vertical; min-height: 90px;
+    transition: border-color 0.2s; border-radius: 0;
+  }
+  .ad-textarea:focus { border-color: var(--ink); }
+  .ad-btn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 24px; background: var(--ink); color: var(--paper);
+    font-family: 'Unbounded', sans-serif; font-size: 10px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; border: none; cursor: pointer;
+    transition: background 0.2s; width: 100%;
+  }
+  .ad-btn-primary:hover { background: var(--red); }
+  .ad-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* SIDEBAR */
+  .ad-sidebar {
+    width: 256px; background: var(--ink); border-right: 3px solid var(--ink);
+    display: flex; flex-direction: column; padding: 32px 0;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .ad-sidebar-brand {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 900;
+    letter-spacing: -0.5px; text-transform: uppercase; color: var(--paper);
+    margin-bottom: 24px;
+  }
+  .ad-sidebar-logo {
+    width: 34px; height: 34px; background: var(--red);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; flex-shrink: 0;
+  }
+  .ad-sidebar-eyebrow {
+    font-size: 8px; letter-spacing: 4px; text-transform: uppercase;
+    color: rgba(242,239,232,0.2); padding: 0 24px; margin-bottom: 8px;
+  }
+  .ad-sidebar-nav { display: flex; flex-direction: column; gap: 1px; background: rgba(255,255,255,0.04); margin-bottom: 8px; }
+  .ad-nav-btn {
+    display: flex; align-items: center; gap: 12px; padding: 14px 24px;
+    background: transparent; color: rgba(242,239,232,0.35); border: none;
+    font-family: 'Fragment Mono', monospace; font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+    text-align: left; width: 100%; position: relative;
+  }
+  .ad-nav-btn::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--lime); transform: scaleY(0); transition: transform 0.25s;
+  }
+  .ad-nav-btn:hover { background: rgba(255,255,255,0.04); color: var(--paper); }
+  .ad-nav-btn.active { background: rgba(200,255,0,0.06); color: var(--paper); }
+  .ad-nav-btn.active::before { transform: scaleY(1); }
+  .ad-nav-code {
+    font-family: 'Unbounded', sans-serif; font-size: 9px; font-weight: 900;
+    color: rgba(242,239,232,0.15); min-width: 20px;
+  }
+  .ad-nav-btn.active .ad-nav-code { color: var(--lime); }
+  .ad-sidebar-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 12px 0; }
+  .ad-sidebar-footer { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid rgba(255,255,255,0.06); }
+  .ad-sidebar-user { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .ad-user-avatar { width: 34px; height: 34px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); flex-shrink: 0; }
+  .ad-user-name { font-size: 11px; font-weight: 700; color: var(--paper); }
+  .ad-user-tag { font-size: 8px; letter-spacing: 2px; color: rgba(242,239,232,0.3); text-transform: uppercase; margin-top: 2px; }
+  .ad-logout-btn {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    padding: 11px 14px; background: transparent; color: rgba(232,25,44,0.5);
+    font-family: 'Fragment Mono', monospace; font-size: 9px; letter-spacing: 3px;
+    text-transform: uppercase; border: 1px solid rgba(232,25,44,0.15); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .ad-logout-btn:hover { background: rgba(232,25,44,0.08); color: var(--red); border-color: var(--red); }
+
+  /* MAIN */
+  .ad-main { flex: 1; display: flex; flex-direction: column; min-height: 100vh; overflow-y: auto; }
+  .ad-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 44px; border-bottom: 3px solid var(--ink);
+    background: var(--paper); position: sticky; top: 0; z-index: 30;
+  }
+  .ad-header-eyebrow { font-size: 8px; letter-spacing: 5px; text-transform: uppercase; color: var(--red); margin-bottom: 5px; }
+  .ad-header-title {
+    font-family: 'Unbounded', sans-serif; font-size: clamp(16px,2vw,24px);
+    font-weight: 900; letter-spacing: -1px; text-transform: uppercase; color: var(--ink);
+  }
+  .ad-header-right { display: flex; align-items: center; gap: 14px; }
+  .ad-sync-badge {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px; border: 1px solid var(--border);
+    font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted);
+  }
+  .ad-sync-dot { width: 6px; height: 6px; background: var(--lime); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .ad-spinner { animation: spin 1s linear infinite; }
+  @keyframes spin { to{ transform: rotate(360deg); } }
+
+  /* CONTENT */
+  .ad-content { padding: 36px 44px; flex: 1; display: flex; flex-direction: column; gap: 28px; }
+
+  /* STATS */
+  .ad-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .ad-stat-cell { background: var(--paper); padding: 22px 18px; cursor: default; transition: background 0.3s; }
+  .ad-stat-cell:hover { background: var(--ink); }
+  .ad-stat-icon { color: var(--muted); margin-bottom: 10px; transition: color 0.3s; }
+  .ad-stat-cell:hover .ad-stat-icon { color: var(--lime); }
+  .ad-stat-n { font-family: 'Unbounded', sans-serif; font-size: 26px; font-weight: 900; letter-spacing: -1px; color: var(--ink); line-height: 1; margin-bottom: 4px; transition: color 0.3s; }
+  .ad-stat-cell:hover .ad-stat-n { color: var(--paper); }
+  .ad-stat-l { font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); transition: color 0.3s; }
+  .ad-stat-cell:hover .ad-stat-l { color: rgba(242,239,232,0.3); }
+
+  /* TAB GRID */
+  .ad-tab-grid {
+    display: grid; grid-template-columns: 1fr 1px 1.4fr;
+    background: var(--border); border: 1px solid var(--border);
+    min-height: 580px;
+  }
+
+  /* FORM PANEL */
+  .ad-form-panel { background: var(--paper); padding: 32px 28px; }
+  .ad-panel-hdr { margin-bottom: 24px; }
+  .ad-panel-eyebrow { font-size: 8px; letter-spacing: 5px; text-transform: uppercase; color: var(--red); margin-bottom: 5px; }
+  .ad-panel-title { font-family: 'Unbounded', sans-serif; font-size: 18px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; color: var(--ink); }
+  .ad-form { display: flex; flex-direction: column; gap: 16px; }
+
+  /* LIST PANEL */
+  .ad-list-panel { background: var(--ink); display: flex; flex-direction: column; }
+  .ad-list-hdr {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 22px 24px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .ad-list-title { font-size: 9px; letter-spacing: 5px; text-transform: uppercase; color: rgba(242,239,232,0.3); }
+  .ad-list-count { font-family: 'Unbounded', sans-serif; font-size: 28px; font-weight: 900; letter-spacing: -2px; color: rgba(255,255,255,0.05); }
+  .ad-list { flex: 1; overflow-y: auto; max-height: 520px; display: flex; flex-direction: column; gap: 1px; background: rgba(255,255,255,0.04); }
+
+  /* EVENT ITEM */
+  .ad-event-item {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 16px 22px; background: rgba(13,13,15,0.6);
+    transition: background 0.2s;
+  }
+  .ad-event-item:hover { background: rgba(200,255,0,0.04); }
+  .ad-event-img { width: 60px; height: 60px; flex-shrink: 0; overflow: hidden; background: rgba(255,255,255,0.05); }
+  .ad-event-img img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(0.6); transition: filter 0.3s; }
+  .ad-event-item:hover .ad-event-img img { filter: saturate(1); }
+  .ad-event-info { flex: 1; min-width: 0; }
+  .ad-event-title { font-size: 11px; font-weight: 700; color: var(--paper); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ad-event-meta { display: flex; align-items: center; gap: 10px; font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: rgba(242,239,232,0.3); margin-bottom: 5px; }
+  .ad-event-desc { font-size: 9px; line-height: 1.6; color: rgba(242,239,232,0.2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ad-tag { display: inline-block; background: var(--lime); color: var(--ink); font-size: 7px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; padding: 3px 7px; }
+  .ad-delete-btn {
+    flex-shrink: 0; width: 28px; height: 28px; background: transparent;
+    border: 1px solid rgba(232,25,44,0.15); color: rgba(232,25,44,0.3);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;
+  }
+  .ad-delete-btn:hover { background: var(--red); border-color: var(--red); color: #fff; }
+
+  /* BULLETIN ITEM */
+  .ad-bulletin-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 22px; background: rgba(13,13,15,0.6); transition: background 0.2s;
+  }
+  .ad-bulletin-item:hover { background: rgba(200,255,0,0.04); }
+  .ad-bulletin-icon { width: 40px; height: 40px; flex-shrink: 0; background: rgba(200,255,0,0.08); color: var(--lime); display: flex; align-items: center; justify-content: center; }
+  .ad-bulletin-info { flex: 1; min-width: 0; }
+  .ad-bulletin-id { font-size: 8px; letter-spacing: 2px; color: rgba(242,239,232,0.2); text-transform: uppercase; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* GALLERY GRID */
+  .ad-gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.04); overflow-y: auto; max-height: 520px; align-content: start; }
+  .ad-gallery-card { background: rgba(13,13,15,0.7); }
+  .ad-gallery-img { position: relative; aspect-ratio: 1; overflow: hidden; background: rgba(255,255,255,0.04); }
+  .ad-gallery-img img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(0.6); transition: filter 0.3s; }
+  .ad-gallery-card:hover .ad-gallery-img img { filter: saturate(1); }
+  .ad-gallery-delete {
+    position: absolute; top: 8px; right: 8px; width: 26px; height: 26px;
+    background: rgba(13,13,15,0.8); border: none; color: rgba(242,239,232,0.5);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: all 0.2s;
+  }
+  .ad-gallery-card:hover .ad-gallery-delete { opacity: 1; }
+  .ad-gallery-delete:hover { background: var(--red); color: #fff; }
+  .ad-gallery-info { padding: 10px 12px; display: flex; flex-direction: column; gap: 5px; }
+  .ad-gallery-title { font-size: 10px; font-weight: 700; color: var(--paper); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* EMPTY */
+  .ad-empty { padding: 56px 28px; text-align: center; background: rgba(13,13,15,0.4); flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ad-empty-text { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(242,239,232,0.15); margin-top: 10px; }
+
+  /* FOOTER */
+  .ad-footer { padding: 18px 44px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--paper); }
+  .ad-footer-brand { font-family: 'Unbounded', sans-serif; font-size: 12px; font-weight: 900; letter-spacing: -0.5px; color: rgba(13,13,15,0.18); text-transform: uppercase; }
+  .ad-footer-note { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); opacity: 0.5; }
+
+  /* RESPONSIVE */
+  @media (max-width: 1024px) {
+    .ad-sidebar { display: none; }
+    .ad-content { padding: 24px; }
+    .ad-header { padding: 18px 24px; }
+    .ad-stats-row { grid-template-columns: repeat(2, 1fr); }
+    .ad-tab-grid { grid-template-columns: 1fr; }
+    .ad-login-root { grid-template-columns: 1fr; }
+    .ad-login-left { min-height: 280px; }
+    .ad-login-div { display: none; }
+    .ad-login-right { padding: 40px 28px; }
+    .ad-footer { padding: 14px 24px; flex-direction: column; gap: 6px; }
+  }
+  @media (max-width: 600px) {
+    .ad-gallery-grid { grid-template-columns: 1fr; }
+    .ad-field-row { grid-template-columns: 1fr; }
+  }
+`;
 
 const Admin = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -47,563 +323,278 @@ const Admin = () => {
     const [activeTab, setActiveTab] = useState('events');
     const [isLoading, setIsLoading] = useState(false);
 
-    // Form States
-    const [eventForm, setEventForm] = useState<Partial<AdminEvent>>({
-        title: '',
-        date: '',
-        time: '',
-        location: '',
-        platform: 'In-person',
-        image: '',
-        description: ''
-    });
-
-    const [bulletinForm, setBulletinForm] = useState<Partial<AdminBulletin>>({
-        title: '',
-        date: '',
-        content: '',
-        fileId: ''
-    });
-
-    const [galleryForm, setGalleryForm] = useState<Partial<AdminGalleryItem>>({
-        title: '',
-        description: '',
-        category: 'club service',
-        src: ''
-    });
+    const [eventForm, setEventForm] = useState<Partial<AdminEvent>>({ title: '', date: '', time: '', location: '', platform: 'In-person', image: '', description: '' });
+    const [bulletinForm, setBulletinForm] = useState<Partial<AdminBulletin>>({ title: '', date: '', content: '', fileId: '' });
+    const [galleryForm, setGalleryForm] = useState<Partial<AdminGalleryItem>>({ title: '', description: '', category: 'club service', src: '' });
 
     const [customEvents, setCustomEvents] = useState<AdminEvent[]>([]);
     const [customBulletins, setCustomBulletins] = useState<AdminBulletin[]>([]);
     const [customGallery, setCustomGallery] = useState<AdminGalleryItem[]>([]);
 
-    // If database connection is missing, show localized warning instead of blank screen
     if (!db) {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
-                <Card className="max-w-md w-full p-8 text-center shadow-2xl rounded-3xl border-none space-y-6">
-                    <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto">
-                        <AlertCircle className="w-8 h-8" />
+            <>
+                <style>{adminStyles}</style>
+                <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40, background: 'var(--paper)', fontFamily: 'Fragment Mono, monospace' }}>
+                    <div className="ad-error-card">
+                        <div className="ad-error-icon"><AlertCircle size={28} /></div>
+                        <div className="ad-error-title">Config Required</div>
+                        <p className="ad-error-body">Firebase env variables missing. Add <code>VITE_FIREBASE_API_KEY</code> to your deployment settings.</p>
+                        <button className="ad-btn-primary" onClick={() => window.location.reload()}>Retry Connection</button>
                     </div>
-                    <div>
-                        <h2 className="text-2xl font-black text-gray-900 mb-2">Configuration Required</h2>
-                        <p className="text-gray-500 text-sm leading-relaxed">
-                            The Admin Dashboard requires **Firebase Environment Variables** to function on the live site.
-                            If you haven't added them to your Render dashboard yet, please do so now.
-                        </p>
-                    </div>
-                    <div className="bg-blue-50 p-4 rounded-xl text-left border border-blue-100">
-                        <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-1">Developer Note</p>
-                        <p className="text-xs text-blue-800">
-                            Check for `VITE_FIREBASE_API_KEY` and other credentials in your `.env` or Render settings.
-                        </p>
-                    </div>
-                    <Button onClick={() => window.location.reload()} variant="outline" className="w-full rounded-xl">
-                        Retry Connection
-                    </Button>
-                </Card>
-            </div>
+                </div>
+            </>
         );
     }
 
     useEffect(() => {
-        const fetchData = async () => {
-            if (isAuthenticated) {
-                setIsLoading(true);
-                const events = await getCustomEvents();
-                const bulletins = await getCustomBulletins();
-                const gallery = await getCustomGalleryItems();
-                setCustomEvents(events);
-                setCustomBulletins(bulletins);
-                setCustomGallery(gallery);
-                setIsLoading(false);
-            }
+        if (!isAuthenticated) return;
+        const load = async () => {
+            setIsLoading(true);
+            const [e, b, g] = await Promise.all([getCustomEvents(), getCustomBulletins(), getCustomGalleryItems()]);
+            setCustomEvents(e); setCustomBulletins(b); setCustomGallery(g);
+            setIsLoading(false);
         };
-        fetchData();
+        load();
     }, [isAuthenticated]);
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        if (password === ADMIN_PASSWORD) {
-            setIsAuthenticated(true);
-            toast.success('Access Granted. Welcome back, Admin.');
-        } else {
-            toast.error('Invalid credentials. Access denied.');
-        }
+        if (password === ADMIN_PASSWORD) { setIsAuthenticated(true); toast.success('Access granted.'); }
+        else toast.error('Invalid credentials.');
     };
 
-    const handleAddEvent = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!eventForm.title || !eventForm.image) {
-            toast.error('Please fill in required fields');
-            return;
-        }
-        setIsLoading(true);
-        try {
-            await saveCustomEvent(eventForm as AdminEvent);
-            const events = await getCustomEvents();
-            setCustomEvents(events);
-            setEventForm({ title: '', date: '', time: '', location: '', platform: 'In-person', image: '', description: '' });
-            toast.success('Event published successfully!');
-        } catch (error) {
-            toast.error('Failed to save event');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const withLoad = async (fn: () => Promise<void>) => { setIsLoading(true); try { await fn(); } catch { toast.error('Operation failed.'); } finally { setIsLoading(false); } };
 
-    const handleAddBulletin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!bulletinForm.title || !bulletinForm.fileId) {
-            toast.error('Please fill in required fields');
-            return;
-        }
-        setIsLoading(true);
-        try {
-            await saveCustomBulletin(bulletinForm as AdminBulletin);
-            const bulletins = await getCustomBulletins();
-            setCustomBulletins(bulletins);
-            setBulletinForm({ title: '', date: '', content: '', fileId: '' });
-            toast.success('Bulletin uploaded successfully!');
-        } catch (error) {
-            toast.error('Failed to save bulletin');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const handleAddEvent = (e: React.FormEvent) => { e.preventDefault(); if (!eventForm.title || !eventForm.image) { toast.error('Fill required fields'); return; } withLoad(async () => { await saveCustomEvent(eventForm as AdminEvent); setCustomEvents(await getCustomEvents()); setEventForm({ title: '', date: '', time: '', location: '', platform: 'In-person', image: '', description: '' }); toast.success('Event published!'); }); };
+    const handleAddBulletin = (e: React.FormEvent) => { e.preventDefault(); if (!bulletinForm.title || !bulletinForm.fileId) { toast.error('Fill required fields'); return; } withLoad(async () => { await saveCustomBulletin(bulletinForm as AdminBulletin); setCustomBulletins(await getCustomBulletins()); setBulletinForm({ title: '', date: '', content: '', fileId: '' }); toast.success('Bulletin archived!'); }); };
+    const handleAddGallery = (e: React.FormEvent) => { e.preventDefault(); if (!galleryForm.title || !galleryForm.src) { toast.error('Fill required fields'); return; } withLoad(async () => { await saveCustomGalleryItem(galleryForm as AdminGalleryItem); setCustomGallery(await getCustomGalleryItems()); setGalleryForm({ title: '', description: '', category: 'club service', src: '' }); toast.success('Moment archived!'); }); };
+    const handleDeleteEvent = (id: string) => withLoad(async () => { await deleteCustomEvent(id); setCustomEvents(await getCustomEvents()); toast.info('Event removed.'); });
+    const handleDeleteBulletin = (id: string) => withLoad(async () => { await deleteCustomBulletin(id); setCustomBulletins(await getCustomBulletins()); toast.info('Bulletin removed.'); });
+    const handleDeleteGallery = (id: string) => withLoad(async () => { await deleteCustomGalleryItem(id); setCustomGallery(await getCustomGalleryItems()); toast.info('Item removed.'); });
 
-    const handleDeleteEvent = async (id: string) => {
-        setIsLoading(true);
-        try {
-            await deleteCustomEvent(id);
-            const events = await getCustomEvents();
-            setCustomEvents(events);
-            toast.info('Event removed');
-        } catch (error) {
-            toast.error('Failed to delete event');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleDeleteBulletin = async (id: string) => {
-        setIsLoading(true);
-        try {
-            await deleteCustomBulletin(id);
-            const bulletins = await getCustomBulletins();
-            setCustomBulletins(bulletins);
-            toast.info('Bulletin removed');
-        } catch (error) {
-            toast.error('Failed to delete bulletin');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleAddGalleryItem = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!galleryForm.title || !galleryForm.src) {
-            toast.error('Please fill in required fields');
-            return;
-        }
-        setIsLoading(true);
-        try {
-            await saveCustomGalleryItem(galleryForm as AdminGalleryItem);
-            const gallery = await getCustomGalleryItems();
-            setCustomGallery(gallery);
-            setGalleryForm({ title: '', description: '', category: 'club service', src: '' });
-            toast.success('Gallery item added!');
-        } catch (error) {
-            toast.error('Failed to save gallery item');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleDeleteGalleryItem = async (id: string) => {
-        setIsLoading(true);
-        try {
-            await deleteCustomGalleryItem(id);
-            const gallery = await getCustomGalleryItems();
-            setCustomGallery(gallery);
-            toast.info('Item removed from gallery');
-        } catch (error) {
-            toast.error('Failed to delete item');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    if (!isAuthenticated) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] p-4 font-inter">
-                <AnimationWrapper animation="zoom-in">
-                    <Card className="w-full max-w-md p-8 bg-[#151515] border-[#333] shadow-2xl">
-                        <div className="flex flex-col items-center text-center mb-8">
-                            <div className="w-16 h-16 bg-[#800000] rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-[#800000]/20">
-                                <Lock className="w-8 h-8 text-white" />
-                            </div>
-                            <h1 className="text-2xl font-bold text-white mb-2">Admin Gateway</h1>
-                            <p className="text-gray-400 text-sm">Secure access for Rotaract KPRCAS management</p>
+    /* ── LOGIN PAGE ── */
+    if (!isAuthenticated) return (
+        <>
+            <style>{adminStyles}</style>
+            <div className="ad-login-root">
+                <div className="ad-login-left">
+                    <div className="ad-login-bg-word">ADMIN</div>
+                    <div className="ad-login-left-content">
+                        <div className="ad-login-eyebrow">// Secure Access</div>
+                        <h1 className="ad-login-h1">
+                            <span className="ad-outline">Admin</span><br />
+                            <span className="ad-accent">Gate</span>
+                        </h1>
+                        <div className="ad-login-meta">
+                            {[{ k: 'Access Level', v: 'Club Admin' }, { k: 'Season', v: '2025–26' }, { k: 'Auth', v: 'Token Gate' }].map(r => (
+                                <div key={r.k} className="ad-meta-row">
+                                    <span className="ad-meta-k">{r.k}</span>
+                                    <span className="ad-meta-v">{r.v}</span>
+                                </div>
+                            ))}
                         </div>
-
-                        <form onSubmit={handleLogin} className="space-y-6">
-                            <div className="space-y-2">
-                                <Label className="text-gray-300 text-xs uppercase tracking-widest font-bold">Encrypted Token</Label>
-                                <Input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="••••••••••••"
-                                    className="bg-[#1f1f1f] border-[#333] text-white focus:border-[#800000] h-12"
-                                />
-                            </div>
-                            <Button type="submit" className="w-full h-12 bg-[#800000] hover:bg-[#a00000] text-white font-bold transition-all transform hover:scale-[1.02]">
-                                Initiate Session
-                            </Button>
-                        </form>
-
-                        <div className="mt-8 pt-6 border-t border-[#333] text-center">
-                            <p className="text-gray-500 text-xs uppercase tracking-tighter">Authorized Personnel Only</p>
+                    </div>
+                </div>
+                <div className="ad-login-div" />
+                <div className="ad-login-right">
+                    <div className="ad-login-icon-wrap"><Lock size={20} /></div>
+                    <div className="ad-login-title">Authenticate</div>
+                    <p className="ad-login-sub">Authorized personnel only. Enter your access token to proceed.</p>
+                    <form onSubmit={handleLogin} className="ad-login-form">
+                        <div className="ad-field">
+                            <label className="ad-label">// Encrypted Token</label>
+                            <input type="password" className="ad-input" placeholder="••••••••••••" value={password} onChange={e => setPassword(e.target.value)} />
                         </div>
-                    </Card>
-                </AnimationWrapper>
+                        <button type="submit" className="ad-btn-primary">Initiate Session</button>
+                    </form>
+                </div>
             </div>
-        );
-    }
+        </>
+    );
+
+    /* ── DASHBOARD ── */
+    const tabs = [
+        { id: 'events', label: 'Events', icon: Calendar, code: '01' },
+        { id: 'bulletins', label: 'Bulletins', icon: FileText, code: '02' },
+        { id: 'gallery', label: 'Gallery', icon: ImageIcon, code: '03' },
+    ];
+    const currentTab = tabs.find(t => t.id === activeTab);
 
     return (
-        <div className="min-h-screen bg-[#fcfcfc] flex font-inter">
-            {/* Sidebar */}
-            <aside className="w-72 bg-[#111] text-white p-6 hidden lg:flex flex-col border-r border-[#222]">
-                <div className="flex items-center gap-3 mb-10 px-2">
-                    <div className="w-10 h-10 bg-[#800000] rounded-lg flex items-center justify-center">
-                        <LayoutDashboard className="w-5 h-5 text-white" />
+        <>
+            <style>{adminStyles}</style>
+            <div className="ad-root">
+
+                {/* SIDEBAR */}
+                <aside className="ad-sidebar">
+                    <div className="ad-sidebar-brand">
+                        <div className="ad-sidebar-logo"><LayoutDashboard size={16} /></div>
+                        <span>RAC Dash</span>
                     </div>
-                    <span className="font-black text-lg tracking-tight">RAC DASH</span>
-                </div>
-
-                <nav className="flex-1 space-y-2">
-                    <button
-                        onClick={() => setActiveTab('events')}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'events' ? 'bg-[#800000] text-white' : 'text-gray-400 hover:bg-[#222] hover:text-white'}`}
-                    >
-                        <Calendar className="w-5 h-5" />
-                        <span className="text-sm font-semibold">Events Manager</span>
+                    <div className="ad-sidebar-eyebrow">// Navigation</div>
+                    <nav className="ad-sidebar-nav">
+                        {tabs.map(t => (
+                            <button key={t.id} className={`ad-nav-btn ${activeTab === t.id ? 'active' : ''}`} onClick={() => setActiveTab(t.id)}>
+                                <span className="ad-nav-code">{t.code}</span>
+                                <t.icon size={13} />
+                                <span>{t.label}</span>
+                            </button>
+                        ))}
+                    </nav>
+                    <div className="ad-sidebar-divider" />
+                    <button className="ad-nav-btn" style={{ opacity: 0.4, cursor: 'default' }}>
+                        <span className="ad-nav-code">04</span>
+                        <Settings size={13} />
+                        <span>Settings</span>
                     </button>
-                    <button
-                        onClick={() => setActiveTab('bulletins')}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'bulletins' ? 'bg-[#800000] text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
-                    >
-                        <FileText className="w-4 h-4" />
-                        <span className="text-sm font-medium">Bulletins</span>
-                    </button>
-
-                    <button
-                        onClick={() => setActiveTab('gallery')}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'gallery' ? 'bg-[#800000] text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
-                    >
-                        <ImageIcon className="w-4 h-4" />
-                        <span className="text-sm font-medium">Gallery</span>
-                    </button>
-                    <div className="pt-4 mt-4 border-t border-[#222]">
-                        <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition-all">
-                            <Settings className="w-5 h-5" />
-                            <span className="text-sm font-semibold">System Settings</span>
+                    <div className="ad-sidebar-footer">
+                        <div className="ad-sidebar-user">
+                            <div className="ad-user-avatar" />
+                            <div>
+                                <div className="ad-user-name">Club Admin</div>
+                                <div className="ad-user-tag">Vision 25–26</div>
+                            </div>
+                        </div>
+                        <button className="ad-logout-btn" onClick={() => setIsAuthenticated(false)}>
+                            <LogOut size={12} /> Terminate Session
                         </button>
                     </div>
-                </nav>
+                </aside>
 
-                <div className="mt-auto pt-6 border-t border-[#222]">
-                    <div className="flex items-center gap-3 px-2 mb-6">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#333] to-[#444] border border-[#555]" />
-                        <div>
-                            <p className="text-sm font-bold">Club Admin</p>
-                            <p className="text-[10px] text-gray-500 font-mono">VISION_YEAR_25_26</p>
+                {/* MAIN */}
+                <div className="ad-main">
+                    <header className="ad-header">
+                        <div className="ad-header-left">
+                            <div className="ad-header-eyebrow">// Control Panel</div>
+                            <h2 className="ad-header-title">{currentTab?.label} Manager</h2>
                         </div>
-                    </div>
-                    <Button
-                        variant="ghost"
-                        className="w-full justify-start text-red-500 hover:text-red-400 hover:bg-red-500/10"
-                        onClick={() => setIsAuthenticated(false)}
-                    >
-                        <LogOut className="w-4 h-4 mr-2" />
-                        Terminate Session
-                    </Button>
-                </div>
-            </aside>
-
-            {/* Main Content */}
-            <main className="flex-1 h-screen overflow-y-auto bg-[#fafafa]">
-                <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 sticky top-0 z-10">
-                    <h2 className="text-xl font-black text-[#111] uppercase tracking-wide">
-                        {activeTab === 'events' ? 'Strategic Events' : 'Monthly Bulletins'} Control
-                    </h2>
-                    <div className="flex items-center gap-4">
-                        {isLoading && <Loader2 className="w-5 h-5 animate-spin text-[#800000]" />}
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-600 rounded-full border border-green-100">
-                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                            <span className="text-[10px] font-black uppercase">Cloud Sync Active</span>
+                        <div className="ad-header-right">
+                            {isLoading && <Loader2 size={15} className="ad-spinner" />}
+                            <div className="ad-sync-badge">
+                                <span className="ad-sync-dot" /> Cloud Sync Active
+                            </div>
                         </div>
-                    </div>
-                </header>
+                    </header>
 
-                <div className="p-10 max-w-6xl mx-auto space-y-10">
+                    <div className="ad-content">
 
-                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                        <TabsContent value="events" className="mt-0 space-y-10">
-                            {/* Form Card */}
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                                <Card className="lg:col-span-5 p-8 border-none shadow-xl bg-white rounded-3xl">
-                                    <div className="flex items-center gap-3 mb-8">
-                                        <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
-                                            <Plus className="w-5 h-5" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-lg font-black text-[#111]">Register New Event</h3>
-                                            <p className="text-xs text-gray-400">Broadcast your impact to the club</p>
-                                        </div>
+                        {/* STATS */}
+                        <div className="ad-stats-row">
+                            {[
+                                { label: 'Events', val: customEvents.length, icon: Calendar },
+                                { label: 'Bulletins', val: customBulletins.length, icon: FileText },
+                                { label: 'Gallery', val: customGallery.length, icon: ImageIcon },
+                                { label: 'Status', val: 'Online', icon: CheckCircle2 },
+                            ].map((s, i) => (
+                                <div key={i} className="ad-stat-cell">
+                                    <div className="ad-stat-icon"><s.icon size={14} /></div>
+                                    <div className="ad-stat-n">{s.val}</div>
+                                    <div className="ad-stat-l">{s.label}</div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* EVENTS */}
+                        {activeTab === 'events' && (
+                            <div className="ad-tab-grid">
+                                <div className="ad-form-panel">
+                                    <div className="ad-panel-hdr">
+                                        <div className="ad-panel-eyebrow">// New Entry</div>
+                                        <div className="ad-panel-title">Register Event</div>
                                     </div>
-
-                                    <form onSubmit={handleAddEvent} className="space-y-5">
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold text-gray-500">Event Designation</Label>
-                                            <Input
-                                                placeholder="e.g. Mattaipandhu 3.0"
-                                                value={eventForm.title}
-                                                onChange={e => setEventForm({ ...eventForm, title: e.target.value })}
-                                                className="bg-gray-50 border-gray-100 placeholder:text-gray-300 h-11"
-                                            />
+                                    <form onSubmit={handleAddEvent} className="ad-form">
+                                        <div className="ad-field"><label className="ad-label">Event Title *</label><input className="ad-input" placeholder="e.g. Mattaipandhu 3.0" value={eventForm.title} onChange={e => setEventForm({ ...eventForm, title: e.target.value })} /></div>
+                                        <div className="ad-field-row">
+                                            <div className="ad-field"><label className="ad-label">Date</label><input className="ad-input" placeholder="2025-10-31" value={eventForm.date} onChange={e => setEventForm({ ...eventForm, date: e.target.value })} /></div>
+                                            <div className="ad-field"><label className="ad-label">Venue</label><input className="ad-input" placeholder="KPRCAS Campus" value={eventForm.location} onChange={e => setEventForm({ ...eventForm, location: e.target.value })} /></div>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <Label className="text-xs font-bold text-gray-500">Timeline (YYYY-MM-DD)</Label>
-                                                <Input
-                                                    placeholder="2025-10-31"
-                                                    value={eventForm.date}
-                                                    onChange={e => setEventForm({ ...eventForm, date: e.target.value })}
-                                                    className="bg-gray-50 border-gray-100 h-11"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label className="text-xs font-bold text-gray-500">Venue</Label>
-                                                <Input
-                                                    placeholder="KPRCAS Campus"
-                                                    value={eventForm.location}
-                                                    onChange={e => setEventForm({ ...eventForm, location: e.target.value })}
-                                                    className="bg-gray-50 border-gray-100 h-11"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold text-gray-500">Visual Resource (Image URL)</Label>
-                                            <div className="relative">
-                                                <Input
-                                                    placeholder="https://res.cloudinary.com/..."
-                                                    value={eventForm.image}
-                                                    onChange={e => setEventForm({ ...eventForm, image: e.target.value })}
-                                                    className="bg-gray-50 border-gray-100 pl-10 h-11"
-                                                />
-                                                <ImageIcon className="absolute left-3 top-3 w-5 h-5 text-gray-300" />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold text-gray-500">Strategic Overview</Label>
-                                            <textarea
-                                                className="w-full h-24 bg-gray-50 border border-gray-100 rounded-xl p-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none transition-all"
-                                                placeholder="Summarize the initiative and its objectives..."
-                                                value={eventForm.description}
-                                                onChange={e => setEventForm({ ...eventForm, description: e.target.value })}
-                                            />
-                                        </div>
-                                        <Button type="submit" disabled={isLoading} className="w-full h-12 bg-[#111] hover:bg-[#222] text-white rounded-xl shadow-lg shadow-black/10">
-                                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                                            Deploy Intelligence
-                                        </Button>
+                                        <div className="ad-field"><label className="ad-label">Image URL *</label><input className="ad-input" placeholder="https://res.cloudinary.com/..." value={eventForm.image} onChange={e => setEventForm({ ...eventForm, image: e.target.value })} /></div>
+                                        <div className="ad-field"><label className="ad-label">Description</label><textarea className="ad-textarea" placeholder="Describe the event..." value={eventForm.description} onChange={e => setEventForm({ ...eventForm, description: e.target.value })} /></div>
+                                        <button type="submit" className="ad-btn-primary" disabled={isLoading}>
+                                            {isLoading ? <Loader2 size={13} className="ad-spinner" /> : <Plus size={13} />} Publish Event
+                                        </button>
                                     </form>
-                                </Card>
-
-                                <div className="lg:col-span-7 space-y-6">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-sm font-black uppercase text-gray-400 tracking-widest">Active Deployments</h3>
-                                        <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{customEvents.length} Items</span>
+                                </div>
+                                <div style={{ background: 'var(--border)' }} />
+                                <div className="ad-list-panel">
+                                    <div className="ad-list-hdr">
+                                        <div className="ad-list-title">Active Events</div>
+                                        <div className="ad-list-count">{String(customEvents.length).padStart(2, '0')}</div>
                                     </div>
-
-                                    <ScrollArea className="h-[600px] pr-4">
-                                        <div className="space-y-4">
-                                            {customEvents.length === 0 && !isLoading && (
-                                                <div className="p-12 border-2 border-dashed border-gray-100 rounded-3xl flex flex-col items-center text-center">
-                                                    <AlertCircle className="w-10 h-10 text-gray-200 mb-4" />
-                                                    <p className="text-gray-400 text-sm italic">No custom events registered in current ledger.</p>
+                                    <div className="ad-list">
+                                        {customEvents.length === 0 && !isLoading && <div className="ad-empty"><AlertCircle size={28} style={{ color: 'rgba(242,239,232,0.1)' }} /><div className="ad-empty-text">No events registered</div></div>}
+                                        {customEvents.map(ev => (
+                                            <div key={ev.id} className="ad-event-item">
+                                                <div className="ad-event-img"><img src={ev.image} alt={ev.title} /></div>
+                                                <div className="ad-event-info">
+                                                    <div className="ad-event-title">{ev.title}</div>
+                                                    <div className="ad-event-meta"><span className="ad-tag">{ev.date}</span><span>{ev.location || 'TBD'}</span></div>
+                                                    <div className="ad-event-desc">{ev.description}</div>
                                                 </div>
-                                            )}
-                                            {customEvents.map((e) => (
-                                                <Card key={e.id} className="p-4 border-none shadow-sm hover:shadow-md transition-all group rounded-2xl bg-white">
-                                                    <div className="flex gap-4">
-                                                        <div className="w-20 h-20 rounded-xl overflow-hidden shadow-inner bg-gray-50 shrink-0">
-                                                            <img src={e.image} alt="" className="w-full h-full object-cover" />
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="flex justify-between">
-                                                                <h4 className="font-bold text-[#111] truncate">{e.title}</h4>
-                                                                <button
-                                                                    onClick={() => handleDeleteEvent(e.id)}
-                                                                    disabled={isLoading}
-                                                                    className="text-gray-300 hover:text-red-500 transition-colors p-1"
-                                                                >
-                                                                    <Trash2 className="w-4 h-4" />
-                                                                </button>
-                                                            </div>
-                                                            <div className="flex items-center gap-3 mt-1 text-[10px] text-gray-400 font-bold uppercase">
-                                                                <span className="flex items-center gap-1 text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{e.date}</span>
-                                                                <span className="flex items-center gap-1">{e.location || 'Global'}</span>
-                                                            </div>
-                                                            <p className="text-xs text-gray-500 mt-3 line-clamp-1">{e.description}</p>
-                                                        </div>
-                                                    </div>
-                                                </Card>
-                                            ))}
-                                        </div>
-                                    </ScrollArea>
+                                                <button className="ad-delete-btn" onClick={() => handleDeleteEvent(ev.id)} disabled={isLoading}><Trash2 size={12} /></button>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </TabsContent>
+                        )}
 
-                        <TabsContent value="bulletins" className="mt-0 space-y-10">
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                                <Card className="lg:col-span-5 p-8 border-none shadow-xl bg-white rounded-3xl">
-                                    <div className="flex items-center gap-3 mb-8">
-                                        <div className="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
-                                            <FileText className="w-5 h-5" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-lg font-black text-[#111]">Archive New Bulletin</h3>
-                                            <p className="text-xs text-gray-400">Preserve the monthly history</p>
-                                        </div>
+                        {/* BULLETINS */}
+                        {activeTab === 'bulletins' && (
+                            <div className="ad-tab-grid">
+                                <div className="ad-form-panel">
+                                    <div className="ad-panel-hdr">
+                                        <div className="ad-panel-eyebrow">// New Entry</div>
+                                        <div className="ad-panel-title">Archive Bulletin</div>
                                     </div>
-
-                                    <form onSubmit={handleAddBulletin} className="space-y-5">
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold text-gray-500">Edition Title</Label>
-                                            <Input
-                                                placeholder="e.g. November 2025"
-                                                value={bulletinForm.title}
-                                                onChange={e => setBulletinForm({ ...bulletinForm, title: e.target.value })}
-                                                className="bg-gray-50 border-gray-100 placeholder:text-gray-300 h-11"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold text-gray-500">Reference Period</Label>
-                                            <Input
-                                                placeholder="November-2025"
-                                                value={bulletinForm.date}
-                                                onChange={e => setBulletinForm({ ...bulletinForm, date: e.target.value })}
-                                                className="bg-gray-50 border-gray-100 h-11"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold text-gray-500">G-Drive Identity (File ID)</Label>
-                                            <Input
-                                                placeholder="1HRRqhiuJIrOzChxt..."
-                                                value={bulletinForm.fileId}
-                                                onChange={e => setBulletinForm({ ...bulletinForm, fileId: e.target.value })}
-                                                className="bg-gray-50 border-gray-100 h-11"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold text-gray-500">Editorial Summary</Label>
-                                            <textarea
-                                                className="w-full h-24 bg-gray-50 border border-gray-100 rounded-xl p-3 text-sm outline-none"
-                                                placeholder="Brief notes about this edition..."
-                                                value={bulletinForm.content}
-                                                onChange={e => setBulletinForm({ ...bulletinForm, content: e.target.value })}
-                                            />
-                                        </div>
-                                        <Button type="submit" disabled={isLoading} className="w-full h-12 bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-lg shadow-amber-600/20">
-                                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                                            Commit to Archive
-                                        </Button>
+                                    <form onSubmit={handleAddBulletin} className="ad-form">
+                                        <div className="ad-field"><label className="ad-label">Edition Title *</label><input className="ad-input" placeholder="e.g. November 2025" value={bulletinForm.title} onChange={e => setBulletinForm({ ...bulletinForm, title: e.target.value })} /></div>
+                                        <div className="ad-field"><label className="ad-label">Reference Period</label><input className="ad-input" placeholder="November-2025" value={bulletinForm.date} onChange={e => setBulletinForm({ ...bulletinForm, date: e.target.value })} /></div>
+                                        <div className="ad-field"><label className="ad-label">G-Drive File ID *</label><input className="ad-input" placeholder="1HRRqhiuJIrOzChxt..." value={bulletinForm.fileId} onChange={e => setBulletinForm({ ...bulletinForm, fileId: e.target.value })} /></div>
+                                        <div className="ad-field"><label className="ad-label">Editorial Summary</label><textarea className="ad-textarea" placeholder="Brief notes about this edition..." value={bulletinForm.content} onChange={e => setBulletinForm({ ...bulletinForm, content: e.target.value })} /></div>
+                                        <button type="submit" className="ad-btn-primary" disabled={isLoading}>
+                                            {isLoading ? <Loader2 size={13} className="ad-spinner" /> : <Plus size={13} />} Commit to Archive
+                                        </button>
                                     </form>
-                                </Card>
-
-                                <div className="lg:col-span-7 space-y-6">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-sm font-black uppercase text-gray-400 tracking-widest">Digital Archives</h3>
-                                        <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{customBulletins.length} Items</span>
+                                </div>
+                                <div style={{ background: 'var(--border)' }} />
+                                <div className="ad-list-panel">
+                                    <div className="ad-list-hdr">
+                                        <div className="ad-list-title">Digital Archives</div>
+                                        <div className="ad-list-count">{String(customBulletins.length).padStart(2, '0')}</div>
                                     </div>
-
-                                    <ScrollArea className="h-[600px] pr-4">
-                                        <div className="space-y-4">
-                                            {customBulletins.length === 0 && !isLoading && (
-                                                <div className="p-12 border-2 border-dashed border-gray-100 rounded-3xl flex flex-col items-center text-center">
-                                                    <AlertCircle className="w-10 h-10 text-gray-200 mb-4" />
-                                                    <p className="text-gray-400 text-sm italic">No custom bulletins archived.</p>
+                                    <div className="ad-list">
+                                        {customBulletins.length === 0 && !isLoading && <div className="ad-empty"><FileText size={28} style={{ color: 'rgba(242,239,232,0.1)' }} /><div className="ad-empty-text">No bulletins archived</div></div>}
+                                        {customBulletins.map(b => (
+                                            <div key={b.id} className="ad-bulletin-item">
+                                                <div className="ad-bulletin-icon"><FileText size={16} /></div>
+                                                <div className="ad-bulletin-info">
+                                                    <div className="ad-event-title">{b.title}</div>
+                                                    <div className="ad-bulletin-id">{b.fileId}</div>
                                                 </div>
-                                            )}
-                                            {customBulletins.map((b) => (
-                                                <Card key={b.id} className="p-5 border-none shadow-sm hover:shadow-md transition-all rounded-2xl bg-white flex items-center justify-between">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
-                                                            <FileText className="w-6 h-6" />
-                                                        </div>
-                                                        <div>
-                                                            <h4 className="font-bold text-[#111]">{b.title}</h4>
-                                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">{b.fileId}</p>
-                                                        </div>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => handleDeleteBulletin(b.id)}
-                                                        disabled={isLoading}
-                                                        className="text-gray-300 hover:text-red-500 transition-colors p-2"
-                                                    >
-                                                        <Trash2 className="w-5 h-5" />
-                                                    </button>
-                                                </Card>
-                                            ))}
-                                        </div>
-                                    </ScrollArea>
+                                                <button className="ad-delete-btn" onClick={() => handleDeleteBulletin(b.id)} disabled={isLoading}><Trash2 size={12} /></button>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </TabsContent>
+                        )}
 
-                        <TabsContent value="gallery" className="mt-0 space-y-10">
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                                <Card className="lg:col-span-5 p-8 border-none shadow-xl bg-white rounded-3xl">
-                                    <div className="flex items-center gap-3 mb-8">
-                                        <div className="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center">
-                                            <ImageIcon className="w-5 h-5" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-lg font-black text-[#111]">Add Gallery Moment</h3>
-                                            <p className="text-xs text-gray-400">Add new memories to the archive</p>
-                                        </div>
+                        {/* GALLERY */}
+                        {activeTab === 'gallery' && (
+                            <div className="ad-tab-grid">
+                                <div className="ad-form-panel">
+                                    <div className="ad-panel-hdr">
+                                        <div className="ad-panel-eyebrow">// New Entry</div>
+                                        <div className="ad-panel-title">Add Moment</div>
                                     </div>
-
-                                    <form onSubmit={handleAddGalleryItem} className="space-y-5">
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold text-gray-500">Moment Title</Label>
-                                            <Input
-                                                placeholder="e.g. Charter Day Celebration"
-                                                value={galleryForm.title}
-                                                onChange={e => setGalleryForm({ ...galleryForm, title: e.target.value })}
-                                                className="bg-gray-50 border-gray-100 placeholder:text-gray-300 h-11"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold text-gray-500">Direct Image Link</Label>
-                                            <Input
-                                                placeholder="https://res.cloudinary.com/..."
-                                                value={galleryForm.src}
-                                                onChange={e => setGalleryForm({ ...galleryForm, src: e.target.value })}
-                                                className="bg-gray-50 border-gray-100 h-11"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold text-gray-500">Service Avenue (Category)</Label>
-                                            <select
-                                                className="w-full h-11 bg-gray-50 border border-gray-100 rounded-xl px-3 text-sm outline-none transition-all"
-                                                value={galleryForm.category}
-                                                onChange={e => setGalleryForm({ ...galleryForm, category: e.target.value })}
-                                            >
+                                    <form onSubmit={handleAddGallery} className="ad-form">
+                                        <div className="ad-field"><label className="ad-label">Moment Title *</label><input className="ad-input" placeholder="e.g. Charter Day" value={galleryForm.title} onChange={e => setGalleryForm({ ...galleryForm, title: e.target.value })} /></div>
+                                        <div className="ad-field"><label className="ad-label">Image URL *</label><input className="ad-input" placeholder="https://res.cloudinary.com/..." value={galleryForm.src} onChange={e => setGalleryForm({ ...galleryForm, src: e.target.value })} /></div>
+                                        <div className="ad-field">
+                                            <label className="ad-label">Service Avenue</label>
+                                            <select className="ad-input" style={{ cursor: 'pointer' }} value={galleryForm.category} onChange={e => setGalleryForm({ ...galleryForm, category: e.target.value })}>
                                                 <option value="club service">Club Service</option>
                                                 <option value="community">Community Service</option>
                                                 <option value="professional service">Professional Service</option>
@@ -611,93 +602,46 @@ const Admin = () => {
                                                 <option value="district priority projects">DPP</option>
                                             </select>
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold text-gray-500">Brief Description</Label>
-                                            <textarea
-                                                className="w-full h-24 bg-gray-50 border border-gray-100 rounded-xl p-3 text-sm focus:ring-1 focus:ring-purple-500 outline-none transition-all"
-                                                placeholder="What happened in this moment?"
-                                                value={galleryForm.description}
-                                                onChange={e => setGalleryForm({ ...galleryForm, description: e.target.value })}
-                                            />
-                                        </div>
-                                        <Button type="submit" disabled={isLoading} className="w-full h-12 bg-[#111] hover:bg-[#222] text-white rounded-xl">
-                                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                                            Archive Moment
-                                        </Button>
+                                        <div className="ad-field"><label className="ad-label">Description</label><textarea className="ad-textarea" placeholder="What happened in this moment?" value={galleryForm.description} onChange={e => setGalleryForm({ ...galleryForm, description: e.target.value })} /></div>
+                                        <button type="submit" className="ad-btn-primary" disabled={isLoading}>
+                                            {isLoading ? <Loader2 size={13} className="ad-spinner" /> : <Plus size={13} />} Archive Moment
+                                        </button>
                                     </form>
-                                </Card>
-
-                                <div className="lg:col-span-7 space-y-6">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-sm font-black uppercase text-gray-400 tracking-widest">Gallery Feed</h3>
-                                        <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{customGallery.length} Items</span>
+                                </div>
+                                <div style={{ background: 'var(--border)' }} />
+                                <div className="ad-list-panel">
+                                    <div className="ad-list-hdr">
+                                        <div className="ad-list-title">Gallery Feed</div>
+                                        <div className="ad-list-count">{String(customGallery.length).padStart(2, '0')}</div>
                                     </div>
-
-                                    <ScrollArea className="h-[600px] pr-4">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {customGallery.length === 0 && !isLoading && (
-                                                <div className="col-span-2 p-12 border-2 border-dashed border-gray-100 rounded-3xl flex flex-col items-center text-center">
-                                                    <ImageIcon className="w-10 h-10 text-gray-200 mb-4" />
-                                                    <p className="text-gray-400 text-sm italic">No custom gallery items found.</p>
+                                    <div className="ad-gallery-grid">
+                                        {customGallery.length === 0 && !isLoading && <div className="ad-empty" style={{ gridColumn: 'span 2' }}><ImageIcon size={28} style={{ color: 'rgba(242,239,232,0.1)' }} /><div className="ad-empty-text">No gallery items added</div></div>}
+                                        {customGallery.map(item => (
+                                            <div key={item.id} className="ad-gallery-card">
+                                                <div className="ad-gallery-img">
+                                                    <img src={item.src} alt={item.title} />
+                                                    <button className="ad-gallery-delete" onClick={() => handleDeleteGallery(item.id)} disabled={isLoading}><Trash2 size={11} /></button>
                                                 </div>
-                                            )}
-                                            {customGallery.map((item) => (
-                                                <Card key={item.id} className="p-3 border-none shadow-sm hover:shadow-md transition-all group rounded-2xl bg-white overflow-hidden">
-                                                    <div className="aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50 relative">
-                                                        <img src={item.src} alt="" className="w-full h-full object-cover" />
-                                                        <button
-                                                            onClick={() => handleDeleteGalleryItem(item.id)}
-                                                            disabled={isLoading}
-                                                            className="absolute top-2 right-2 bg-black/50 hover:bg-red-500 text-white p-2 rounded-lg backdrop-blur-sm transition-all"
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </button>
-                                                    </div>
-                                                    <h4 className="font-bold text-[#111] text-xs truncate px-1">{item.title}</h4>
-                                                    <div className="flex items-center gap-1 mt-1 px-1">
-                                                        <span className="text-[8px] font-black uppercase tracking-wider text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">
-                                                            {item.category}
-                                                        </span>
-                                                    </div>
-                                                </Card>
-                                            ))}
-                                        </div>
-                                    </ScrollArea>
+                                                <div className="ad-gallery-info">
+                                                    <div className="ad-gallery-title">{item.title}</div>
+                                                    <div className="ad-tag">{item.category}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </TabsContent>
-                    </Tabs>
+                        )}
 
-                    {/* Quick Stats */}
-                    <section className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-10">
-                        {[
-                            { label: 'Intelligence Nodes', val: 'Active', icon: CheckCircle2, color: 'text-green-500' },
-                            { label: 'Active Memory', val: 'Firebase Cloud', icon: Eye, color: 'text-blue-500' },
-                            { label: 'System Uptime', val: '99.9%', icon: LayoutDashboard, color: 'text-purple-500' },
-                            { label: 'Security Layer', val: 'Auth Gate', icon: Lock, color: 'text-[#800000]' },
-                        ].map((s, i) => (
-                            <div key={i} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-50 flex items-center gap-4">
-                                <div className={`p-3 rounded-2xl bg-gray-50 ${s.color}`}>
-                                    <s.icon className="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-black uppercase text-gray-400 tracking-wider leading-none mb-1">{s.label}</p>
-                                    <p className="text-sm font-black text-[#111]">{s.val}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </section>
+                    </div>
 
+                    <footer className="ad-footer">
+                        <div className="ad-footer-brand">Rotaract KPRCAS</div>
+                        <div className="ad-footer-note">© 2025 · Admin Dashboard</div>
+                    </footer>
                 </div>
-            </main>
-
-            <footer className="py-6 border-t border-gray-100 bg-white">
-                <div className="max-w-7xl mx-auto px-6 flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-gray-300">
-                    <span>© 2025 · All Rights Reserved</span>
-                    <span>Rotaract Club of KPRCAS</span>
-                </div>
-            </footer>
-        </div>
+            </div>
+        </>
     );
 };
 
