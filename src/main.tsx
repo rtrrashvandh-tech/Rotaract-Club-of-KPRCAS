@@ -20,14 +20,12 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }> {
         <div style={{ padding: '2rem', fontFamily: 'Poppins, sans-serif' }}>
           <h1>Something went wrong.</h1>
           <p>Please refresh the page or try again later.</p>
-          {process.env.NODE_ENV === 'development' && (
-            <details style={{ marginTop: '1rem' }}>
-              <summary>Error details</summary>
-              <pre style={{ whiteSpace: 'pre-wrap' }}>
-                {this.state.error?.toString()}
-              </pre>
-            </details>
-          )}
+          <details style={{ marginTop: '1rem' }}>
+            <summary>Error details</summary>
+            <pre style={{ whiteSpace: 'pre-wrap' }}>
+              {this.state.error?.toString()}
+            </pre>
+          </details>
         </div>
       );
     }
