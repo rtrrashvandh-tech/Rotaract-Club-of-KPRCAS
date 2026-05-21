@@ -83,16 +83,6 @@ const Navigation = () => {
             })}
           </div>
 
-          {/* Right Action button */}
-          <div className="hidden md:flex items-center">
-            <Link
-              to="/admin"
-              className="inline-flex items-center justify-center px-5 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-[0.25em] border border-gold/40 text-gold bg-gold/5 backdrop-blur-sm hover:text-black hover:bg-gold hover:border-gold hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all duration-300 active:scale-95 cursor-pointer"
-            >
-              Console
-            </Link>
-          </div>
-
           {/* Mobile menu button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -127,16 +117,6 @@ const Navigation = () => {
                 </Link>
               );
             })}
-            <div className="pt-4 border-t border-white/5 mt-2 px-2 flex justify-between items-center">
-              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Quick Access</span>
-              <Link
-                to="/admin"
-                onClick={() => setIsOpen(false)}
-                className="inline-flex items-center justify-center px-4 py-2 rounded-full text-[9px] font-extrabold uppercase tracking-[0.2em] border border-gold/30 text-gold bg-gold/5 hover:bg-gold/10 hover:border-gold/50 transition-all duration-300 active:scale-95"
-              >
-                Admin Console
-              </Link>
-            </div>
           </div>
         </div>
       </nav>
