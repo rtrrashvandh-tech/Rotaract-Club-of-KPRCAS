@@ -165,3 +165,91 @@ All colors MUST be HSL.
     @apply max-w-7xl mx-auto;
   }
 }
+
+/* Custom premium animations for high-impact visual hooks */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { 
+    opacity: 0.92; 
+    filter: drop-shadow(0 0 15px rgba(229,9,20,0.15)) drop-shadow(0 0 30px rgba(168,85,247,0.1)); 
+  }
+  50% { 
+    opacity: 1; 
+    filter: drop-shadow(0 0 30px rgba(229,9,20,0.4)) drop-shadow(0 0 50px rgba(168,85,247,0.25)); 
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 15s linear infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 5s ease-in-out infinite;
+}
+
+/* --- Holographic 3D Flip & Cyber-Grid Utilities --- */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+@keyframes scanning {
+  0% {
+    top: -10%;
+  }
+  100% {
+    top: 110%;
+  }
+}
+
+.animate-scanning {
+  animation: scanning 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes cyber-pulse {
+  0%, 100% {
+    opacity: 0.25;
+    box-shadow: 0 0 15px rgba(229, 9, 20, 0.1), inset 0 0 10px rgba(229, 9, 20, 0.05);
+  }
+  50% {
+    opacity: 0.6;
+    box-shadow: 0 0 30px rgba(229, 9, 20, 0.4), inset 0 0 20px rgba(229, 9, 20, 0.2);
+  }
+}
+
+.animate-cyber-pulse {
+  animation: cyber-pulse 4s ease-in-out infinite;
+}
+
+@keyframes cyber-grid-movement {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 80px;
+  }
+}
+
+.bg-cyber-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  animation: cyber-grid-movement 20s linear infinite;
+}

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { motion } from 'framer-motion';
+
 const clubLogo = "https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411700/club-logo_wsjsmp.png";
 
 const Navigation = () => {
@@ -28,92 +30,117 @@ const Navigation = () => {
     { name: 'Contact', path: '/contact' },
   ];
 
+  // Cinematic dark floating glassmorphic capsule globally for all pages
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled || isOpen
-          ? 'bg-background/95 backdrop-blur-md shadow-lg border-b border-border'
-          : 'bg-background/80 backdrop-blur-sm md:bg-transparent md:backdrop-blur-0'
-      }`}
-    >
-      <div className="container-custom">
-        <div className="flex items-center justify-between h-16 md:h-20">
+    <div className="fixed top-0 left-0 right-0 z-50 px-4 pt-4 transition-all duration-300 pointer-events-none">
+      <nav
+        className={`w-full max-w-7xl mx-auto rounded-full border transition-all duration-500 pointer-events-auto ${
+          isScrolled || isOpen
+            ? 'bg-black/75 backdrop-blur-xl border-white/10 shadow-[0_15px_40px_-15px_rgba(0,0,0,0.6)] py-1.5 md:py-2 px-6'
+            : 'bg-transparent border-transparent py-3 md:py-4 px-8 shadow-none'
+        }`}
+      >
+        <div className="flex items-center justify-between h-12 md:h-14">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
             <img
               src={clubLogo}
               alt="Rotaract Club Logo"
-              className="h-10 w-10 md:h-12 md:w-12 transition-transform duration-300 group-hover:scale-105"
+              className="h-9 w-9 md:h-11 md:w-11 transition-transform duration-500 group-hover:rotate-[360deg]"
             />
             <div className="hidden md:block">
-              <h1 className="text-lg font-bold text-primary">
+              <h1 className="text-sm md:text-base font-extrabold tracking-tight text-white group-hover:text-gold transition-colors duration-300">
                 Rotaract Club
               </h1>
-              <p className="text-sm text-muted-foreground -mt-1">
+              <p className="text-[10px] md:text-xs text-gray-400 font-medium tracking-widest uppercase -mt-0.5 group-hover:text-white transition-colors duration-300">
                 KPRCAS
               </p>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`relative px-3 py-2 text-sm font-medium transition-colors duration-300 hover:text-primary group ${
-                  location.pathname === item.path
-                    ? 'text-primary'
-                    : 'text-foreground'
-                }`}
-              >
-                {item.name}
-                <span
-                  className={`absolute bottom-0 left-0 w-full h-0.5 bg-primary transform transition-transform duration-300 ${
-                    location.pathname === item.path
-                      ? 'scale-x-100'
-                      : 'scale-x-0 group-hover:scale-x-100'
+          <div className="hidden md:flex items-center space-x-1 lg:space-x-2 bg-white/5 border border-white/5 p-1 rounded-full">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className={`relative px-4 py-1.5 rounded-full text-xs lg:text-sm font-semibold transition-all duration-300 ${
+                    isActive ? 'text-white' : 'text-gray-300 hover:text-white'
                   }`}
-                />
-              </Link>
-            ))}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeNavTab"
+                      className="absolute inset-0 bg-gradient-to-r from-maroon to-red-700 rounded-full -z-10 shadow-[0_0_15px_rgba(128,0,0,0.5)] border border-white/10"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  {item.name}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Right Action button */}
+          <div className="hidden md:flex items-center">
+            <Link
+              to="/admin"
+              className="inline-flex items-center justify-center px-5 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-[0.25em] border border-gold/40 text-gold bg-gold/5 backdrop-blur-sm hover:text-black hover:bg-gold hover:border-gold hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all duration-300 active:scale-95 cursor-pointer"
+            >
+              Console
+            </Link>
           </div>
 
           {/* Mobile menu button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-3 rounded-lg text-foreground hover:bg-secondary transition-colors duration-300"
+            className="md:hidden p-2 rounded-full text-white hover:bg-white/10 transition-colors duration-300"
             aria-label={isOpen ? 'Close menu' : 'Open menu'}
           >
-            {isOpen ? <X size={28} /> : <Menu size={28} />}
+            {isOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
 
         {/* Mobile Navigation */}
         <div
-          className={`md:hidden transition-all duration-300 overflow-hidden ${
-            isOpen ? 'max-h-96 pb-4' : 'max-h-0'
+          className={`md:hidden transition-all duration-500 overflow-hidden ${
+            isOpen ? 'max-h-96 pb-6 pt-4 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
           }`}
         >
-          <div className="space-y-3 pt-6 pb-4 border-t border-border">
-            {navItems.map((item) => (
+          <div className="space-y-1.5 pt-4 border-t border-white/10">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  onClick={() => setIsOpen(false)}
+                  className={`block px-5 py-3 text-sm font-semibold rounded-full transition-all duration-300 ${
+                    isActive
+                      ? 'bg-gradient-to-r from-maroon to-red-700 text-white shadow-[0_0_15px_rgba(128,0,0,0.4)] border border-white/10'
+                      : 'text-gray-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
+            <div className="pt-4 border-t border-white/5 mt-2 px-2 flex justify-between items-center">
+              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Quick Access</span>
               <Link
-                key={item.name}
-                to={item.path}
+                to="/admin"
                 onClick={() => setIsOpen(false)}
-                className={`block px-6 py-4 text-base font-medium rounded-lg transition-colors duration-300 ${
-                  location.pathname === item.path
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-foreground hover:bg-secondary/50 active:bg-secondary/70'
-                }`}
+                className="inline-flex items-center justify-center px-4 py-2 rounded-full text-[9px] font-extrabold uppercase tracking-[0.2em] border border-gold/30 text-gold bg-gold/5 hover:bg-gold/10 hover:border-gold/50 transition-all duration-300 active:scale-95"
               >
-                {item.name}
+                Admin Console
               </Link>
-            ))}
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 };
 

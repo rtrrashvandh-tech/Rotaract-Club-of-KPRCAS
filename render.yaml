@@ -1,0 +1,19 @@
+# Render.com Deployment Blueprint (1-Click Deployment)
+# To use: In your Render Dashboard, click "New" -> "Blueprint" and select your repository!
+
+services:
+  - type: web
+    name: rotaract-kprcas-web
+    env: node
+    plan: starter                # Note: You can change this to 'free' in the Render UI if you want to deploy for free without a disk!
+    buildCommand: npm install && npm run build
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: NODE_ENV
+        value: production
+    disk:
+      name: rotaract-data
+      mountPath: /data
+      sizeGB: 1                  # Mounted persistent disk ensures all admin changes are kept forever!

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,31 +14,41 @@ import Bulletin from "./pages/Bulletin";
 import JoinUs from "./pages/JoinUs";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import Admin from "./pages/Admin";
+import { syncWithBackend } from "@/lib/storage";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Navigation />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/team" element={<Team />} />
-          <Route path="/gallery" element={<Gallery />} />
-          <Route path="/bulletin" element={<Bulletin />} />
-          <Route path="/join" element={<JoinUs />} />
-          <Route path="/contact" element={<Contact />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  useEffect(() => {
+    // Run initial data synchronization with the server in the background
+    syncWithBackend();
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Navigation />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/team" element={<Team />} />
+            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/bulletin" element={<Bulletin />} />
+            <Route path="/join" element={<JoinUs />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/admin" element={<Admin />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

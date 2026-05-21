@@ -1,427 +1,431 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo, useRef, RefObject } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AnimationWrapper from "@/components/AnimationWrapper";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-
-// ✅ Event type
-type EventType = {
-  title: string;
-  date?: string;
-  time?: string;
-  location?: string;
-  platform?: string;
-  image: string;
-  description: string;
-};
+import { Calendar, MapPin, Clock, Globe, Filter, Search, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { cn } from "@/lib/utils";
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { getEvents, EventType } from '@/lib/storage';
 
 const placeholderImage = 'https://placehold.co/800x400?text=Event+Poster';
 
-// ✅ Event list
-const events: EventType[] = [
-  {
-    title: 'Yours Lovingly',
-    date: '2025-08-24',
-    time: '10:00 AM – 1:00 PM',
-    location: 'Uthavum Karangal, Avinashi',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755885523/WhatsApp_Image_2025-08-22_at_20.54.05_8f591faf_dlqyvp.jpg', 
-    description: 'A Dream Mental Support Initiative.'
-  },
-  {
-    title: 'Lingua Connection',
-    date: '2025-08-25',
-    time: '07:00 PM – 08:00 PM',
-    location: '',
-    platform: 'Gmeet',
-    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755885523/WhatsApp_Image_2025-08-22_at_20.54.05_3b4f2292_yjzwwh.jpg',
-    description: 'A platform for language exchange and cultural enrichment.'
-  },
-  {
-    title: 'அன்பின் மறு உருவம்',
-    date: '2025-08-26',
-    time: '10:00 AM - 1:00 PM',
-    location: 'FAMILY FOR CHILDREN, VELLALOR,CBE.',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755885523/WhatsApp_Image_2025-08-22_at_20.54.04_a199c8ac_zeoxqn.jpg',
-    description: 'அன்பின் மறு உருவம் is an initiative to help elderly people.'
-  },
-  {
-    title: 'Mattaipandhu 2.0',
-    date: '2025-08-28',
-    location: 'Karumathampatti',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1756053140/WhatsApp_Image_2025-08-24_at_21.45.07_224b18e3_fllgx6.jpg',
-    description: 'Mattaipandhu 2.0 is an initiative to build a community.'
-  },
-  {
-    title: 'வெறும் பெண் இல்லை',
-    date: '2025-08-28',
-    location: 'Arasur Govt School',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755885523/WhatsApp_Image_2025-08-22_at_20.54.04_c5c998e3_o6x8vz.jpg',
-    description: 'வெறும் பெண் இல்லை is a self-defence learning session for girls.'
-  },
-  {
-    title: 'Excelerate - Art of Speaking',
-    date: '2025-08-29',
-    time: '10:00 AM',
-    location: 'Seminar Hall (KPRCAS)',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1756053002/WhatsApp_Image_2025-08-24_at_20.52.42_78b8ef19_arjsxf.jpg',
-    description: 'Excelerate - Art of Speaking is an initiative to enhance communication skills.'
-  },
-  {
-    title: 'வளமான கல்விக்காக',
-    date: '2025-08-30',
-    time: '03:00 PM',
-    location: 'Arasur Govt School',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1756053014/WhatsApp_Image_2025-08-24_at_21.45.07_f2b2c24d_ldwk5w.jpg',
-    description: 'Books are bridges that connect dreams to reality — donate them.'
-  },
-  {
-    title: 'Tharagam - Onam Celebration',
-    date: '2025-09-03',
-    time: '10:00 AM - 1:00 PM',
-    location: 'KPRCAS Campus',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760281232/PHOTO-2025-09-03-09-22-13_kow0x9.jpg',
-    description: 'The Rotaract Club of KPRCAS proudly celebrated Onam under Tharangam 3.0.'
-  },
-  {
-    title: 'Words that Empower',
-    date: '2025-09-08',
-    time: '10:00 AM',
-    location: 'Gmeet',
-    platform: 'Online',
-    image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760285151/Screenshot_2025-10-01-12-32-50-85_99c04817c0de5652397fc8b56c3b3817_s6f6tr.jpg',
-    description: 'Words that empower is an initiative to unlock the potential of effective communication and personal growth.'
-  },
-  {
-    title: 'RAC-a-THON',
-    date: '2025-09-15',
-    time: '9:00 AM',
-    location: 'KPRCAS Campus',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760287839/IMG-20251001-WA0068_pnyicy.jpg',
-    description: 'RAC-a-THON is a 24-hour hackathon event.'
-  },
-  {
-    title: 'Veeram Pen Illai – Self-Defense Training',
-    date: '2025-09-18',
-    time: '10:00 AM',
-    location: 'Vagarayampalayam Government School',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760287144/IMG-20250917-WA0057_jzpqea.jpg',
-    description: 'Join the Rotaract Club of KPRCAS for "Veeram Pen Illai", a self-defense training session aimed at empowering women and enhancing their confidence and safety skills.'
-  },
-  {
-    title: 'Touro quiz',
-    date: '2025-09-27',
-    time: '2:00 PM - 4:00 PM',
-    location: 'Gmeet',
-    platform: 'Online',
-    image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760284629/Screenshot_2025-10-01-12-36-16-82_99c04817c0de5652397fc8b56c3b3817_fordh1.jpg',
-    description: 'Touro quiz is an event for quizzing and knowledge celebration.'
-  },
-  {
-    title: 'Charity Drive',
-    date: '2025-09-27',
-    time: '2:00 PM - 4:00 PM',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760287422/IMG-20250929-WA0005_xuyg6l.jpg',
-    description: 'Charity Drive is an event to raise funds for the needy.'
-  },
-  {
-    title: 'Navrang - Navratri Celebration',
-    date: '2025-09-29',
-    time: '2:00 PM - 4:00 PM',
-    location: 'KPRCAS Campus',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760283820/PHOTO-2025-09-26-21-51-21_mniq4e.jpg',
-    description: 'Navrang is an event celebrating Navratri with vibrant traditions.'
-  },
-  {
-    title: 'Innovision',
-    date: '2025-09-29',
-    time: '10:00 AM',
-    location: 'Gmeet',
-    platform: 'Online',
-    image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760285361/IMG-20250926-WA0064_knpsv9.jpg',
-    description: 'Innovision is an initiative to unlock insights for SQL and enhance data understanding.'
-  },
-  // October events
-  {
-    title: 'Nalam oru Padhai',
-    date: '2025-10-07',
-    platform: 'In-person',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765467685/10_Oct_Nalam_Oru_Pathai_Club_jijdhv.jpg",
-    location:"15-Vellampalyam Government School, Tiruppur",
-    description: 'Health and wellness outreach to build a stronger, healthier community.'
-  },
-  {
-    title: 'Feed the Future',
-    date: '2025-10-10',
-    platform: 'In-person',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/IMG-20251006-WA0012_tfllwk.jpg",
-    location:"Family for Children, Vellalore, Coimbatore",
-    description: 'Food distribution drive to support families in need.'
-  },
-  {
-    title: 'Anbin maru Uruvam',
-    date: '2025-10-10',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765464462/IMG-20251126-WA0007_c88v2i.jpg',
-    location: 'Family for Children, Vellalore, Coimbatore',
-    description: 'A compassion-led visit to spread kindness and support.'
-  },
-  {
-    title: 'Nambikkai Siragugal',
-    date: '2025-10-13',
-    platform: 'In-person',
-    image: placeholderImage,
-    description: 'Inspiration session to empower students with hope and confidence.'
-  },
-  {
-    title: 'Paasathin Pakkangal',
-    date: '2025-10-13',
-    platform: 'In-person',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/IMG-20251009-WA0003_b93rpj.jpg",
-    location:"Universal Peace Foundation,Pogallur",
-    description: 'Celebrating the many facets of empathy and togetherness.'
-  },
-  {
-    title: 'One Day Police',
-    date: '2025-10-16',
-    platform: 'In-person',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468126/WhatsApp_Image_2025-12-11_at_8.46.45_PM_ufqwj2.jpg",
-    location:"Coimbatore",
-    description: 'Immersive policing experience for youth (runs Oct 16 – Oct 20).'
-  },
-  {
-    title: 'Crewfinity',
-    date: '2025-10-17',
-    platform: 'In-person',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468126/WhatsApp_Image_2025-12-11_at_8.46.45_PM_ufqwj2.jpg",
-    location:"Coimbatore",
-    description: 'Team-building challenge to strengthen collaboration and leadership.'
-  },
-  {
-    title: 'Glow and Give',
-    date: '2025-10-22',
-    platform: 'In-person',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/Photo_from_Monisha_n0whms.jpg",
-    location:"SRCAS,Coimbatore",
-    description: 'Evening fundraiser combining art, light, and community giving.'
-  },
-  {
-    title: 'Help in Soul',
-    date: '2025-10-26',
-    platform: 'In-person',
-    image:"https://res.cloudinary.com/drmwtmeg3/image/upload/v1765467842/10_Oct_Help_in_Soul_Club_limuzn.jpg",
-    location:"Annur Old Town Panchyath,Annur",
-    description: 'Mental health support circle focused on listening and care.'
-  },
-  {
-    title: 'We are with you',
-    date: '2025-10-27',
-    platform: 'In-person',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765467987/10_Oct_We_are_with_you_Club_dazmz4.jpg",
-    location:"Avinashi Old Bus Stand,Tiruppur",
-    description: 'Solidarity event to stand with those facing challenges.'
-  },
-  {
-    title: 'Dude Dayout',
-    date: '2025-10-29',
-    platform: 'In-person',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468130/PHOTO-2025-10-24-21-44-38_d0g4j1.jpg",
-    location:"Mirage cinema",
-    description: 'Fun social outing to unwind and build friendships.'
-  },
-  {
-    title: 'Mattai Pandhu 3.O',
-    date: '2025-10-29',
-    platform: 'In-person',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468127/PHOTO-2025-10-24-21-44-38_1_ogc2cj.jpg",
-    location:"Karumathampatti",
-    description: 'Street cricket 3.0—friendly matches that bring the community together.'
-  },
-  // Late October additions
-  {
-    title: 'Rotaween',
-    date: '2025-10-31',
-    platform: 'In-person',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470143/IMG-20251103-WA0009_knttmi.jpg",
-    location:"Sathya Jeevan Home",
-    description: 'Halloween-themed celebration with the club.'
-  },
-  {
-    title: 'Vaathi Raid 4.0',
-    date: '2025-10-31',
-    platform: 'In-person',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470133/PHOTO-2025-12-02-15-23-50_t3jjan.jpg",
-    location:"KPRCAS Campus",
-    description: 'The fourth edition of Vaathi Raid.'
-  },
-  // November events
-  {
-    title: 'Rotaract Fusion Fiesta',
-    date: '2025-11-02',
-    platform: 'Gmeet',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470132/IMG-20251028-WA0043_1_duvk0h.jpg",
-    description: 'Fusion Fiesta celebrating international service.'
-  },
-  {
-    title: 'Cyber Security Awareness',
-    date: '2025-11-08',
-    platform: 'Professional Service',
-    image: placeholderImage,
-    description: 'Workshop on staying safe online.'
-  },
-  {
-    title: 'Eegai',
-    date: '2025-11-12',
-    platform: 'Gmeet',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470134/IMG-20251125-WA0012_tsdstk.jpg",
-    description: 'Service initiative focused on giving back.'
-  },
-  {
-    title: 'Cleanfluence',
-    date: '2025-11-12',
-    platform: 'In-person',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470132/IMG-20251113-WA0001_scb5pg.jpg",
-    location:"Tinkle sevaa Tribal School",
-    description: 'Cleanliness drive with international collaboration.'
-  },
-  {
-    title: 'Bouncing Back',
-    date: '2025-11-12',
-    platform: 'Gmeet',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470790/IMG-20251108-WA0073_lnkx5c.jpg",
-    description: 'Session on resilience and professional growth.'
-  },
-  {
-    title: 'Pair and Share',
-    date: '2025-11-13',
-    platform: 'Gmeet',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765471195/PHOTO-2025-11-09-18-16-29_bpbevr.jpg",
-    description: 'Club service activity focused on collaboration.'
-  },
-  {
-    title: 'Mind and Me',
-    date: '2025-11-13',
-    platform: 'Gmeet',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470131/IMG-20251112-WA0011_yxsck9.jpg",
-    description: 'Mental wellness and professional development session.'
-  },
-  {
-    title: 'View Point',
-    date: '2025-11-21',
-    platform: 'Gmeet',
-    image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470134/IMG-20251120-WA0013_iu5vtf.jpg",
-    description: 'Media,Mindset and Screen Cluture.'
-  }
-];
+const CinematicEventCard = ({ event, scrollContainerRef, setSelectedImage }: { event: EventType, scrollContainerRef: RefObject<HTMLDivElement>, index: number, setSelectedImage: any }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollXProgress } = useScroll({
+    target: ref,
+    container: scrollContainerRef,
+    axis: "x",
+    offset: ["start end", "end start"]
+  });
+
+  const smoothProgress = useSpring(scrollXProgress, { stiffness: 100, damping: 30 });
+
+  // 3D Transforms
+  const rotateY = useTransform(smoothProgress, [0, 0.5, 1], [30, 0, -30]);
+  const scale = useTransform(smoothProgress, [0, 0.5, 1], [0.8, 1, 0.8]);
+  const opacity = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const x = useTransform(smoothProgress, [0, 0.5, 1], [100, 0, -100]);
+
+  const eventDate = event.date ? new Date(event.date) : null;
+  const day = eventDate?.getDate();
+  const monthName = eventDate?.toLocaleString('default', { month: 'short' });
+
+  return (
+    <div style={{ perspective: "1500px" }} className="w-full h-full flex justify-center py-2 px-4">
+      <motion.div
+        ref={ref}
+        style={{
+          rotateY,
+          scale,
+          opacity,
+          x,
+          transformStyle: "preserve-3d"
+        }}
+        className="w-full h-full max-w-3xl relative group flex flex-col"
+      >
+        <div className="absolute -inset-1 bg-gradient-to-r from-maroon to-gold rounded-[2rem] blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+        <div className="relative h-full bg-black/80 backdrop-blur-xl border border-white/10 rounded-[2rem] overflow-hidden flex flex-col md:flex-row shadow-2xl">
+
+          {/* Image Section */}
+          <div className="md:w-1/2 relative h-64 md:h-auto overflow-hidden bg-black/40 flex items-center justify-center min-h-[220px] md:min-h-[340px]">
+            {/* Ambient Blurred Background */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center blur-2xl opacity-40 scale-110 pointer-events-none" 
+              style={{ backgroundImage: `url(${event.image || 'https://placehold.co/800x400?text=Event+Poster'})` }} 
+            />
+            
+            {/* Dark Overlay for depth */}
+            <div className="absolute inset-0 bg-black/30 pointer-events-none z-0" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 md:bg-gradient-to-r pointer-events-none" />
+            
+            <button
+              onClick={() => setSelectedImage({ src: event.image || 'https://placehold.co/800x400?text=Event+Poster', alt: event.title })}
+              className="w-full h-full focus:outline-none cursor-zoom-in relative z-20 flex items-center justify-center p-6"
+            >
+              <img
+                src={event.image || 'https://placehold.co/800x400?text=Event+Poster'}
+                alt={event.title}
+                className="max-w-full max-h-full object-contain rounded-xl transition-all duration-700 group-hover:scale-[1.03] shadow-[0_15px_30px_rgba(0,0,0,0.5)] border border-white/5"
+              />
+            </button>
+
+            {/* Date Badge */}
+            {day && monthName && (
+              <div className="absolute top-6 left-6 z-30 bg-black/60 backdrop-blur-md border border-white/20 rounded-2xl p-3 min-w-[70px] text-center shadow-2xl">
+                <span className="block text-3xl font-bold text-gold leading-none">{day}</span>
+                <span className="block text-[11px] font-bold uppercase tracking-widest text-gray-300 mt-2">{monthName}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Content Section */}
+          <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-center bg-gradient-to-b from-transparent to-black/50 text-left">
+            <div className="flex justify-between items-start mb-4">
+              <Badge className="bg-gold/20 text-gold hover:bg-gold/30 border border-gold/30 font-semibold px-4 py-1.5 rounded-full text-xs tracking-wider uppercase">
+                {event.platform === 'Online' || event.platform === 'Gmeet' ? 'Virtual Experience' : 'Live Event'}
+              </Badge>
+            </div>
+
+            <h3 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight group-hover:text-gold transition-colors duration-300 uppercase tracking-tight">
+              {event.title}
+            </h3>
+
+            <p className="text-gray-400 text-xs md:text-sm leading-relaxed mb-4 font-light">
+              {event.description}
+            </p>
+
+            <div className="space-y-4">
+              {event.location && (
+                <div className="flex items-center gap-4 text-sm text-gray-300">
+                  <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-4 h-4 text-gold" />
+                  </div>
+                  <span className="truncate">{event.location}</span>
+                </div>
+              )}
+              {event.time && (
+                <div className="flex items-center gap-4 text-sm text-gray-300">
+                  <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-4 h-4 text-gold" />
+                  </div>
+                  <span>{event.time}</span>
+                </div>
+              )}
+              {event.platform && (
+                <div className="flex items-center gap-4 text-sm text-gray-300">
+                  <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+                    <Globe className="w-4 h-4 text-gold" />
+                  </div>
+                  <span>{event.platform}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+        </div>
+      </motion.div>
+    </div>
+  );
+};
 
 const Events = () => {
+  const [events, setEvents] = useState<EventType[]>([]);
   const [selectedImage, setSelectedImage] = useState<{ src: string; alt: string } | null>(null);
-  const [zoom, setZoom] = useState(1); // Initial zoom level
+  const [zoom, setZoom] = useState(1);
+  const [selectedMonth, setSelectedMonth] = useState<string>('All');
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.2, 3)); // Max zoom x3
-  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.2, 0.5)); // Min zoom x0.5
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const updateScrollButtons = () => {
+    const el = scrollContainerRef.current;
+    if (el) {
+      const tolerance = 5; // tolerance for rounding differences
+      setCanScrollLeft(el.scrollLeft > tolerance);
+      setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - tolerance);
+    }
+  };
+
+  useEffect(() => {
+    const loadEvents = () => setEvents(getEvents());
+    loadEvents();
+    window.addEventListener('storage-synced', loadEvents);
+    return () => window.removeEventListener('storage-synced', loadEvents);
+  }, []);
+
+  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.2, 3));
+  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.2, 0.5));
   const handleClose = () => {
     setSelectedImage(null);
     setZoom(1);
   };
 
+  const availableMonths = useMemo(() => {
+    const months = events
+      .filter(e => e.date)
+      .map(e => {
+        const date = new Date(e.date!);
+        return date.toLocaleString('default', { month: 'long' });
+      });
+    return ['All', ...Array.from(new Set(months))];
+  }, [events]);
+
+  const filteredEvents = useMemo(() => {
+    if (selectedMonth === 'All') return events;
+    return events.filter(event => {
+      if (!event.date) return false;
+      const eventMonth = new Date(event.date).toLocaleString('default', { month: 'long' });
+      return eventMonth === selectedMonth;
+    });
+  }, [selectedMonth, events]);
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (el) {
+      updateScrollButtons();
+      const timer = setTimeout(updateScrollButtons, 100);
+
+      el.addEventListener('scroll', updateScrollButtons);
+      window.addEventListener('resize', updateScrollButtons);
+      return () => {
+        clearTimeout(timer);
+        el.removeEventListener('scroll', updateScrollButtons);
+        window.removeEventListener('resize', updateScrollButtons);
+      };
+    }
+  }, [filteredEvents]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      {/* Hero Section */}
-      <section className="relative h-[60vh] flex items-center justify-center bg-gradient-to-r from-primary/10 to-secondary/10">
+    <div className="min-h-screen bg-black text-white selection:bg-maroon selection:text-white">
+      {/* Cinematic Hero Section */}
+      <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-black/50" />
-          <img
-            src="https://res.cloudinary.com/drmwtmeg3/image/upload/v1755412154/team-photo_lefoty.jpg"
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black z-10" />
+          <motion.img
+            initial={{ scale: 1.2, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 2, ease: "easeOut" }}
+            src="https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760281257/PHOTO-2025-09-28-09-55-14_wodjhp.jpg"
             alt="Events Hero"
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="relative z-10 text-center text-white px-4">
-          <AnimationWrapper>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Our Events</h1>
-            <p className="text-xl md:text-2xl max-w-2xl mx-auto">
-              Join us for exciting events that make a difference in our community and beyond.
-            </p>
-          </AnimationWrapper>
+        <div className="relative z-20 text-center px-4 max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5 }}
+          >
+            <span className="inline-block px-6 py-2 mb-8 text-xs md:text-sm font-semibold tracking-[0.2em] uppercase bg-white/5 backdrop-blur-md border border-white/10 rounded-full text-gold">
+              Experience the Impact
+            </span>
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.7 }}
+            className="text-6xl md:text-8xl font-black mb-8 tracking-tighter"
+          >
+            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-maroon via-red-600 to-gold">Legacy</span>
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.9 }}
+            className="text-xl md:text-2xl text-gray-300 font-light leading-relaxed max-w-2xl mx-auto"
+          >
+            Discover the monumental moments that define our journey in service, leadership, and community building.
+          </motion.p>
         </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.5 }}
+          className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center gap-2"
+        >
+          <span className="text-xs uppercase tracking-[0.2em] text-gray-500 font-semibold">Scroll to Explore</span>
+          <div className="w-[1px] h-12 bg-gradient-to-b from-gold to-transparent animate-pulse" />
+        </motion.div>
       </section>
 
-      {/* Event Grid */}
-      <div className="container mx-auto py-12 px-4">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {events.map((event, index) => (
-            <AnimationWrapper key={index} delay={index * 50}>
-              <Card className="h-full bg-white border-none shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
-                {event.image && (
-                  <div className="relative h-48 w-full overflow-hidden">
-                    <button
-                      onClick={() => setSelectedImage({ src: event.image, alt: event.title })}
-                      className="w-full h-full focus:outline-none"
-                    >
-                      <img
-                        src={event.image}
-                        alt={event.title}
-                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105 cursor-zoom-in"
-                      />
-                    </button>
-                  </div>
-                )}
-                <CardHeader>
-                  <div className="flex justify-between items-start mb-2">
-                    <CardTitle className="text-lg font-semibold">{event.title}</CardTitle>
-                    {event.date && (
-                      <div className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full whitespace-nowrap">
-                        {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-muted-foreground text-sm mb-3">{event.description}</p>
-                  {event.location && <p className="text-xs text-gray-600">📍 {event.location}</p>}
-                  {event.time && <p className="text-xs text-gray-600">🕒 {event.time}</p>}
-                  {event.platform && <p className="text-xs text-gray-600">💼 {event.platform}</p>}
-                </CardHeader>
-              </Card>
-            </AnimationWrapper>
-          ))}
+      {/* Filter Section - Minimalist Typographic Timeline */}
+      <div className="w-full max-w-4xl mx-auto px-6 py-8 mb-12">
+        <div className="flex flex-col items-center justify-center gap-6">
+          {/* Subtle separator and label */}
+          <div className="flex items-center gap-4 w-full">
+            <div className="h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent flex-1" />
+            <span className="text-[10px] uppercase tracking-[0.3em] text-gold font-bold flex items-center gap-2">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-gold"></span>
+              </span>
+              Timeline
+            </span>
+            <div className="h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent flex-1" />
+          </div>
+
+          {/* Borderless months row */}
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
+            {availableMonths.map((month) => {
+              const isActive = selectedMonth === month;
+              return (
+                <button
+                  key={month}
+                  onClick={() => setSelectedMonth(month)}
+                  className={cn(
+                    "relative py-2 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 focus:outline-none",
+                    isActive ? "text-gold" : "text-gray-400 hover:text-white"
+                  )}
+                >
+                  {month}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeTimelineDot"
+                      className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-gold rounded-full shadow-[0_0_8px_rgba(212,175,55,0.8)]"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      {/* Image Zoom Dialog */}
+      {/* 3D Horizontal Scrolling Event List */}
+      <div className="relative w-full max-w-[100vw] pb-32 overflow-hidden">
+        {filteredEvents.length > 0 ? (
+          <>
+            {/* Left Navigation Button */}
+            <button
+              onClick={() => {
+                if (scrollContainerRef.current) {
+                  scrollContainerRef.current.scrollBy({
+                    left: -window.innerWidth * 0.6,
+                    behavior: 'smooth'
+                  });
+                }
+              }}
+              className={cn(
+                "absolute left-4 md:left-8 top-[35%] transform -translate-y-1/2 z-30 bg-black/60 hover:bg-gold/25 hover:border-gold/50 border border-white/10 text-white hover:text-gold w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-300 shadow-xl active:scale-95 group focus:outline-none",
+                canScrollLeft ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-90 pointer-events-none"
+              )}
+              aria-label="Scroll Left"
+            >
+              <ChevronLeft className="w-6 h-6 transition-transform duration-300 group-hover:-translate-x-0.5" />
+            </button>
+
+            {/* Right Navigation Button */}
+            <button
+              onClick={() => {
+                if (scrollContainerRef.current) {
+                  scrollContainerRef.current.scrollBy({
+                    left: window.innerWidth * 0.6,
+                    behavior: 'smooth'
+                  });
+                }
+              }}
+              className={cn(
+                "absolute right-4 md:right-8 top-[35%] transform -translate-y-1/2 z-30 bg-black/60 hover:bg-gold/25 hover:border-gold/50 border border-white/10 text-white hover:text-gold w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-300 shadow-xl active:scale-95 group focus:outline-none",
+                canScrollRight ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-90 pointer-events-none"
+              )}
+              aria-label="Scroll Right"
+            >
+              <ChevronRight className="w-6 h-6 transition-transform duration-300 group-hover:translate-x-0.5" />
+            </button>
+
+            <div 
+              ref={scrollContainerRef}
+              className="flex overflow-x-auto gap-4 md:gap-8 pb-12 snap-x snap-mandatory items-stretch [&::-webkit-scrollbar]:hidden"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {/* Left Spacer */}
+              <div className="w-[10vw] md:w-[20vw] lg:w-[26vw] flex-shrink-0" />
+
+              {filteredEvents.map((event, index) => (
+                <div key={`${selectedMonth}-${index}`} className="flex-shrink-0 w-[80vw] md:w-[60vw] lg:w-[48vw] snap-center">
+                  <CinematicEventCard
+                    event={event}
+                    index={index}
+                    scrollContainerRef={scrollContainerRef}
+                    setSelectedImage={setSelectedImage}
+                  />
+                </div>
+              ))}
+              
+              {/* Right Spacer */}
+              <div className="w-[10vw] md:w-[20vw] lg:w-[26vw] flex-shrink-0" />
+            </div>
+          </>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col items-center justify-center py-32 text-center"
+          >
+            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-8 border border-white/10">
+              <Calendar className="w-12 h-12 text-gray-500" />
+            </div>
+            <h3 className="text-3xl font-bold text-white mb-4 tracking-tight">No Events Found</h3>
+            <p className="text-gray-400 max-w-md text-lg">
+              We couldn't find any events scheduled for {selectedMonth}.
+            </p>
+            <button
+              onClick={() => setSelectedMonth('All')}
+              className="mt-8 text-gold font-bold tracking-widest uppercase text-sm hover:text-white transition-colors duration-300 flex items-center gap-2"
+            >
+              <span>View All Events</span>
+              <div className="w-8 h-[1px] bg-gold" />
+            </button>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Cinematic Image Zoom Lightbox */}
       <Dialog open={!!selectedImage} onOpenChange={handleClose}>
-        <DialogContent className="p-4 max-w-4xl flex flex-col items-center">
+        <DialogContent className="p-0 max-w-6xl bg-transparent border-none shadow-none flex flex-col items-center justify-center w-screen h-screen">
+          <div className="absolute inset-0 bg-black/95 backdrop-blur-3xl z-[-1]" onClick={handleClose} />
           {selectedImage && (
-            <>
-              <div className="flex space-x-2 mb-2">
+            <div className="relative w-full h-full flex flex-col items-center justify-center p-8">
+              <div className="absolute top-8 right-8 flex items-center space-x-4 z-50">
                 <button
                   onClick={handleZoomOut}
-                  className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+                  className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md p-3 rounded-full transition-all border border-white/20 shadow-lg active:scale-95 cursor-pointer"
+                  title="Zoom Out"
                 >
-                  ➖
+                  <ZoomOut className="w-5 h-5" />
                 </button>
                 <button
                   onClick={handleZoomIn}
-                  className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+                  className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md p-3 rounded-full transition-all border border-white/20 shadow-lg active:scale-95 cursor-pointer"
+                  title="Zoom In"
                 >
-                  ➕
+                  <ZoomIn className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={handleClose}
+                  className="bg-red-500/20 hover:bg-red-500 text-white hover:text-white backdrop-blur-md p-3 rounded-full transition-all border border-red-500/30 hover:border-red-500 shadow-lg active:scale-95 ml-2 cursor-pointer"
+                  title="Close Full View"
+                >
+                  <X className="w-5 h-5" />
                 </button>
               </div>
-              <img
+              <motion.img
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.4 }}
                 src={selectedImage.src}
                 alt={selectedImage.alt}
                 style={{ transform: `scale(${zoom})` }}
-                className="transition-transform duration-200 max-h-[80vh] rounded-lg object-contain"
+                className="transition-transform duration-300 max-h-[85vh] max-w-full rounded-lg object-contain shadow-2xl shadow-black"
               />
-            </>
+              <h2 className="text-white text-2xl font-bold mt-8 tracking-wide text-center">{selectedImage.alt}</h2>
+            </div>
           )}
         </DialogContent>
       </Dialog>
