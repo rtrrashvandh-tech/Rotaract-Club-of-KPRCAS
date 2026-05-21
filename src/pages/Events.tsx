@@ -130,6 +130,7 @@ const CinematicEventCard = ({ event, scrollContainerRef, setSelectedImage }: { e
 };
 
 const Events = () => {
+  const [selectedYear, setSelectedYear] = useState<number>(2026);
   const [events, setEvents] = useState<EventType[]>([]);
   const [selectedImage, setSelectedImage] = useState<{ src: string; alt: string } | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -163,23 +164,48 @@ const Events = () => {
   };
 
   const availableMonths = useMemo(() => {
-    const months = events
-      .filter(e => e.date)
+    const monthsData = events
+      .filter(e => {
+        if (!e.date) return false;
+        return new Date(e.date).getFullYear() === selectedYear;
+      })
       .map(e => {
-        const date = new Date(e.date!);
-        return date.toLocaleString('default', { month: 'long' });
+        const d = new Date(e.date!);
+        return {
+          name: d.toLocaleString('default', { month: 'long' }),
+          index: d.getMonth()
+        };
       });
-    return ['All', ...Array.from(new Set(months))];
-  }, [events]);
+
+    // Extract unique months and sort them chronologically (by month index 0-11)
+    const uniqueSortedMonths = Array.from(
+      new Map(monthsData.map(m => [m.name, m])).values()
+    )
+    .sort((a, b) => a.index - b.index)
+    .map(m => m.name);
+
+    return ['All', ...uniqueSortedMonths];
+  }, [events, selectedYear]);
 
   const filteredEvents = useMemo(() => {
-    if (selectedMonth === 'All') return events;
-    return events.filter(event => {
+    // Filter by selected year first
+    let yearEvents = events.filter(event => {
       if (!event.date) return false;
-      const eventMonth = new Date(event.date).toLocaleString('default', { month: 'long' });
+      return new Date(event.date).getFullYear() === selectedYear;
+    });
+
+    // Sort chronologically (earliest to latest in the timeline)
+    yearEvents = [...yearEvents].sort((a, b) => {
+      return new Date(a.date!).getTime() - new Date(b.date!).getTime();
+    });
+
+    if (selectedMonth === 'All') return yearEvents;
+
+    return yearEvents.filter(event => {
+      const eventMonth = new Date(event.date!).toLocaleString('default', { month: 'long' });
       return eventMonth === selectedMonth;
     });
-  }, [selectedMonth, events]);
+  }, [selectedMonth, selectedYear, events]);
 
   useEffect(() => {
     const el = scrollContainerRef.current;
@@ -268,6 +294,35 @@ const Events = () => {
             <div className="h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent flex-1" />
           </div>
 
+          {/* Year Switcher Tabs */}
+          <div className="flex bg-white/5 border border-white/10 rounded-full p-1 shadow-inner relative z-20">
+            {[2026, 2025].map((year) => {
+              const isYearActive = selectedYear === year;
+              return (
+                <button
+                  key={year}
+                  onClick={() => {
+                    setSelectedYear(year);
+                    setSelectedMonth('All');
+                  }}
+                  className={cn(
+                    "relative px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-[0.15em] transition-all duration-300 focus:outline-none w-36 text-center z-10",
+                    isYearActive ? "text-white" : "text-gray-400 hover:text-white"
+                  )}
+                >
+                  {isYearActive && (
+                    <motion.span
+                      layoutId="activeYearBg"
+                      className="absolute inset-0 bg-gradient-to-r from-maroon to-red-600 rounded-full z-[-1] shadow-lg shadow-maroon/30"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  {year === 2026 ? "2026 Journey" : "2025 Legacy"}
+                </button>
+              );
+            })}
+          </div>
+
           {/* Borderless months row */}
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
             {availableMonths.map((month) => {
@@ -347,7 +402,7 @@ const Events = () => {
               <div className="w-[10vw] md:w-[20vw] lg:w-[26vw] flex-shrink-0" />
 
               {filteredEvents.map((event, index) => (
-                <div key={`${selectedMonth}-${index}`} className="flex-shrink-0 w-[80vw] md:w-[60vw] lg:w-[48vw] snap-center">
+                <div key={`${selectedYear}-${selectedMonth}-${event.id || index}`} className="flex-shrink-0 w-[80vw] md:w-[60vw] lg:w-[48vw] snap-center">
                   <CinematicEventCard
                     event={event}
                     index={index}
