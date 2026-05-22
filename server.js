@@ -40,7 +40,6 @@ const defaultData = {
       title: 'Lingua Connection',
       date: '2025-08-25',
       time: '07:00 PM – 08:00 PM',
-      location: '',
       platform: 'Gmeet',
       image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755885523/WhatsApp_Image_2025-08-22_at_20.54.05_3b4f2292_yjzwwh.jpg',
       description: 'A platform for language exchange and cultural enrichment.'
@@ -50,10 +49,10 @@ const defaultData = {
       title: 'அன்பின் மறு உருவம்',
       date: '2025-08-26',
       time: '10:00 AM - 1:00 PM',
-      location: 'FAMILY FOR CHILDREN, VELLALOR,CBE.',
+      location: 'FAMILY FOR CHILDREN, VELLALOR, CBE.',
       platform: 'In-person',
       image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755885523/WhatsApp_Image_2025-08-22_at_20.54.04_a199c8ac_zeoxqn.jpg',
-      description: 'அன்பின் மறு உருவம் is an initiative to help elderly people.'
+      description: 'An initiative to help elderly people.'
     },
     {
       id: 'e4',
@@ -62,7 +61,7 @@ const defaultData = {
       location: 'Karumathampatti',
       platform: 'In-person',
       image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1756053140/WhatsApp_Image_2025-08-24_at_21.45.07_224b18e3_fllgx6.jpg',
-      description: 'Mattaipandhu 2.0 is an initiative to build a community.'
+      description: 'An initiative to build a community.'
     },
     {
       id: 'e5',
@@ -71,7 +70,7 @@ const defaultData = {
       location: 'Arasur Govt School',
       platform: 'In-person',
       image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755885523/WhatsApp_Image_2025-08-22_at_20.54.04_c5c998e3_o6x8vz.jpg',
-      description: 'வெறும் பெண் இல்லை is a self-defence learning session for girls.'
+      description: 'A self-defence learning session for girls.'
     },
     {
       id: 'e6',
@@ -81,7 +80,7 @@ const defaultData = {
       location: 'Seminar Hall (KPRCAS)',
       platform: 'In-person',
       image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1756053002/WhatsApp_Image_2025-08-24_at_20.52.42_78b8ef19_arjsxf.jpg',
-      description: 'Excelerate - Art of Speaking is an initiative to enhance communication skills.'
+      description: 'An initiative to enhance communication skills.'
     },
     {
       id: 'e7',
@@ -111,7 +110,7 @@ const defaultData = {
       location: 'Gmeet',
       platform: 'Online',
       image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760285151/Screenshot_2025-10-01-12-32-50-85_99c04817c0de5652397fc8b56c3b3817_s6f6tr.jpg',
-      description: 'Words that empower is an initiative to unlock the potential of effective communication and personal growth.'
+      description: 'Unlock the potential of effective communication and personal growth.'
     },
     {
       id: 'e10',
@@ -121,7 +120,7 @@ const defaultData = {
       location: 'KPRCAS Campus',
       platform: 'In-person',
       image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760287839/IMG-20251001-WA0068_pnyicy.jpg',
-      description: 'RAC-a-THON is a 24-hour hackathon event.'
+      description: 'A 24-hour hackathon event.'
     },
     {
       id: 'e11',
@@ -131,7 +130,7 @@ const defaultData = {
       location: 'Vagarayampalayam Government School',
       platform: 'In-person',
       image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760287144/IMG-20250917-WA0057_jzpqea.jpg',
-      description: 'Join the Rotaract Club of KPRCAS for "Veeram Pen Illai", a self-defense training session aimed at empowering women and enhancing their confidence and safety skills.'
+      description: 'Empowering women with self-defense training for safety and confidence.'
     },
     {
       id: 'e12',
@@ -141,7 +140,7 @@ const defaultData = {
       location: 'Gmeet',
       platform: 'Online',
       image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760284629/Screenshot_2025-10-01-12-36-16-82_99c04817c0de5652397fc8b56c3b3817_fordh1.jpg',
-      description: 'Touro quiz is an event for quizzing and knowledge celebration.'
+      description: 'An event for quizzing and knowledge celebration.'
     },
     {
       id: 'e13',
@@ -150,7 +149,7 @@ const defaultData = {
       time: '2:00 PM - 4:00 PM',
       platform: 'In-person',
       image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760287422/IMG-20250929-WA0005_xuyg6l.jpg',
-      description: 'Charity Drive is an event to raise funds for the needy.'
+      description: 'An event to raise funds for the needy.'
     },
     {
       id: 'e14',
@@ -160,7 +159,7 @@ const defaultData = {
       location: 'KPRCAS Campus',
       platform: 'In-person',
       image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760283820/PHOTO-2025-09-26-21-51-21_mniq4e.jpg',
-      description: 'Navrang is an event celebrating Navratri with vibrant traditions.'
+      description: 'Celebrating Navratri with vibrant traditions.'
     },
     {
       id: 'e15',
@@ -170,15 +169,15 @@ const defaultData = {
       location: 'Gmeet',
       platform: 'Online',
       image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760285361/IMG-20250926-WA0064_knpsv9.jpg',
-      description: 'Innovision is an initiative to unlock insights for SQL and enhance data understanding.'
+      description: 'Unlock insights for SQL and enhance data understanding.'
     },
     {
       id: 'e16',
       title: 'Nalam oru Padhai',
       date: '2025-10-07',
       platform: 'In-person',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765467685/10_Oct_Nalam_Oru_Pathai_Club_jijdhv.jpg",
-      location: "15-Vellampalyam Government School, Tiruppur",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765467685/10_Oct_Nalam_Oru_Pathai_Club_jijdhv.jpg',
+      location: '15-Vellampalyam Government School, Tiruppur',
       description: 'Health and wellness outreach to build a stronger, healthier community.'
     },
     {
@@ -186,8 +185,8 @@ const defaultData = {
       title: 'Feed the Future',
       date: '2025-10-10',
       platform: 'In-person',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/IMG-20251006-WA0012_tfllwk.jpg",
-      location: "Family for Children, Vellalore, Coimbatore",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/IMG-20251006-WA0012_tfllwk.jpg',
+      location: 'Family for Children, Vellalore, Coimbatore',
       description: 'Food distribution drive to support families in need.'
     },
     {
@@ -212,8 +211,8 @@ const defaultData = {
       title: 'Paasathin Pakkangal',
       date: '2025-10-13',
       platform: 'In-person',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/IMG-20251009-WA0003_b93rpj.jpg",
-      location: "Universal Peace Foundation,Pogallur",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/IMG-20251009-WA0003_b93rpj.jpg',
+      location: 'Universal Peace Foundation, Pogallur',
       description: 'Celebrating the many facets of empathy and togetherness.'
     },
     {
@@ -221,8 +220,8 @@ const defaultData = {
       title: 'One Day Police',
       date: '2025-10-16',
       platform: 'In-person',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468126/WhatsApp_Image_2025-12-11_at_8.46.45_PM_ufqwj2.jpg",
-      location: "Coimbatore",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468126/WhatsApp_Image_2025-12-11_at_8.46.45_PM_ufqwj2.jpg',
+      location: 'Coimbatore',
       description: 'Immersive policing experience for youth (runs Oct 16 – Oct 20).'
     },
     {
@@ -230,8 +229,8 @@ const defaultData = {
       title: 'Crewfinity',
       date: '2025-10-17',
       platform: 'In-person',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468126/WhatsApp_Image_2025-12-11_at_8.46.45_PM_ufqwj2.jpg",
-      location: "Coimbatore",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468126/WhatsApp_Image_2025-12-11_at_8.46.45_PM_ufqwj2.jpg',
+      location: 'Coimbatore',
       description: 'Team-building challenge to strengthen collaboration and leadership.'
     },
     {
@@ -239,8 +238,8 @@ const defaultData = {
       title: 'Glow and Give',
       date: '2025-10-22',
       platform: 'In-person',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/Photo_from_Monisha_n0whms.jpg",
-      location: "SRCAS,Coimbatore",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/Photo_from_Monisha_n0whms.jpg',
+      location: 'SRCAS, Coimbatore',
       description: 'Evening fundraiser combining art, light, and community giving.'
     },
     {
@@ -248,8 +247,8 @@ const defaultData = {
       title: 'Help in Soul',
       date: '2025-10-26',
       platform: 'In-person',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765467842/10_Oct_Help_in_Soul_Club_limuzn.jpg",
-      location: "Annur Old Town Panchyath,Annur",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765467842/10_Oct_Help_in_Soul_Club_limuzn.jpg',
+      location: 'Annur Old Town Panchyath, Annur',
       description: 'Mental health support circle focused on listening and care.'
     },
     {
@@ -257,8 +256,8 @@ const defaultData = {
       title: 'We are with you',
       date: '2025-10-27',
       platform: 'In-person',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765467987/10_Oct_We_are_with_you_Club_dazmz4.jpg",
-      location: "Avinashi Old Bus Stand,Tiruppur",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765467987/10_Oct_We_are_with_you_Club_dazmz4.jpg',
+      location: 'Avinashi Old Bus Stand, Tiruppur',
       description: 'Solidarity event to stand with those facing challenges.'
     },
     {
@@ -266,8 +265,8 @@ const defaultData = {
       title: 'Dude Dayout',
       date: '2025-10-29',
       platform: 'In-person',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468130/PHOTO-2025-10-24-21-44-38_d0g4j1.jpg",
-      location: "Mirage cinema",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468130/PHOTO-2025-10-24-21-44-38_d0g4j1.jpg',
+      location: 'Mirage cinema',
       description: 'Fun social outing to unwind and build friendships.'
     },
     {
@@ -275,17 +274,17 @@ const defaultData = {
       title: 'Mattai Pandhu 3.O',
       date: '2025-10-29',
       platform: 'In-person',
-      image: "/turf_cricket.jpg",
-      location: "Karumathampatti",
-      description: 'Street cricket 3.0—friendly matches that bring the community together.'
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468127/PHOTO-2025-10-24-21-44-38_1_ogc2cj.jpg',
+      location: 'Karumathampatti',
+      description: 'Street cricket 3.0 — friendly matches that bring the community together.'
     },
     {
       id: 'e28',
       title: 'Rotaween',
       date: '2025-10-31',
       platform: 'In-person',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470143/IMG-20251103-WA0009_knttmi.jpg",
-      location: "Sathya Jeevan Home",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470143/IMG-20251103-WA0009_knttmi.jpg',
+      location: 'Sathya Jeevan Home',
       description: 'Halloween-themed celebration with the club.'
     },
     {
@@ -293,8 +292,8 @@ const defaultData = {
       title: 'Vaathi Raid 4.0',
       date: '2025-10-31',
       platform: 'In-person',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470133/PHOTO-2025-12-02-15-23-50_t3jjan.jpg",
-      location: "KPRCAS Campus",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470133/PHOTO-2025-12-02-15-23-50_t3jjan.jpg',
+      location: 'KPRCAS Campus',
       description: 'The fourth edition of Vaathi Raid.'
     },
     {
@@ -302,7 +301,7 @@ const defaultData = {
       title: 'Rotaract Fusion Fiesta',
       date: '2025-11-02',
       platform: 'Gmeet',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470132/IMG-20251028-WA0043_1_duvk0h.jpg",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470132/IMG-20251028-WA0043_1_duvk0h.jpg',
       description: 'Fusion Fiesta celebrating international service.'
     },
     {
@@ -318,7 +317,7 @@ const defaultData = {
       title: 'Eegai',
       date: '2025-11-12',
       platform: 'Gmeet',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470134/IMG-20251125-WA0012_tsdstk.jpg",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470134/IMG-20251125-WA0012_tsdstk.jpg',
       description: 'Service initiative focused on giving back.'
     },
     {
@@ -326,8 +325,8 @@ const defaultData = {
       title: 'Cleanfluence',
       date: '2025-11-12',
       platform: 'In-person',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470132/IMG-20251113-WA0001_scb5pg.jpg",
-      location: "Tinkle sevaa Tribal School",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470132/IMG-20251113-WA0001_scb5pg.jpg',
+      location: 'Tinkle sevaa Tribal School',
       description: 'Cleanliness drive with international collaboration.'
     },
     {
@@ -335,7 +334,7 @@ const defaultData = {
       title: 'Bouncing Back',
       date: '2025-11-12',
       platform: 'Gmeet',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470790/IMG-20251108-WA0073_lnkx5c.jpg",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470790/IMG-20251108-WA0073_lnkx5c.jpg',
       description: 'Session on resilience and professional growth.'
     },
     {
@@ -343,7 +342,7 @@ const defaultData = {
       title: 'Pair and Share',
       date: '2025-11-13',
       platform: 'Gmeet',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765471195/PHOTO-2025-11-09-18-16-29_bpbevr.jpg",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765471195/PHOTO-2025-11-09-18-16-29_bpbevr.jpg',
       description: 'Club service activity focused on collaboration.'
     },
     {
@@ -351,7 +350,7 @@ const defaultData = {
       title: 'Mind and Me',
       date: '2025-11-13',
       platform: 'Gmeet',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470131/IMG-20251112-WA0011_yxsck9.jpg",
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470131/IMG-20251112-WA0011_yxsck9.jpg',
       description: 'Mental wellness and professional development session.'
     },
     {
@@ -359,8 +358,57 @@ const defaultData = {
       title: 'View Point',
       date: '2025-11-21',
       platform: 'Gmeet',
-      image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470134/IMG-20251120-WA0013_iu5vtf.jpg",
-      description: 'Media,Mindset and Screen Cluture.'
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470134/IMG-20251120-WA0013_iu5vtf.jpg',
+    },
+    {
+      id: 'e38',
+      title: 'Pinnacle Leadership Summit',
+      date: '2026-01-18',
+      time: '09:30 AM - 4:30 PM',
+      location: 'KPRCAS Auditorium',
+      platform: 'In-person',
+      image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760281257/PHOTO-2025-09-28-09-55-14_wodjhp.jpg',
+      description: 'An empowering day of leadership workshops, keynotes, and team building to inspire next-generation changemakers.'
+    },
+    {
+      id: 'e39',
+      title: 'Pulse 2026: Sports Fiesta',
+      date: '2026-02-14',
+      time: '08:00 AM - 5:00 PM',
+      location: 'KPR Sports Grounds',
+      platform: 'In-person',
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1756053140/WhatsApp_Image_2025-08-24_at_21.45.07_224b18e3_fllgx6.jpg',
+      description: 'Unleashing the spirit of sportsmanship! A thrilling inter-club tournament featuring cricket, football, and track events.'
+    },
+    {
+      id: 'e40',
+      title: 'EmpowerHer: Women in Tech',
+      date: '2026-03-08',
+      time: '10:30 AM - 12:30 PM',
+      location: 'Google Meet',
+      platform: 'Online',
+      image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760285361/IMG-20250926-WA0064_knpsv9.jpg',
+      description: 'Celebrating International Women\'s Day with an expert panel sharing insights on breaking barriers and thriving in the tech industry.'
+    },
+    {
+      id: 'e41',
+      title: 'Green Earth Initiative',
+      date: '2026-04-22',
+      time: '07:30 AM - 11:30 AM',
+      location: 'Arasur Village, Coimbatore',
+      platform: 'In-person',
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470132/IMG-20251113-WA0001_scb5pg.jpg',
+      description: 'Earth Day special tree-planting and environmental awareness drive to create a greener, more sustainable tomorrow.'
+    },
+    {
+      id: 'e42',
+      title: 'Care for Kids: Orphanage Visit',
+      date: '2026-05-10',
+      time: '09:30 AM - 01:30 PM',
+      location: 'Mercy Home, Karumathampatti',
+      platform: 'In-person',
+      image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/IMG-20251006-WA0012_tfllwk.jpg',
+      description: 'Bringing smiles and joy! A day filled with interactive games, drawing competitions, and sharing gifts and nutritious meals.'
     }
   ],
   bulletins: [

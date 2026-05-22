@@ -133,6 +133,7 @@ const Events = () => {
   const [events, setEvents] = useState<EventType[]>([]);
   const [selectedImage, setSelectedImage] = useState<{ src: string; alt: string } | null>(null);
   const [zoom, setZoom] = useState(1);
+  const [selectedYear, setSelectedYear] = useState<string>('2025');
   const [selectedMonth, setSelectedMonth] = useState<string>('All');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -162,24 +163,43 @@ const Events = () => {
     setZoom(1);
   };
 
+  const availableYears = useMemo(() => {
+    const years = events
+      .filter(e => e.date)
+      .map(e => new Date(e.date!).getFullYear().toString());
+    return Array.from(new Set(years)).sort((a, b) => b.localeCompare(a));
+  }, [events]);
+
+  useEffect(() => {
+    setSelectedMonth('All');
+  }, [selectedYear]);
+
+  const yearFilteredEvents = useMemo(() => {
+    return events.filter(event => {
+      if (!event.date) return false;
+      const eventYear = new Date(event.date).getFullYear().toString();
+      return eventYear === selectedYear;
+    });
+  }, [selectedYear, events]);
+
   const availableMonths = useMemo(() => {
-    const months = events
+    const months = yearFilteredEvents
       .filter(e => e.date)
       .map(e => {
         const date = new Date(e.date!);
         return date.toLocaleString('default', { month: 'long' });
       });
     return ['All', ...Array.from(new Set(months))];
-  }, [events]);
+  }, [yearFilteredEvents]);
 
   const filteredEvents = useMemo(() => {
-    if (selectedMonth === 'All') return events;
-    return events.filter(event => {
+    if (selectedMonth === 'All') return yearFilteredEvents;
+    return yearFilteredEvents.filter(event => {
       if (!event.date) return false;
       const eventMonth = new Date(event.date).toLocaleString('default', { month: 'long' });
       return eventMonth === selectedMonth;
     });
-  }, [selectedMonth, events]);
+  }, [selectedMonth, yearFilteredEvents]);
 
   useEffect(() => {
     const el = scrollContainerRef.current;
@@ -267,6 +287,29 @@ const Events = () => {
             </span>
             <div className="h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent flex-1" />
           </div>
+
+          {/* Sleek dynamic year toggle */}
+          {availableYears.length > 1 && (
+            <div className="flex items-center justify-center gap-4 mb-2">
+              {availableYears.map((year) => {
+                const isActive = selectedYear === year;
+                return (
+                  <button
+                    key={year}
+                    onClick={() => setSelectedYear(year)}
+                    className={cn(
+                      "px-6 py-2 rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 border focus:outline-none",
+                      isActive
+                        ? "bg-gradient-to-r from-maroon to-red-600 border-red-500/50 text-white shadow-[0_0_15px_rgba(128,0,0,0.5)]"
+                        : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10"
+                    )}
+                  >
+                    {year}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Borderless months row */}
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
