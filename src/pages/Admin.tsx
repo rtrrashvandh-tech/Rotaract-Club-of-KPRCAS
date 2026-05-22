@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -43,6 +43,182 @@ import {
   Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
+
+interface Particle3D {
+  x: number;
+  y: number;
+  z: number;
+}
+
+const Futuristic3DCanvas: React.FC<{ variant?: 'sphere' | 'plexus' | 'ring'; size?: number }> = ({ variant = 'plexus', size = 300 }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = canvas.width = size;
+    let height = canvas.height = size;
+
+    // Generate 3D points
+    const particles: Particle3D[] = [];
+    const particleCount = variant === 'sphere' ? 100 : (variant === 'ring' ? 80 : 60);
+    const radius = size * 0.38;
+
+    for (let i = 0; i < particleCount; i++) {
+      if (variant === 'sphere') {
+        const u = Math.random();
+        const v = Math.random();
+        const theta = u * 2.0 * Math.PI;
+        const phi = Math.acos(2.0 * v - 1.0);
+        particles.push({
+          x: radius * Math.sin(phi) * Math.cos(theta),
+          y: radius * Math.sin(phi) * Math.sin(theta),
+          z: radius * Math.cos(phi),
+        });
+      } else if (variant === 'ring') {
+        const theta = (i / particleCount) * Math.PI * 2;
+        const ringIndex = i % 2;
+        if (ringIndex === 0) {
+          particles.push({
+            x: radius * Math.cos(theta),
+            y: radius * Math.sin(theta),
+            z: (Math.random() - 0.5) * 8,
+          });
+        } else {
+          particles.push({
+            x: radius * Math.cos(theta),
+            y: (Math.random() - 0.5) * 8,
+            z: radius * Math.sin(theta),
+          });
+        }
+      } else {
+        particles.push({
+          x: (Math.random() - 0.5) * size * 0.7,
+          y: (Math.random() - 0.5) * size * 0.7,
+          z: (Math.random() - 0.5) * size * 0.7,
+        });
+      }
+    }
+
+    let angleX = 0.002;
+    let angleY = 0.002;
+    const perspective = size * 0.9;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left - width / 2;
+      const y = e.clientY - rect.top - height / 2;
+      mouseRef.current.targetX = (x / (width / 2)) * 0.012;
+      mouseRef.current.targetY = (y / (height / 2)) * 0.012;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Smooth mouse rotation damping
+      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.05;
+      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.05;
+
+      const currentAngleX = angleX + mouseRef.current.y;
+      const currentAngleY = angleY + mouseRef.current.x;
+
+      const cosX = Math.cos(currentAngleX);
+      const sinX = Math.sin(currentAngleX);
+      const cosY = Math.cos(currentAngleY);
+      const sinY = Math.sin(currentAngleY);
+
+      // Projects and rotates particles
+      const projected = particles.map(p => {
+        let x1 = p.x * cosY - p.z * sinY;
+        let z1 = p.x * sinY + p.z * cosY;
+
+        let y2 = p.y * cosX - z1 * sinX;
+        let z2 = p.y * sinX + z1 * cosX;
+
+        const scale = perspective / (perspective + z2);
+        const projX = x1 * scale + width / 2;
+        const projY = y2 * scale + height / 2;
+
+        return { projX, projY, scale, z2 };
+      });
+
+      // Draw lines between close particles
+      if (variant === 'plexus' || variant === 'ring') {
+        const connectionDistance = variant === 'ring' ? size * 0.2 : size * 0.24;
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < projected.length; i++) {
+          for (let j = i + 1; j < projected.length; j++) {
+            const dx = projected[i].projX - projected[j].projX;
+            const dy = projected[i].projY - projected[j].projY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < connectionDistance) {
+              const alpha = (1 - dist / connectionDistance) * 0.22;
+              const color = projected[i].z2 > 0 ? `rgba(128, 0, 32, ${alpha})` : `rgba(212, 175, 55, ${alpha})`;
+              ctx.strokeStyle = color;
+              ctx.beginPath();
+              ctx.moveTo(projected[i].projX, projected[i].projY);
+              ctx.lineTo(projected[j].projX, projected[j].projY);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      // Draw particle points
+      projected.forEach((p) => {
+        if (p.projX < 0 || p.projX > width || p.projY < 0 || p.projY > height) return;
+
+        const size = Math.max(0.6, p.scale * 2.2);
+        const alpha = Math.min(1, Math.max(0.15, p.scale * 0.8));
+        ctx.fillStyle = p.z2 > 0 
+          ? `rgba(239, 68, 68, ${alpha})` 
+          : `rgba(212, 175, 55, ${alpha})`; 
+
+        ctx.beginPath();
+        ctx.arc(p.projX, p.projY, size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw outer glow for front particles in sphere
+        if (p.z2 < -15 && variant === 'sphere') {
+          ctx.shadowBlur = 3;
+          ctx.shadowColor = '#d4af37';
+          ctx.fillStyle = `rgba(255, 215, 0, ${alpha * 0.3})`;
+          ctx.beginPath();
+          ctx.arc(p.projX, p.projY, size * 1.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+      });
+
+      // Slowly rotate particles internally
+      particles.forEach(p => {
+        const spinSpeed = 0.0035;
+        const xTemp = p.x * Math.cos(spinSpeed) - p.y * Math.sin(spinSpeed);
+        p.y = p.x * Math.sin(spinSpeed) + p.y * Math.cos(spinSpeed);
+        p.x = xTemp;
+      });
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [variant, size]);
+
+  return <canvas ref={canvasRef} className="opacity-70 pointer-events-none mix-blend-screen" />;
+};
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -478,8 +654,14 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                 {/* Outer spin rings */}
                 <div className="absolute inset-0 rounded-full border border-dashed border-red-500/30 animate-[spin_20s_linear_infinite]"></div>
                 <div className="absolute inset-2 rounded-full border border-double border-gold/40 animate-[spin_10s_linear_infinite_reverse]"></div>
-                <div className="absolute inset-4 rounded-full bg-gradient-to-tr from-maroon/20 to-red-950/40 border border-gold/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shadow-[inset_0_0_20px_rgba(255,0,68,0.2)]">
-                  <Fingerprint className="w-14 h-14 text-rose-500 group-hover:text-gold transition-all duration-500 animate-pulse" />
+                
+                {/* Real-time Interactive 3D Holographic Sphere */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none scale-105">
+                  <Futuristic3DCanvas variant="sphere" size={144} />
+                </div>
+                
+                <div className="absolute inset-5 rounded-full bg-black/70 backdrop-blur-md border border-gold/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shadow-[0_0_20px_rgba(255,0,68,0.3)]">
+                  <Fingerprint className="w-12 h-12 text-rose-500 group-hover:text-gold transition-all duration-500 animate-pulse" />
                 </div>
                 
                 {/* Floating laser line scanner */}
@@ -558,6 +740,11 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
       {/* Background Matrix Grid Overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(18,0,24,0.15)_1px,transparent_1px),linear-gradient(90deg,rgba(18,0,24,0.15)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
 
+      {/* Floating Interactive 3D Plexus Background Network */}
+      <div className="absolute right-0 top-10 w-[350px] h-[350px] pointer-events-none opacity-40 mix-blend-screen hidden lg:block">
+        <Futuristic3DCanvas variant="plexus" size={350} />
+      </div>
+
       {/* Floating sovereign ambient lights */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-maroon/10 rounded-full blur-[180px] pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gold/5 rounded-full blur-[180px] pointer-events-none"></div>
@@ -572,8 +759,11 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
           <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-gold/40"></div>
 
           <div className="flex flex-col md:flex-row items-center gap-5">
-            <div className="w-16 h-16 bg-gradient-to-tr from-maroon to-red-950 rounded-2xl flex items-center justify-center border border-gold/30 shadow-[0_0_20px_rgba(255,0,68,0.2)] group-hover:scale-105 transition-transform duration-500 shrink-0">
-              <Cpu className="w-8 h-8 text-gold" />
+            <div className="w-16 h-16 bg-[#020005] rounded-2xl flex items-center justify-center border border-gold/30 shadow-[0_0_20px_rgba(255,0,68,0.2)] group-hover:scale-105 transition-transform duration-500 shrink-0 overflow-hidden relative">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none scale-[1.3]">
+                <Futuristic3DCanvas variant="ring" size={64} />
+              </div>
+              <Cpu className="w-6 h-6 text-gold relative z-10 animate-pulse" />
             </div>
             <div className="text-center md:text-left">
               <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3">
