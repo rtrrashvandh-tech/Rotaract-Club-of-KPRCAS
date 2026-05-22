@@ -185,7 +185,7 @@ export const CinematicTeamCard3D: React.FC<CinematicTeamCard3DProps> = ({ member
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.4, type: "spring", stiffness: 200, damping: 25 }}
-            className="w-[92vw] md:w-full max-w-4xl max-h-[85vh] bg-neutral-950/80 backdrop-blur-2xl border border-white/10 rounded-[2rem] overflow-y-auto overflow-x-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative flex flex-col md:flex-row [&::-webkit-scrollbar]:hidden"
+            className="w-full max-w-4xl max-h-[85vh] bg-neutral-950/80 backdrop-blur-2xl border border-white/10 rounded-[2rem] overflow-y-auto overflow-x-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative flex flex-col md:flex-row [&::-webkit-scrollbar]:hidden"
             style={{ scrollbarWidth: 'none' }}
           >
             {/* Close Button */}

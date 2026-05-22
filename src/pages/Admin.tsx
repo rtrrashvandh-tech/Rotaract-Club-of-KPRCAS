@@ -503,21 +503,21 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
           <TabsList className="grid w-full grid-cols-3 mb-10 max-w-lg mx-auto bg-white/5 p-1.5 border border-white/10 rounded-2xl shadow-xl">
             <TabsTrigger
               value="events"
-              className={`rounded-xl py-3 font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-xs md:text-sm ${activeTab === 'events' ? 'bg-gradient-to-r from-maroon to-red-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+              className={`rounded-xl py-3 font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-sm ${activeTab === 'events' ? 'bg-gradient-to-r from-maroon to-red-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
             >
               <Calendar className="w-4 h-4" />
               <span>Events</span>
             </TabsTrigger>
             <TabsTrigger
               value="bulletins"
-              className={`rounded-xl py-3 font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-xs md:text-sm ${activeTab === 'bulletins' ? 'bg-gradient-to-r from-maroon to-red-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+              className={`rounded-xl py-3 font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-sm ${activeTab === 'bulletins' ? 'bg-gradient-to-r from-maroon to-red-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
             >
               <Newspaper className="w-4 h-4" />
               <span>Bulletins</span>
             </TabsTrigger>
             <TabsTrigger
               value="team"
-              className={`rounded-xl py-3 font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-xs md:text-sm ${activeTab === 'team' ? 'bg-gradient-to-r from-maroon to-red-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+              className={`rounded-xl py-3 font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-sm ${activeTab === 'team' ? 'bg-gradient-to-r from-maroon to-red-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
             >
               <Users className="w-4 h-4" />
               <span>Team</span>

@@ -444,7 +444,7 @@ const Bulletin = () => {
                 }
               }}
               className={cn(
-                "absolute left-4 md:left-8 top-[46%] transform -translate-y-1/2 z-30 bg-black/60 hover:bg-gold/25 hover:border-gold/50 border border-white/10 text-white hover:text-gold w-14 h-14 rounded-full md:flex items-center justify-center backdrop-blur-md transition-all duration-300 shadow-xl active:scale-95 group focus:outline-none hidden",
+                "absolute left-4 md:left-8 top-[46%] transform -translate-y-1/2 z-30 bg-black/60 hover:bg-gold/25 hover:border-gold/50 border border-white/10 text-white hover:text-gold w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-300 shadow-xl active:scale-95 group focus:outline-none",
                 canScrollLeft ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-90 pointer-events-none"
               )}
               aria-label="Scroll Left"
@@ -463,7 +463,7 @@ const Bulletin = () => {
                 }
               }}
               className={cn(
-                "absolute right-4 md:right-8 top-[46%] transform -translate-y-1/2 z-30 bg-black/60 hover:bg-gold/25 hover:border-gold/50 border border-white/10 text-white hover:text-gold w-14 h-14 rounded-full md:flex items-center justify-center backdrop-blur-md transition-all duration-300 shadow-xl active:scale-95 group focus:outline-none hidden",
+                "absolute right-4 md:right-8 top-[46%] transform -translate-y-1/2 z-30 bg-black/60 hover:bg-gold/25 hover:border-gold/50 border border-white/10 text-white hover:text-gold w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-300 shadow-xl active:scale-95 group focus:outline-none",
                 canScrollRight ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-90 pointer-events-none"
               )}
               aria-label="Scroll Right"
@@ -477,10 +477,10 @@ const Bulletin = () => {
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {/* Left Spacer */}
-              <div className="w-[6vw] xs:w-[7.5vw] md:w-[20vw] lg:w-[26vw] flex-shrink-0" />
+              <div className="w-[10vw] md:w-[20vw] lg:w-[26vw] flex-shrink-0" />
 
               {filteredBulletins.map((bulletin, index) => (
-                <div key={`${selectedYear}-${index}`} className="flex-shrink-0 w-[88vw] xs:w-[85vw] sm:w-[80vw] md:w-[60vw] lg:w-[48vw] snap-center">
+                <div key={`${selectedYear}-${index}`} className="flex-shrink-0 w-[80vw] md:w-[60vw] lg:w-[48vw] snap-center">
                   <CinematicBulletinCard
                     bulletin={bulletin}
                     events={events}
@@ -492,7 +492,7 @@ const Bulletin = () => {
               ))}
               
               {/* Right Spacer */}
-              <div className="w-[6vw] xs:w-[7.5vw] md:w-[20vw] lg:w-[26vw] flex-shrink-0" />
+              <div className="w-[10vw] md:w-[20vw] lg:w-[26vw] flex-shrink-0" />
             </div>
           </>
         ) : (

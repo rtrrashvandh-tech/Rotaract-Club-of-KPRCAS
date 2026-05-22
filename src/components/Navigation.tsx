@@ -34,9 +34,7 @@ const Navigation = () => {
   return (
     <div className="fixed top-0 left-0 right-0 z-50 px-4 pt-4 transition-all duration-300 pointer-events-none">
       <nav
-        className={`w-full max-w-7xl mx-auto border transition-all duration-500 pointer-events-auto ${
-          isOpen ? 'rounded-[2rem]' : 'rounded-full'
-        } ${
+        className={`w-full max-w-7xl mx-auto rounded-full border transition-all duration-500 pointer-events-auto ${
           isScrolled || isOpen
             ? 'bg-black/75 backdrop-blur-xl border-white/10 shadow-[0_15px_40px_-15px_rgba(0,0,0,0.6)] py-1.5 md:py-2 px-6'
             : 'bg-transparent border-transparent py-3 md:py-4 px-8 shadow-none'
