@@ -114,7 +114,7 @@ const Team = () => {
     <div className="min-h-screen bg-black text-white selection:bg-maroon selection:text-white overflow-x-hidden">
       
       {/* Cinematic Hero Section */}
-      <section className="relative h-[65vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[50vh] md:h-[65vh] flex items-center justify-center overflow-hidden pt-28 pb-8 md:pt-0 md:pb-0">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black z-10" />
           <motion.img

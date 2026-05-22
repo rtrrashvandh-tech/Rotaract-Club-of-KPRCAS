@@ -95,8 +95,8 @@ const Navigation = () => {
 
         {/* Mobile Navigation */}
         <div
-          className={`md:hidden transition-all duration-500 overflow-hidden ${
-            isOpen ? 'max-h-96 pb-6 pt-4 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
+          className={`md:hidden transition-all duration-500 overflow-y-auto ${
+            isOpen ? 'max-h-[75vh] pb-6 pt-4 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
           }`}
         >
           <div className="space-y-1.5 pt-4 border-t border-white/10">

@@ -259,12 +259,12 @@ const About = () => {
     <div className="min-h-screen bg-black text-white selection:bg-maroon selection:text-white overflow-hidden">
       
       {/* Cinematic Hero Section */}
-      <section className="relative h-[50vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[42vh] md:h-[50vh] flex items-center justify-center overflow-hidden pt-24 pb-8 md:pt-12 md:pb-0">
         <div className="absolute inset-0 z-0 bg-[#030101]">
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black z-10" />
         </div>
         
-        <div className="relative z-20 text-center px-4 max-w-4xl mx-auto pt-12">
+        <div className="relative z-20 text-center px-4 max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

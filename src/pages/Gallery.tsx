@@ -316,7 +316,7 @@ const Gallery = () => {
     <div className="min-h-screen bg-black text-white selection:bg-maroon selection:text-white font-poppins">
       
       {/* Cinematic Hero Section */}
-      <section className="relative h-[48vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[40vh] md:h-[48vh] flex items-center justify-center overflow-hidden pt-24 pb-8 md:pt-6 md:pb-0">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/40 to-black z-10" />
           <motion.img
@@ -328,7 +328,7 @@ const Gallery = () => {
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="relative z-20 text-center px-4 max-w-4xl mx-auto pt-6">
+        <div className="relative z-20 text-center px-4 max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
