@@ -367,56 +367,6 @@ const initialEvents: EventType[] = [
     platform: 'Gmeet',
     image: "https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470134/IMG-20251120-WA0013_iu5vtf.jpg",
     description: 'Media,Mindset and Screen Cluture.'
-  },
-  {
-    id: 'e38',
-    title: 'Pinnacle Leadership Summit',
-    date: '2026-01-18',
-    time: '09:30 AM - 4:30 PM',
-    location: 'KPRCAS Auditorium',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760281257/PHOTO-2025-09-28-09-55-14_wodjhp.jpg',
-    description: 'An empowering day of leadership workshops, keynotes, and team building to inspire next-generation changemakers.'
-  },
-  {
-    id: 'e39',
-    title: 'Pulse 2026: Sports Fiesta',
-    date: '2026-02-14',
-    time: '08:00 AM - 5:00 PM',
-    location: 'KPR Sports Grounds',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1756053140/WhatsApp_Image_2025-08-24_at_21.45.07_224b18e3_fllgx6.jpg',
-    description: 'Unleashing the spirit of sportsmanship! A thrilling inter-club tournament featuring cricket, football, and track events.'
-  },
-  {
-    id: 'e40',
-    title: 'EmpowerHer: Women in Tech',
-    date: '2026-03-08',
-    time: '10:30 AM - 12:30 PM',
-    location: 'Google Meet',
-    platform: 'Online',
-    image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760285361/IMG-20250926-WA0064_knpsv9.jpg',
-    description: "Celebrating International Women's Day with an expert panel sharing insights on breaking barriers and thriving in the tech industry."
-  },
-  {
-    id: 'e41',
-    title: 'Green Earth Initiative',
-    date: '2026-04-22',
-    time: '07:30 AM - 11:30 AM',
-    location: 'Arasur Village, Coimbatore',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765470132/IMG-20251113-WA0001_scb5pg.jpg',
-    description: 'Earth Day special tree-planting and environmental awareness drive to create a greener, more sustainable tomorrow.'
-  },
-  {
-    id: 'e42',
-    title: 'Care for Kids: Orphanage Visit',
-    date: '2026-05-10',
-    time: '09:30 AM - 01:30 PM',
-    location: 'Mercy Home, Karumathampatti',
-    platform: 'In-person',
-    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/IMG-20251006-WA0012_tfllwk.jpg',
-    description: 'Bringing smiles and joy! A day filled with interactive games, drawing competitions, and sharing gifts and nutritious meals.'
   }
 ];
 
@@ -443,16 +393,6 @@ export const getEvents = (): EventType[] => {
         saveEvents(updated);
         return updated;
       }
-
-      // Migration: Ensure new 2026 default events are imported
-      const storedIds = new Set(parsed.map((e: any) => e.id));
-      const missingInitial = initialEvents.filter(e => !storedIds.has(e.id));
-      if (missingInitial.length > 0) {
-        const updated = [...parsed, ...missingInitial];
-        saveEvents(updated);
-        return updated;
-      }
-
       return parsed;
     } catch (e) {
       console.error('Failed to parse events from local storage', e);
