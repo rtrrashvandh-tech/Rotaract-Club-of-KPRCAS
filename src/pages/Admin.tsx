@@ -33,7 +33,8 @@ import {
   User,
   ArrowRight,
   Download,
-  X
+  X,
+  Edit
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -44,6 +45,11 @@ const Admin = () => {
   const [bulletins, setBulletins] = useState<BulletinType[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMemberType[]>([]);
   const [showGuide, setShowGuide] = useState(true);
+
+  // Editing States
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [editingBulletinId, setEditingBulletinId] = useState<string | null>(null);
+  const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
 
   // Search Filters
   const [eventSearch, setEventSearch] = useState('');
@@ -224,7 +230,7 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
     toast.success("Database exported! Replace src/lib/storage.ts with the downloaded file to persist changes.");
   };
 
-  // --- Add Event Handler ---
+  // --- Add/Edit Event Handler ---
   const handleAddEvent = (e: React.FormEvent) => {
     e.preventDefault();
     if (!eventForm.title || !eventForm.description) {
@@ -232,16 +238,51 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
       return;
     }
 
-    const newEvent: EventType = {
-      ...eventForm,
-      id: `e_${Date.now()}`
-    };
+    let updatedEvents: EventType[];
 
-    const updatedEvents = [newEvent, ...events];
+    if (editingEventId) {
+      updatedEvents = events.map(evt =>
+        evt.id === editingEventId ? { ...eventForm, id: editingEventId } : evt
+      );
+      setEditingEventId(null);
+      toast.success(`Event "${eventForm.title}" updated successfully!`);
+    } else {
+      const newEvent: EventType = {
+        ...eventForm,
+        id: `e_${Date.now()}`
+      };
+      updatedEvents = [newEvent, ...events];
+      toast.success(`Event "${newEvent.title}" added successfully!`);
+    }
+
     setEvents(updatedEvents);
     saveEvents(updatedEvents);
     setEventForm({ title: '', date: '', time: '', location: '', platform: '', image: '', description: '' });
-    toast.success(`Event "${newEvent.title}" added successfully!`);
+  };
+
+  const startEditEvent = (event: EventType) => {
+    setEditingEventId(event.id);
+    setEventForm({
+      title: event.title || '',
+      date: event.date || '',
+      time: event.time || '',
+      location: event.location || '',
+      platform: event.platform || '',
+      image: event.image || '',
+      description: event.description || ''
+    });
+    // Smooth scroll to event form title input
+    const formEl = document.getElementById('title');
+    if (formEl) {
+      formEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      formEl.focus();
+    }
+  };
+
+  const cancelEditEvent = () => {
+    setEditingEventId(null);
+    setEventForm({ title: '', date: '', time: '', location: '', platform: '', image: '', description: '' });
+    toast.info('Event editing cancelled');
   };
 
   // --- Delete Event Handler ---
@@ -253,7 +294,7 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
     toast.success(`Deleted Event: ${eventToDelete?.title || 'Event'}`);
   };
 
-  // --- Add Bulletin Handler ---
+  // --- Add/Edit Bulletin Handler ---
   const handleAddBulletin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!bulletinForm.title || !bulletinForm.fileId || !bulletinForm.date) {
@@ -261,16 +302,48 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
       return;
     }
 
-    const newBulletin: BulletinType = {
-      ...bulletinForm,
-      id: `b_${Date.now()}`
-    };
+    let updatedBulletins: BulletinType[];
 
-    const updatedBulletins = [newBulletin, ...bulletins];
+    if (editingBulletinId) {
+      updatedBulletins = bulletins.map(b =>
+        b.id === editingBulletinId ? { ...bulletinForm, id: editingBulletinId } : b
+      );
+      setEditingBulletinId(null);
+      toast.success(`Bulletin "${bulletinForm.title}" updated successfully!`);
+    } else {
+      const newBulletin: BulletinType = {
+        ...bulletinForm,
+        id: `b_${Date.now()}`
+      };
+      updatedBulletins = [newBulletin, ...bulletins];
+      toast.success(`Bulletin "${newBulletin.title}" added successfully!`);
+    }
+
     setBulletins(updatedBulletins);
     saveBulletins(updatedBulletins);
     setBulletinForm({ title: '', date: '', content: '', fileId: '', coverImage: '' });
-    toast.success(`Bulletin "${newBulletin.title}" added successfully!`);
+  };
+
+  const startEditBulletin = (bulletin: BulletinType) => {
+    setEditingBulletinId(bulletin.id);
+    setBulletinForm({
+      title: bulletin.title || '',
+      date: bulletin.date || '',
+      content: bulletin.content || '',
+      fileId: bulletin.fileId || '',
+      coverImage: bulletin.coverImage || ''
+    });
+    const formEl = document.getElementById('b_title');
+    if (formEl) {
+      formEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      formEl.focus();
+    }
+  };
+
+  const cancelEditBulletin = () => {
+    setEditingBulletinId(null);
+    setBulletinForm({ title: '', date: '', content: '', fileId: '', coverImage: '' });
+    toast.info('Bulletin editing cancelled');
   };
 
   // --- Delete Bulletin Handler ---
@@ -282,7 +355,7 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
     toast.success(`Deleted Bulletin: ${bulletinToDelete?.title || 'Bulletin'}`);
   };
 
-  // --- Add Team Member Handler ---
+  // --- Add/Edit Team Member Handler ---
   const handleAddTeamMember = (e: React.FormEvent) => {
     e.preventDefault();
     if (!teamForm.name || !teamForm.position) {
@@ -291,17 +364,47 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
     }
 
     const defaultImage = 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411700/club-logo_wsjsmp.png';
-    const newMember: TeamMemberType = {
-      ...teamForm,
-      image: teamForm.image.trim() || defaultImage,
-      id: `t_${Date.now()}`
-    };
+    let updatedMembers: TeamMemberType[];
 
-    const updatedMembers = [newMember, ...teamMembers];
+    if (editingTeamId) {
+      updatedMembers = teamMembers.map(m =>
+        m.id === editingTeamId ? { ...teamForm, image: teamForm.image.trim() || defaultImage, id: editingTeamId } : m
+      );
+      setEditingTeamId(null);
+      toast.success(`Team Member "${teamForm.name}" updated successfully!`);
+    } else {
+      const newMember: TeamMemberType = {
+        ...teamForm,
+        image: teamForm.image.trim() || defaultImage,
+        id: `t_${Date.now()}`
+      };
+      updatedMembers = [newMember, ...teamMembers];
+      toast.success(`Team Member "${newMember.name}" added successfully!`);
+    }
+
     setTeamMembers(updatedMembers);
     saveTeamMembers(updatedMembers);
     setTeamForm({ name: '', position: '', image: '' });
-    toast.success(`Team Member "${newMember.name}" added successfully!`);
+  };
+
+  const startEditTeamMember = (member: TeamMemberType) => {
+    setEditingTeamId(member.id);
+    setTeamForm({
+      name: member.name || '',
+      position: member.position || '',
+      image: member.image === 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411700/club-logo_wsjsmp.png' ? '' : (member.image || '')
+    });
+    const formEl = document.getElementById('m_name');
+    if (formEl) {
+      formEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      formEl.focus();
+    }
+  };
+
+  const cancelEditTeamMember = () => {
+    setEditingTeamId(null);
+    setTeamForm({ name: '', position: '', image: '' });
+    toast.info('Team member editing cancelled');
   };
 
   // --- Delete Team Member Handler ---
@@ -529,11 +632,15 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
             <div className="grid lg:grid-cols-12 gap-8">
               {/* Form Section (left) */}
               <div className="lg:col-span-5">
-                <Card className="bg-white/5 border-white/10 rounded-3xl overflow-hidden shadow-2xl relative">
+                <Card className={`bg-white/5 border-white/10 rounded-3xl overflow-hidden shadow-2xl relative transition-all duration-300 ${editingEventId ? 'ring-2 ring-gold border-gold/50 shadow-gold/10' : ''}`}>
                   <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-maroon to-gold"></div>
                   <CardHeader className="pb-4">
-                    <CardTitle className="text-xl font-bold text-white">Create New Event</CardTitle>
-                    <CardDescription className="text-gray-400 text-xs">Fill in the fields to deploy a live event card.</CardDescription>
+                    <CardTitle className="text-xl font-bold text-white">
+                      {editingEventId ? 'Edit Event' : 'Create New Event'}
+                    </CardTitle>
+                    <CardDescription className="text-gray-400 text-xs">
+                      {editingEventId ? 'Modify the fields below to update this event.' : 'Fill in the fields to deploy a live event card.'}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleAddEvent} className="space-y-4 text-gray-300">
@@ -630,13 +737,34 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                         </div>
                       </div>
 
-                      <Button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-maroon to-red-700 text-white font-bold py-6 rounded-2xl shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 mt-2 flex items-center justify-center gap-2"
-                      >
-                        <Plus className="w-5 h-5 text-gold" />
-                        <span>Deploy Event</span>
-                      </Button>
+                      <div className="flex gap-4 mt-2">
+                        {editingEventId && (
+                          <Button
+                            type="button"
+                            onClick={cancelEditEvent}
+                            className="flex-1 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 font-semibold py-6 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2"
+                          >
+                            <X className="w-5 h-5 text-red-400" />
+                            <span>Cancel</span>
+                          </Button>
+                        )}
+                        <Button
+                          type="submit"
+                          className={`${editingEventId ? 'flex-1 bg-gradient-to-r from-gold to-yellow-600 text-black font-bold' : 'w-full bg-gradient-to-r from-maroon to-red-700 text-white font-bold'} py-6 rounded-2xl shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2`}
+                        >
+                          {editingEventId ? (
+                            <>
+                              <Edit className="w-5 h-5 text-black" />
+                              <span>Save Changes</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="w-5 h-5 text-gold" />
+                              <span>Deploy Event</span>
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </form>
                   </CardContent>
                 </Card>
@@ -691,14 +819,26 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                                 {event.location && <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-gold/80" /> {event.location}</span>}
                               </div>
                             </div>
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              onClick={() => handleDeleteEvent(event.id)}
-                              className="rounded-xl w-10 h-10 border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300 flex items-center justify-center flex-shrink-0"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                            <div className="flex gap-2 flex-shrink-0">
+                              <Button
+                                type="button"
+                                size="icon"
+                                onClick={() => startEditEvent(event)}
+                                className={`rounded-xl w-10 h-10 border transition-all duration-300 flex items-center justify-center ${editingEventId === event.id ? 'bg-gold border-gold text-black shadow-lg shadow-gold/20' : 'border-gold/20 bg-gold/10 text-gold hover:bg-gold hover:text-black'}`}
+                                title="Edit Event"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                onClick={() => handleDeleteEvent(event.id)}
+                                className="rounded-xl w-10 h-10 border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300 flex items-center justify-center"
+                                title="Delete Event"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </motion.div>
                         ))}
                       </AnimatePresence>
@@ -720,11 +860,15 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
             <div className="grid lg:grid-cols-12 gap-8">
               {/* Form Section (left) */}
               <div className="lg:col-span-5">
-                <Card className="bg-white/5 border-white/10 rounded-3xl overflow-hidden shadow-2xl relative">
+                <Card className={`bg-white/5 border-white/10 rounded-3xl overflow-hidden shadow-2xl relative transition-all duration-300 ${editingBulletinId ? 'ring-2 ring-gold border-gold/50 shadow-gold/10' : ''}`}>
                   <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-maroon to-gold"></div>
                   <CardHeader className="pb-4">
-                    <CardTitle className="text-xl font-bold text-white">Add New Bulletin</CardTitle>
-                    <CardDescription className="text-gray-400 text-xs">Link a PDF bulletin file from your Google Drive storage.</CardDescription>
+                    <CardTitle className="text-xl font-bold text-white">
+                      {editingBulletinId ? 'Edit Bulletin' : 'Add New Bulletin'}
+                    </CardTitle>
+                    <CardDescription className="text-gray-400 text-xs">
+                      {editingBulletinId ? 'Modify the fields below to update this bulletin.' : 'Link a PDF bulletin file from your Google Drive storage.'}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleAddBulletin} className="space-y-4 text-gray-300">
@@ -785,13 +929,34 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                         />
                       </div>
 
-                      <Button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-maroon to-red-700 text-white font-bold py-6 rounded-2xl shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 mt-2 flex items-center justify-center gap-2"
-                      >
-                        <Plus className="w-5 h-5 text-gold" />
-                        <span>Publish Bulletin</span>
-                      </Button>
+                      <div className="flex gap-4 mt-2">
+                        {editingBulletinId && (
+                          <Button
+                            type="button"
+                            onClick={cancelEditBulletin}
+                            className="flex-1 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 font-semibold py-6 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2"
+                          >
+                            <X className="w-5 h-5 text-red-400" />
+                            <span>Cancel</span>
+                          </Button>
+                        )}
+                        <Button
+                          type="submit"
+                          className={`${editingBulletinId ? 'flex-1 bg-gradient-to-r from-gold to-yellow-600 text-black font-bold' : 'w-full bg-gradient-to-r from-maroon to-red-700 text-white font-bold'} py-6 rounded-2xl shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2`}
+                        >
+                          {editingBulletinId ? (
+                            <>
+                              <Edit className="w-5 h-5 text-black" />
+                              <span>Save Changes</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="w-5 h-5 text-gold" />
+                              <span>Publish Bulletin</span>
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </form>
                   </CardContent>
                 </Card>
@@ -846,14 +1011,26 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                                 <span className="flex items-center gap-1 text-[11px] bg-white/5 border border-white/5 px-2 py-0.5 rounded-full text-gold/80">{bulletin.date}</span>
                               </div>
                             </div>
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              onClick={() => handleDeleteBulletin(bulletin.id)}
-                              className="rounded-xl w-10 h-10 border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300 flex items-center justify-center flex-shrink-0"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                            <div className="flex gap-2 flex-shrink-0">
+                              <Button
+                                type="button"
+                                size="icon"
+                                onClick={() => startEditBulletin(bulletin)}
+                                className={`rounded-xl w-10 h-10 border transition-all duration-300 flex items-center justify-center ${editingBulletinId === bulletin.id ? 'bg-gold border-gold text-black shadow-lg shadow-gold/20' : 'border-gold/20 bg-gold/10 text-gold hover:bg-gold hover:text-black'}`}
+                                title="Edit Bulletin"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                onClick={() => handleDeleteBulletin(bulletin.id)}
+                                className="rounded-xl w-10 h-10 border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300 flex items-center justify-center"
+                                title="Delete Bulletin"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </motion.div>
                         ))}
                       </AnimatePresence>
@@ -875,11 +1052,15 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
             <div className="grid lg:grid-cols-12 gap-8">
               {/* Form Section (left) */}
               <div className="lg:col-span-5">
-                <Card className="bg-white/5 border-white/10 rounded-3xl overflow-hidden shadow-2xl relative">
+                <Card className={`bg-white/5 border-white/10 rounded-3xl overflow-hidden shadow-2xl relative transition-all duration-300 ${editingTeamId ? 'ring-2 ring-gold border-gold/50 shadow-gold/10' : ''}`}>
                   <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-maroon to-gold"></div>
                   <CardHeader className="pb-4">
-                    <CardTitle className="text-xl font-bold text-white">Add Team Member</CardTitle>
-                    <CardDescription className="text-gray-400 text-xs">Publish a new team card onto the leadership roster.</CardDescription>
+                    <CardTitle className="text-xl font-bold text-white">
+                      {editingTeamId ? 'Edit Team Member' : 'Add Team Member'}
+                    </CardTitle>
+                    <CardDescription className="text-gray-400 text-xs">
+                      {editingTeamId ? 'Modify the fields below to update this team member.' : 'Publish a new team card onto the leadership roster.'}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleAddTeamMember} className="space-y-4 text-gray-300">
@@ -939,13 +1120,34 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                         </p>
                       </div>
 
-                      <Button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-maroon to-red-700 text-white font-bold py-6 rounded-2xl shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 mt-2 flex items-center justify-center gap-2"
-                      >
-                        <Plus className="w-5 h-5 text-gold" />
-                        <span>Deploy Team Member</span>
-                      </Button>
+                      <div className="flex gap-4 mt-2">
+                        {editingTeamId && (
+                          <Button
+                            type="button"
+                            onClick={cancelEditTeamMember}
+                            className="flex-1 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 font-semibold py-6 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2"
+                          >
+                            <X className="w-5 h-5 text-red-400" />
+                            <span>Cancel</span>
+                          </Button>
+                        )}
+                        <Button
+                          type="submit"
+                          className={`${editingTeamId ? 'flex-1 bg-gradient-to-r from-gold to-yellow-600 text-black font-bold' : 'w-full bg-gradient-to-r from-maroon to-red-700 text-white font-bold'} py-6 rounded-2xl shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2`}
+                        >
+                          {editingTeamId ? (
+                            <>
+                              <Edit className="w-5 h-5 text-black" />
+                              <span>Save Changes</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="w-5 h-5 text-gold" />
+                              <span>Deploy Team Member</span>
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </form>
                   </CardContent>
                 </Card>
@@ -997,14 +1199,26 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                               <h4 className="font-bold text-white text-sm truncate leading-snug">{member.name}</h4>
                               <p className="text-xs text-gold font-semibold uppercase tracking-wider mt-0.5">{member.position}</p>
                             </div>
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              onClick={() => handleDeleteTeamMember(member.id)}
-                              className="rounded-xl w-10 h-10 border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300 flex items-center justify-center flex-shrink-0"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                            <div className="flex gap-2 flex-shrink-0">
+                              <Button
+                                type="button"
+                                size="icon"
+                                onClick={() => startEditTeamMember(member)}
+                                className={`rounded-xl w-10 h-10 border transition-all duration-300 flex items-center justify-center ${editingTeamId === member.id ? 'bg-gold border-gold text-black shadow-lg shadow-gold/20' : 'border-gold/20 bg-gold/10 text-gold hover:bg-gold hover:text-black'}`}
+                                title="Edit Team Member"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                onClick={() => handleDeleteTeamMember(member.id)}
+                                className="rounded-xl w-10 h-10 border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300 flex items-center justify-center"
+                                title="Delete Team Member"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </motion.div>
                         ))}
                       </AnimatePresence>

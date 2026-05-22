@@ -409,6 +409,166 @@ const defaultData = {
       platform: 'In-person',
       image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1765468534/IMG-20251006-WA0012_tfllwk.jpg',
       description: 'Bringing smiles and joy! A day filled with interactive games, drawing competitions, and sharing gifts and nutritious meals.'
+    },
+    {
+      id: 'e43',
+      title: 'Markaiyn Idhyam',
+      date: '2025-11-27',
+      time: '10:00 AM',
+      location: 'Mangalam',
+      platform: 'In-person',
+      image: 'https://placehold.co/800x400?text=Markaiyn+Idhyam',
+      description: 'A tree plantation and environmental awareness initiative promoting sustainability, greenery, and collective social responsibility.'
+    },
+    {
+      id: 'e44',
+      title: 'Revitalize',
+      date: '2025-11-27',
+      location: 'Uthavum Karangal – De Addiction Centre, Avinashi',
+      platform: 'In-person',
+      image: 'https://placehold.co/800x400?text=Revitalize',
+      description: 'A mental wellness and motivational session focused on emotional healing, positivity, and personal empowerment.'
+    },
+    {
+      id: 'e45',
+      title: 'Vibe Up',
+      date: '2025-12-07',
+      time: '6:30 PM',
+      platform: 'GMeet',
+      image: 'https://placehold.co/800x400?text=Vibe+Up',
+      description: 'An engaging online session designed to spread positivity, motivation, and meaningful interaction among participants.'
+    },
+    {
+      id: 'e46',
+      title: 'Voice Of Rights',
+      date: '2025-12-10',
+      time: '7:00 PM',
+      platform: 'GMeet',
+      image: 'https://placehold.co/800x400?text=Voice+Of+Rights',
+      description: 'A human rights awareness program encouraging equality, justice, empowerment, and social responsibility.'
+    },
+    {
+      id: 'e47',
+      title: 'SafeBytes',
+      date: '2025-12-13',
+      time: '7:00 PM',
+      platform: 'GMeet',
+      image: 'https://placehold.co/800x400?text=SafeBytes',
+      description: 'A cybersecurity awareness session teaching safe digital practices and responsible online behavior.'
+    },
+    {
+      id: 'e48',
+      title: 'Writing With Pride',
+      date: '2025-12-15',
+      time: '10:00 AM',
+      location: 'Tiruppur & Coimbatore',
+      platform: 'In-person',
+      image: 'https://placehold.co/800x400?text=Writing+With+Pride',
+      description: 'A community outreach initiative encouraging learning and creative expression among senior citizens.'
+    },
+    {
+      id: 'e49',
+      title: 'Oru Gift-uh Parcel',
+      date: '2025-12-22',
+      platform: 'In-person',
+      image: 'https://placehold.co/800x400?text=Oru+Gift-uh+Parcel',
+      description: 'A joyful gifting initiative spreading happiness and festive cheer through thoughtful surprises and kindness.'
+    },
+    {
+      id: 'e50',
+      title: 'Creative Art',
+      date: '2025-12-23',
+      time: '2:00 PM',
+      location: 'KPRCAS',
+      platform: 'In-person',
+      image: 'https://placehold.co/800x400?text=Creative+Art',
+      description: 'A creative event encouraging imagination, artistic skills, and innovative thinking through fun activities.'
+    },
+    {
+      id: 'e51',
+      title: 'Ink To Impact',
+      date: '2025-12-23',
+      time: '3:00 PM',
+      location: 'KPRCAS',
+      platform: 'In-person',
+      image: 'https://placehold.co/800x400?text=Ink+To+Impact',
+      description: 'An inspiring session focused on writing, ideas, and using creativity as a tool to create meaningful change.'
+    },
+    {
+      id: 'e52',
+      title: 'Marudhamalai Dharisanam',
+      date: '2026-01-18',
+      time: '11:00 AM',
+      location: 'Marudhamalai',
+      platform: 'In-person',
+      image: 'https://placehold.co/800x400?text=Marudhamalai+Dharisanam',
+      description: 'A spiritual visit fostering unity, positivity, peace, and cultural connection among participants.'
+    },
+    {
+      id: 'e53',
+      title: 'The CA Sphere',
+      date: '2026-01-26',
+      time: '7:00 PM',
+      platform: 'GMeet',
+      image: 'https://placehold.co/800x400?text=The+CA+Sphere',
+      description: 'A career guidance session for aspiring Chartered Accountants covering opportunities, preparation, and professional growth.'
+    },
+    {
+      id: 'e54',
+      title: 'Ratify The Future',
+      date: '2026-01-29',
+      time: '7:00 PM',
+      platform: 'GMeet',
+      image: 'https://placehold.co/800x400?text=Ratify+The+Future',
+      description: 'A leadership and personality development session focused on preparing students for future challenges and opportunities.'
+    },
+    {
+      id: 'e55',
+      title: 'Upgrade Your Mindset',
+      date: '2026-01-31',
+      time: '7:00 PM',
+      platform: 'GMeet',
+      image: 'https://placehold.co/800x400?text=Upgrade+Your+Mindset',
+      description: 'A motivational session helping students transition from academic life to professional success with confidence and clarity.'
+    },
+    {
+      id: 'e56',
+      title: 'Measuring Community Impact',
+      date: '2026-03-23',
+      time: '11:00 AM',
+      location: 'KPRCAS',
+      platform: 'In-person',
+      image: 'https://placehold.co/800x400?text=Measuring+Community+Impact',
+      description: 'An informative session on evaluating social initiatives and understanding their impact on communities.'
+    },
+    {
+      id: 'e57',
+      title: 'Eco Minds For Better Future',
+      date: '2026-03-23',
+      time: '2:00 PM',
+      location: 'KPRCAS',
+      platform: 'In-person',
+      image: 'https://placehold.co/800x400?text=Eco+Minds+For+Better+Future',
+      description: 'An environmental awareness session encouraging sustainable living and eco-friendly practices for a greener future.'
+    },
+    {
+      id: 'e58',
+      title: 'Strands For Smiles',
+      date: '2026-03-25',
+      time: '11:00 AM',
+      location: 'KPRCAS',
+      platform: 'In-person',
+      image: 'https://placehold.co/800x400?text=Strands+For+Smiles',
+      description: 'A hair donation awareness initiative supporting cancer patients through compassion, confidence, and care.'
+    },
+    {
+      id: 'e59',
+      title: 'Vanchi',
+      date: '2026-04-10',
+      location: 'Nannilam Eco Village, Kalvarayan Hills, Salem',
+      platform: 'In-person',
+      image: 'https://placehold.co/800x400?text=Vanchi',
+      description: 'A 3-day immersive leadership camp focused on sustainability, eco-living, teamwork, and outreach activities.'
     }
   ],
   bulletins: [
@@ -684,6 +844,13 @@ const readDb = () => {
       parsed.teamMembers = defaultData.teamMembers;
       fs.writeFileSync(DB_PATH, JSON.stringify(parsed, null, 2), 'utf-8');
       console.log('Migrated server database teamMembers to include all core team members.');
+    }
+
+    // Migration: If the events list in database.json is older (e.g. less than 50 items), merge/overwrite it
+    if (parsed && (!parsed.events || parsed.events.length < 50)) {
+      parsed.events = defaultData.events;
+      fs.writeFileSync(DB_PATH, JSON.stringify(parsed, null, 2), 'utf-8');
+      console.log('Migrated server database events to include all new events.');
     }
     
     return parsed;
