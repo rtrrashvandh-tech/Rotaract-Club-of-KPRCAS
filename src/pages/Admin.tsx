@@ -649,7 +649,7 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
             <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-maroon via-gold to-maroon"></div>
             
             <CardHeader className="pt-10 pb-4 text-center relative">
-              {/* Sovereign Biometric Decryptor HUD */}
+              {/* Sovereign Biometric Decryptor HUD with 3D Hologram & Crown Sigil */}
               <div className="relative mx-auto w-36 h-36 flex items-center justify-center mb-6 group cursor-pointer">
                 {/* Outer spin rings */}
                 <div className="absolute inset-0 rounded-full border border-dashed border-red-500/30 animate-[spin_20s_linear_infinite]"></div>
@@ -660,23 +660,44 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                   <Futuristic3DCanvas variant="sphere" size={144} />
                 </div>
                 
-                <div className="absolute inset-5 rounded-full bg-black/70 backdrop-blur-md border border-gold/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shadow-[0_0_20px_rgba(255,0,68,0.3)]">
-                  <Fingerprint className="w-12 h-12 text-rose-500 group-hover:text-gold transition-all duration-500 animate-pulse" />
+                <div className="absolute inset-5 rounded-full bg-black/85 backdrop-blur-md border border-gold/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shadow-[0_0_25px_rgba(212,175,55,0.4)]">
+                  {/* Glowing 3D-feeling Crown SVG */}
+                  <svg className="w-14 h-14 text-gold drop-shadow-[0_0_15px_rgba(212,175,55,0.7)] animate-pulse" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 70 L15 35 L35 50 L50 20 L65 50 L85 35 L80 70 Z" fill="url(#crownGradient)" stroke="#d4af37" strokeWidth="2" strokeLinejoin="round"/>
+                    <circle cx="15" cy="35" r="3" fill="#ff0044" />
+                    <circle cx="35" cy="50" r="3" fill="#ff0044" />
+                    <circle cx="50" cy="20" r="4" fill="#ffee88" className="animate-ping origin-center" />
+                    <circle cx="50" cy="20" r="4" fill="#d4af37" />
+                    <circle cx="65" cy="50" r="3" fill="#ff0044" />
+                    <circle cx="85" cy="35" r="3" fill="#ff0044" />
+                    <rect x="25" y="62" width="50" height="5" rx="2" fill="#800020" stroke="#d4af37" strokeWidth="1" />
+                    <circle cx="35" cy="64.5" r="1.5" fill="#d4af37" />
+                    <circle cx="50" cy="64.5" r="1.5" fill="#d4af37" />
+                    <circle cx="65" cy="64.5" r="1.5" fill="#d4af37" />
+                    <path d="M35 75 C35 85, 50 92, 50 92 C50 92, 65 85, 65 75 L65 70 L35 70 Z" fill="none" stroke="#d4af37" strokeWidth="1.5" />
+                    <defs>
+                      <linearGradient id="crownGradient" x1="50" y1="20" x2="50" y2="70" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stopColor="#ffee88"/>
+                        <stop offset="50%" stopColor="#d4af37"/>
+                        <stop offset="100%" stopColor="#800020"/>
+                      </linearGradient>
+                    </defs>
+                  </svg>
                 </div>
                 
                 {/* Floating laser line scanner */}
                 <div className="absolute left-4 right-4 h-0.5 bg-gold/80 opacity-70 shadow-[0_0_10px_#ffaa00] animate-[ping_2s_infinite] pointer-events-none"></div>
               </div>
               
-              <div className="font-mono text-[10px] tracking-[0.25em] text-rose-500 uppercase font-black mb-1 animate-pulse">
-                [ SECURE ACCESS GATEWAY ]
+              <div className="font-mono text-[10px] tracking-[0.25em] text-gold uppercase font-black mb-1 animate-pulse">
+                [ ROYAL COURT KEEP ENTRY ]
               </div>
               
               <CardTitle className="text-4xl font-extrabold tracking-tighter bg-gradient-to-r from-white via-red-200 to-gold bg-clip-text text-transparent font-mono">
-                SOVEREIGN CORE
+                SOVEREIGN KEEP
               </CardTitle>
-              <CardDescription className="text-gray-400 text-xs mt-2 max-w-sm mx-auto font-light leading-relaxed">
-                Scan fingerprint pattern or input sovereign decryption passphrase to bypass security mainframe.
+              <CardDescription className="text-gray-400 text-xs mt-2 max-w-sm mx-auto font-light font-mono leading-relaxed">
+                Scan Crown Sigil pattern or present the Royal Seal passphrase to ascend to the Monarch's Throne.
               </CardDescription>
             </CardHeader>
             
@@ -685,24 +706,24 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center font-mono">
                     <Label htmlFor="password" className="text-gold text-xs font-black tracking-widest uppercase">
-                      DECRYPTION PASSKEY
+                      ROYAL SEAL KEY / KNIGHT'S VOW
                     </Label>
                     <span className="text-[10px] text-red-500/70 font-semibold uppercase tracking-wider animate-pulse">
-                      ▲ ENCRYPTED TLS 1.3
+                      ▲ ROYAL SHIELD SECURE
                     </span>
                   </div>
                   <div className="relative">
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-gold/50 text-sm select-none">
-                      &gt;
+                      👑
                     </div>
                     <Input
                       id="password"
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="ENTER RULER KEY"
+                      placeholder="ENTER ROYAL MONARCH KEY"
                       required
-                      className="bg-black/80 border-red-500/20 text-gold placeholder-red-950 font-mono tracking-[0.3em] text-center rounded-xl py-6 pl-10 pr-4 focus:ring-2 focus:ring-gold focus:border-gold transition-all duration-300 w-full shadow-[inset_0_0_15px_rgba(0,0,0,0.8)] text-lg"
+                      className="bg-black/80 border-red-500/20 text-gold placeholder-red-955 font-mono tracking-[0.3em] text-center rounded-xl py-6 pl-12 pr-4 focus:ring-2 focus:ring-gold focus:border-gold transition-all duration-300 w-full shadow-[inset_0_0_15px_rgba(0,0,0,0.8)] text-lg"
                     />
                     {/* Tech Corners on Input */}
                     <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-gold/40"></div>
@@ -719,13 +740,13 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                   >
                     {/* Inner glowing hover sheet */}
                     <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <span>[ INITIATE RULERSHIP PROTOCOL ]</span>
+                    <span>👑 [ ASCEND THE THRONE OF THE REALM ] 👑</span>
                     <ArrowRight className="w-4 h-4 text-gold group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
                 
                 <div className="text-center font-mono text-[9px] text-gray-500 tracking-wider pt-2 select-none uppercase">
-                  System ID: <span className="text-gold/60">SOV-DEC-09EE2A</span> | status: <span className="text-rose-500 animate-pulse font-bold">Awaiting Credentials</span>
+                  Realm Code: <span className="text-gold/60">SOV-DEC-09EE2A</span> | status: <span className="text-rose-500 animate-pulse font-bold">Awaiting Royal Sigil</span>
                 </div>
               </form>
             </CardContent>
