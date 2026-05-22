@@ -34,7 +34,13 @@ import {
   ArrowRight,
   Download,
   X,
-  Edit
+  Edit,
+  Fingerprint,
+  Activity,
+  Terminal,
+  Cpu,
+  Layers,
+  Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -440,55 +446,105 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#3b000a] via-[#120004] to-[#050001] flex items-center justify-center px-4 relative overflow-hidden">
-        {/* Background Decorative Glows */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-maroon/20 rounded-full blur-[100px] pointer-events-none animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gold/10 rounded-full blur-[100px] pointer-events-none animate-pulse"></div>
+      <div className="min-h-screen bg-[#020005] flex items-center justify-center px-4 relative overflow-hidden selection:bg-rose-950 selection:text-gold">
+        {/* Holographic Matrix Background Grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(18,0,24,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(18,0,24,0.3)_1px,transparent_1px)] bg-[size:30px_30px] pointer-events-none"></div>
+        
+        {/* Dynamic Laser Beam Scanline */}
+        <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#ff0044] to-transparent opacity-40 animate-[bounce_5s_infinite] pointer-events-none shadow-[0_0_15px_rgba(255,0,68,0.8)]"></div>
+
+        {/* Ambient sovereign colors */}
+        <div className="absolute top-1/10 left-1/10 w-[500px] h-[500px] bg-maroon/20 rounded-full blur-[160px] pointer-events-none animate-pulse"></div>
+        <div className="absolute bottom-1/10 right-1/10 w-[500px] h-[500px] bg-gold/15 rounded-full blur-[160px] pointer-events-none animate-pulse"></div>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="w-full max-w-md"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="w-full max-w-lg relative z-10"
         >
-          <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-3xl overflow-hidden text-white relative">
-            <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent"></div>
-            <CardHeader className="pt-8 pb-4 text-center">
-              <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-tr from-maroon to-red-600 flex items-center justify-center border border-white/20 shadow-lg mb-4">
-                <Lock className="w-6 h-6 text-gold animate-bounce" />
+          {/* Tech Cybernetic Corner Brackets */}
+          <div className="absolute -top-3 -left-3 w-8 h-8 border-t-2 border-l-2 border-gold/70 pointer-events-none"></div>
+          <div className="absolute -top-3 -right-3 w-8 h-8 border-t-2 border-r-2 border-gold/70 pointer-events-none"></div>
+          <div className="absolute -bottom-3 -left-3 w-8 h-8 border-b-2 border-l-2 border-gold/70 pointer-events-none"></div>
+          <div className="absolute -bottom-3 -right-3 w-8 h-8 border-b-2 border-r-2 border-gold/70 pointer-events-none"></div>
+
+          <Card className="bg-[#05010a]/90 backdrop-blur-2xl border border-red-500/20 shadow-[0_0_60px_rgba(128,0,32,0.3)] rounded-2xl overflow-hidden text-white relative">
+            <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-maroon via-gold to-maroon"></div>
+            
+            <CardHeader className="pt-10 pb-4 text-center relative">
+              {/* Sovereign Biometric Decryptor HUD */}
+              <div className="relative mx-auto w-36 h-36 flex items-center justify-center mb-6 group cursor-pointer">
+                {/* Outer spin rings */}
+                <div className="absolute inset-0 rounded-full border border-dashed border-red-500/30 animate-[spin_20s_linear_infinite]"></div>
+                <div className="absolute inset-2 rounded-full border border-double border-gold/40 animate-[spin_10s_linear_infinite_reverse]"></div>
+                <div className="absolute inset-4 rounded-full bg-gradient-to-tr from-maroon/20 to-red-950/40 border border-gold/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shadow-[inset_0_0_20px_rgba(255,0,68,0.2)]">
+                  <Fingerprint className="w-14 h-14 text-rose-500 group-hover:text-gold transition-all duration-500 animate-pulse" />
+                </div>
+                
+                {/* Floating laser line scanner */}
+                <div className="absolute left-4 right-4 h-0.5 bg-gold/80 opacity-70 shadow-[0_0_10px_#ffaa00] animate-[ping_2s_infinite] pointer-events-none"></div>
               </div>
-              <CardTitle className="text-3xl font-black tracking-tight bg-gradient-to-r from-white via-gray-100 to-gold bg-clip-text text-transparent">
-                Admin Portal
+              
+              <div className="font-mono text-[10px] tracking-[0.25em] text-rose-500 uppercase font-black mb-1 animate-pulse">
+                [ SECURE ACCESS GATEWAY ]
+              </div>
+              
+              <CardTitle className="text-4xl font-extrabold tracking-tighter bg-gradient-to-r from-white via-red-200 to-gold bg-clip-text text-transparent font-mono">
+                SOVEREIGN CORE
               </CardTitle>
-              <CardDescription className="text-gray-400 text-sm mt-2">
-                Enter the password to access the KPRCAS console.
+              <CardDescription className="text-gray-400 text-xs mt-2 max-w-sm mx-auto font-light leading-relaxed">
+                Scan fingerprint pattern or input sovereign decryption passphrase to bypass security mainframe.
               </CardDescription>
             </CardHeader>
-            <CardContent className="pb-8 px-8">
+            
+            <CardContent className="pb-10 px-10">
               <form onSubmit={handleLogin} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-gray-300 text-xs font-semibold uppercase tracking-wider">
-                    Console Password
-                  </Label>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center font-mono">
+                    <Label htmlFor="password" className="text-gold text-xs font-black tracking-widest uppercase">
+                      DECRYPTION PASSKEY
+                    </Label>
+                    <span className="text-[10px] text-red-500/70 font-semibold uppercase tracking-wider animate-pulse">
+                      ▲ ENCRYPTED TLS 1.3
+                    </span>
+                  </div>
                   <div className="relative">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-gold/50 text-sm select-none">
+                      &gt;
+                    </div>
                     <Input
                       id="password"
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••••••"
+                      placeholder="ENTER RULER KEY"
                       required
-                      className="bg-white/5 border-white/10 text-white placeholder-gray-500 rounded-2xl py-6 px-4 focus:ring-2 focus:ring-gold focus:border-gold transition-all duration-300 w-full"
+                      className="bg-black/80 border-red-500/20 text-gold placeholder-red-950 font-mono tracking-[0.3em] text-center rounded-xl py-6 pl-10 pr-4 focus:ring-2 focus:ring-gold focus:border-gold transition-all duration-300 w-full shadow-[inset_0_0_15px_rgba(0,0,0,0.8)] text-lg"
                     />
+                    {/* Tech Corners on Input */}
+                    <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-gold/40"></div>
+                    <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-gold/40"></div>
+                    <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-gold/40"></div>
+                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-gold/40"></div>
                   </div>
                 </div>
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-maroon to-red-700 hover:from-maroon-dark hover:to-red-800 text-white font-bold py-6 rounded-2xl shadow-xl shadow-red-950/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2 group"
-                >
-                  <span>Authenticate Console</span>
-                  <ArrowRight className="w-4 h-4 text-gold group-hover:translate-x-1 transition-transform" />
-                </Button>
+
+                <div className="pt-2">
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-red-950 via-maroon to-red-950 hover:from-red-900 hover:to-red-900 text-gold hover:text-white font-mono text-xs font-black tracking-[0.2em] py-7 rounded-xl border border-gold/30 shadow-[0_0_20px_rgba(128,0,32,0.4)] hover:shadow-[0_0_35px_rgba(255,170,0,0.3)] transition-all duration-500 flex items-center justify-center gap-3 group uppercase relative overflow-hidden"
+                  >
+                    {/* Inner glowing hover sheet */}
+                    <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <span>[ INITIATE RULERSHIP PROTOCOL ]</span>
+                    <ArrowRight className="w-4 h-4 text-gold group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
+                
+                <div className="text-center font-mono text-[9px] text-gray-500 tracking-wider pt-2 select-none uppercase">
+                  System ID: <span className="text-gold/60">SOV-DEC-09EE2A</span> | status: <span className="text-rose-500 animate-pulse font-bold">Awaiting Credentials</span>
+                </div>
               </form>
             </CardContent>
           </Card>
@@ -498,43 +554,133 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 py-12 px-4 pt-28 selection:bg-maroon selection:text-white relative">
-      {/* Background radial overlays */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-maroon/5 rounded-full blur-[150px] pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gold/5 rounded-full blur-[150px] pointer-events-none"></div>
+    <div className="min-h-screen bg-[#020005] text-gray-100 py-12 px-4 pt-28 selection:bg-rose-950 selection:text-gold relative overflow-hidden">
+      {/* Background Matrix Grid Overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(18,0,24,0.15)_1px,transparent_1px),linear-gradient(90deg,rgba(18,0,24,0.15)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
+
+      {/* Floating sovereign ambient lights */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-maroon/10 rounded-full blur-[180px] pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gold/5 rounded-full blur-[180px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Sticky Header */}
-        <header className="flex flex-col md:flex-row items-center justify-between gap-4 mb-12 p-6 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-md shadow-2xl">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-tr from-maroon to-red-600 rounded-2xl flex items-center justify-center border border-white/10 shadow-inner">
-              <Users className="w-6 h-6 text-gold" />
+        {/* Sovereign Header Console */}
+        <header className="flex flex-col lg:flex-row items-center justify-between gap-6 mb-10 p-6 bg-[#06020c]/85 border border-red-500/20 rounded-3xl backdrop-blur-xl shadow-[0_0_40px_rgba(128,0,32,0.2)] relative group">
+          {/* Tech accents */}
+          <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-gold/40"></div>
+          <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-gold/40"></div>
+          <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-gold/40"></div>
+          <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-gold/40"></div>
+
+          <div className="flex flex-col md:flex-row items-center gap-5">
+            <div className="w-16 h-16 bg-gradient-to-tr from-maroon to-red-950 rounded-2xl flex items-center justify-center border border-gold/30 shadow-[0_0_20px_rgba(255,0,68,0.2)] group-hover:scale-105 transition-transform duration-500 shrink-0">
+              <Cpu className="w-8 h-8 text-gold" />
             </div>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-white via-gray-100 to-gold bg-clip-text text-transparent">
-                Rotaract Admin Console
-              </h1>
-              <p className="text-gray-400 text-xs mt-0.5">Roar & Vision Year Dashboard</p>
+            <div className="text-center md:text-left">
+              <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3">
+                <h1 className="text-3xl font-black bg-gradient-to-r from-white via-red-200 to-gold bg-clip-text text-transparent font-mono tracking-tight uppercase">
+                  Sovereign Deck
+                </h1>
+                <div className="flex items-center gap-1.5 bg-red-950/40 border border-red-500/30 px-3 py-1 rounded-full font-mono text-[9px] text-rose-500 uppercase tracking-widest animate-pulse mt-1 md:mt-0 shadow-[0_0_10px_rgba(255,0,68,0.1)]">
+                  <Activity className="w-3.5 h-3.5" />
+                  <span>SYSTEM OVERSEER ONLINE</span>
+                </div>
+              </div>
+              <p className="text-gray-400 text-xs mt-1.5 font-light tracking-wide">
+                Absolute administration console of KPRCAS Rotaract Realm.
+              </p>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-4">
+          
+          <div className="flex flex-wrap items-center justify-center gap-4">
             <Button
               onClick={handleExportDatabase}
-              className="rounded-2xl px-6 py-6 border border-gold/30 hover:bg-gold/10 text-gold bg-transparent flex items-center gap-2 transition-all duration-300 hover:scale-105"
+              className="rounded-2xl px-6 py-6 border border-gold/30 bg-[#0c000f]/60 hover:bg-gold/15 text-gold hover:text-white font-mono text-xs font-semibold tracking-wider flex items-center gap-2 transition-all duration-300 hover:scale-105 shadow-[0_0_15px_rgba(255,170,0,0.05)]"
             >
               <Download className="w-4 h-4" />
-              <span>Export Database Code</span>
+              <span>[ EXPORT DECK STORAGE ]</span>
             </Button>
             <Button
               variant="destructive"
               onClick={handleLogout}
-              className="rounded-2xl px-6 py-6 border border-red-500/20 hover:bg-red-500/10 text-red-400 bg-transparent flex items-center gap-2 transition-all duration-300 hover:scale-105"
+              className="rounded-2xl px-6 py-6 border border-red-500/30 bg-red-950/20 hover:bg-red-500 hover:text-white font-mono text-xs font-semibold tracking-wider flex items-center gap-2 transition-all duration-300 hover:scale-105"
             >
               <LogOut className="w-4 h-4" />
-              <span>Lock Console</span>
+              <span>[ LOCK GATEWAY ]</span>
             </Button>
           </div>
         </header>
+
+        {/* Sovereign Telemetry HUD */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 font-mono">
+          {/* Card 1: Chronos Nodes */}
+          <div className="bg-[#06010c] border border-red-500/20 rounded-2xl p-6 relative overflow-hidden shadow-[0_0_20px_rgba(255,0,68,0.03)] hover:shadow-[0_0_30px_rgba(255,0,68,0.15)] hover:border-red-500/40 transition-all duration-300 group">
+            {/* Tech accents */}
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-red-500/10 pointer-events-none group-hover:border-red-500/60 transition-colors"></div>
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-red-500/10 pointer-events-none group-hover:border-red-500/60 transition-colors"></div>
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-rose-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest">[ DEPLOYED CHRONOS NODES ]</p>
+                <h3 className="text-4xl font-extrabold text-white mt-1 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent">{events.length}</h3>
+              </div>
+              <div className="w-12 h-12 bg-red-950/40 border border-red-500/30 rounded-xl flex items-center justify-center text-red-500 group-hover:scale-105 transition-transform duration-300">
+                <Calendar className="w-6 h-6 animate-pulse" />
+              </div>
+            </div>
+            
+            <div className="text-[10px] text-red-400 flex items-center gap-1.5 font-sans">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+              <span>TEMPORAL DATA STABLE & DEPLOYED</span>
+            </div>
+          </div>
+
+          {/* Card 2: Holonet Broadcasts */}
+          <div className="bg-[#06010c] border border-gold/20 rounded-2xl p-6 relative overflow-hidden shadow-[0_0_20px_rgba(255,170,0,0.03)] hover:shadow-[0_0_30px_rgba(255,170,0,0.15)] hover:border-gold/40 transition-all duration-300 group">
+            {/* Tech accents */}
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-gold/10 pointer-events-none group-hover:border-gold/60 transition-colors"></div>
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-gold/10 pointer-events-none group-hover:border-gold/60 transition-colors"></div>
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-gold/5 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest">[ HOLONET BROADCASTS ]</p>
+                <h3 className="text-4xl font-extrabold text-white mt-1 bg-gradient-to-r from-white to-gold bg-clip-text text-transparent">{bulletins.length}</h3>
+              </div>
+              <div className="w-12 h-12 bg-gold/10 border border-gold/30 rounded-xl flex items-center justify-center text-gold group-hover:scale-105 transition-transform duration-300">
+                <Newspaper className="w-6 h-6 animate-pulse" />
+              </div>
+            </div>
+
+            <div className="text-[10px] text-gold flex items-center gap-1.5 font-sans">
+              <span className="w-2 h-2 rounded-full bg-gold animate-ping"></span>
+              <span>COMMUNICATION BEACONS ACTIVE</span>
+            </div>
+          </div>
+
+          {/* Card 3: Legion Officers */}
+          <div className="bg-[#06010c] border border-red-500/20 rounded-2xl p-6 relative overflow-hidden shadow-[0_0_20px_rgba(255,255,255,0.01)] hover:shadow-[0_0_30px_rgba(212,175,55,0.15)] hover:border-gold/30 transition-all duration-300 group">
+            {/* Tech accents */}
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-red-500/10 pointer-events-none group-hover:border-gold/40 transition-colors"></div>
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-red-500/10 pointer-events-none group-hover:border-gold/40 transition-colors"></div>
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest">[ ROSTER OFFICERS ]</p>
+                <h3 className="text-4xl font-extrabold text-white mt-1 bg-gradient-to-r from-white via-gray-200 to-gold bg-clip-text text-transparent">{teamMembers.length}</h3>
+              </div>
+              <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-white/80 group-hover:scale-105 transition-transform duration-300">
+                <Users className="w-6 h-6 animate-pulse" />
+              </div>
+            </div>
+
+            <div className="text-[10px] text-gray-400 flex items-center gap-1.5 font-sans">
+              <span className="w-2 h-2 rounded-full bg-white/50 animate-ping"></span>
+              <span>ROSTER ALIGNMENT SECURE</span>
+            </div>
+          </div>
+        </div>
 
         <AnimatePresence>
           {showGuide && (
@@ -632,107 +778,117 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
             <div className="grid lg:grid-cols-12 gap-8">
               {/* Form Section (left) */}
               <div className="lg:col-span-5">
-                <Card className={`bg-white/5 border-white/10 rounded-3xl overflow-hidden shadow-2xl relative transition-all duration-300 ${editingEventId ? 'ring-2 ring-gold border-gold/50 shadow-gold/10' : ''}`}>
-                  <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-maroon to-gold"></div>
+                <Card className={`bg-[#05010a]/90 border border-red-500/20 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,0,68,0.05)] relative transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,170,0,0.1)] group ${editingEventId ? 'ring-2 ring-gold/60 border-gold/50 shadow-gold/10' : ''}`}>
+                  {/* Tech Cybernetic Corner Brackets */}
+                  <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-gold/50 pointer-events-none"></div>
+                  <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-gold/50 pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-gold/50 pointer-events-none"></div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-gold/50 pointer-events-none"></div>
+                  
+                  <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-maroon via-gold to-maroon opacity-80"></div>
+                  
                   <CardHeader className="pb-4">
-                    <CardTitle className="text-xl font-bold text-white">
-                      {editingEventId ? 'Edit Event' : 'Create New Event'}
+                    <div className="font-mono text-[9px] text-rose-500 tracking-[0.2em] font-black uppercase mb-1">[ CHRONOS NODE INJECTOR ]</div>
+                    <CardTitle className="text-xl font-extrabold text-white font-mono uppercase tracking-tight">
+                      {editingEventId ? 'Edit Chronos Node' : 'Deploy Chronos Node'}
                     </CardTitle>
                     <CardDescription className="text-gray-400 text-xs">
-                      {editingEventId ? 'Modify the fields below to update this event.' : 'Fill in the fields to deploy a live event card.'}
+                      {editingEventId ? 'Re-calibrate the temporal coordinates of this ledger entry.' : 'Inject a new live event node into the public Chronos timeline.'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleAddEvent} className="space-y-4 text-gray-300">
                       <div className="space-y-1.5">
-                        <Label htmlFor="title" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Event Title *</Label>
+                        <Label htmlFor="title" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">EVENT TITLE *</Label>
                         <Input
                           id="title"
                           value={eventForm.title}
                           onChange={e => setEventForm({ ...eventForm, title: e.target.value })}
-                          placeholder="e.g., Mattaipandhu 3.0"
-                          className="bg-white/5 border-white/10 rounded-xl"
+                          placeholder="e.g., MATTAIPANDHU 3.0"
+                          className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold font-sans placeholder-red-950"
                           required
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                          <Label htmlFor="date" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Date</Label>
+                          <Label htmlFor="date" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">DATE</Label>
                           <Input
                             id="date"
                             type="date"
                             value={eventForm.date}
                             onChange={e => setEventForm({ ...eventForm, date: e.target.value })}
-                            className="bg-white/5 border-white/10 rounded-xl"
+                            className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold text-sm"
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <Label htmlFor="time" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Time</Label>
+                          <Label htmlFor="time" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">TIME</Label>
                           <Input
                             id="time"
                             value={eventForm.time}
                             onChange={e => setEventForm({ ...eventForm, time: e.target.value })}
-                            placeholder="e.g., 10:00 AM - 1:00 PM"
-                            className="bg-white/5 border-white/10 rounded-xl"
+                            placeholder="e.g., 10:00 AM"
+                            className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-950 text-sm"
                           />
                         </div>
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="location" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Location</Label>
+                        <Label htmlFor="location" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">VENUE/LOCATION</Label>
                         <Input
                           id="location"
                           value={eventForm.location}
                           onChange={e => setEventForm({ ...eventForm, location: e.target.value })}
-                          placeholder="e.g., KPRCAS Seminar Hall"
-                          className="bg-white/5 border-white/10 rounded-xl"
+                          placeholder="e.g., KPRCAS SEMINAR HALL"
+                          className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-950"
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="platform" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Platform/Type</Label>
+                        <Label htmlFor="platform" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">PLATFORM/TYPE</Label>
                         <Input
                           id="platform"
                           value={eventForm.platform}
                           onChange={e => setEventForm({ ...eventForm, platform: e.target.value })}
-                          placeholder="e.g., In-person, Gmeet, Online"
-                          className="bg-white/5 border-white/10 rounded-xl"
+                          placeholder="e.g., IN-PERSON / ONLINE"
+                          className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-950"
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="image" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Image URL</Label>
+                        <Label htmlFor="image" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">VISUAL CORRELATE (IMAGE URL)</Label>
                         <Input
                           id="image"
                           value={eventForm.image}
                           onChange={e => setEventForm({ ...eventForm, image: e.target.value })}
                           placeholder="https://res.cloudinary.com/..."
-                          className="bg-white/5 border-white/10 rounded-xl"
+                          className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-950 text-xs font-mono"
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="description" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Description *</Label>
+                        <Label htmlFor="description" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">DECRYPTED DESCRIPTION *</Label>
                         <Textarea
                           id="description"
                           value={eventForm.description}
                           onChange={e => setEventForm({ ...eventForm, description: e.target.value })}
-                          placeholder="Provide a compelling description..."
-                          className="bg-white/5 border-white/10 rounded-xl min-h-[100px]"
+                          placeholder="Provide a highly descriptive log..."
+                          className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-950 min-h-[90px]"
                           required
                         />
                       </div>
 
                       {/* Dynamic Live Preview */}
-                      <div className="border border-white/10 rounded-2xl p-4 bg-white/5 mt-4">
-                        <span className="text-xs font-semibold uppercase text-gold block mb-2">Live Form Preview</span>
-                        <div className="bg-black/40 border border-white/5 rounded-xl p-3 flex gap-3 items-center">
-                          <div className="w-16 h-12 rounded bg-gray-800 border border-white/10 flex-shrink-0 overflow-hidden flex items-center justify-center">
+                      <div className="border border-red-500/10 rounded-xl p-4 bg-[#0c0014]/60 mt-4 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-gold/40"></div>
+                        <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-gold/40"></div>
+                        <span className="text-[10px] font-mono font-bold uppercase text-gold block mb-2 tracking-widest">[ DECK SCREEN PREVIEW ]</span>
+                        <div className="bg-black/60 border border-red-500/10 rounded-lg p-3 flex gap-3 items-center">
+                          <div className="w-16 h-12 rounded bg-[#020005] border border-red-500/20 flex-shrink-0 overflow-hidden flex items-center justify-center relative shadow-[inset_0_0_10px_rgba(255,0,0,0.5)]">
                             {eventForm.image ? (
                               <img src={eventForm.image} alt="Preview" className="w-full h-full object-cover" />
                             ) : (
-                              <ImageIcon className="w-4 h-4 text-gray-600" />
+                              <ImageIcon className="w-4 h-4 text-rose-500/60" />
                             )}
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <h4 className="text-sm font-bold text-white truncate">{eventForm.title || 'Untitled Event'}</h4>
-                            <p className="text-[11px] text-gray-400 truncate">{eventForm.description || 'No description yet'}</p>
+                          <div className="min-w-0 flex-1 font-mono">
+                            <h4 className="text-xs font-bold text-white truncate uppercase tracking-wider">{eventForm.title || 'UNTITLED NODE'}</h4>
+                            <p className="text-[9px] text-gray-500 truncate">{eventForm.description || 'No descriptive feed...'}</p>
                           </div>
                         </div>
                       </div>
@@ -742,25 +898,25 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                           <Button
                             type="button"
                             onClick={cancelEditEvent}
-                            className="flex-1 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 font-semibold py-6 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2"
+                            className="flex-1 bg-[#1a000a] border border-red-500/20 hover:bg-red-950/40 text-rose-400 hover:text-white font-mono text-xs font-bold py-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
                           >
-                            <X className="w-5 h-5 text-red-400" />
-                            <span>Cancel</span>
+                            <X className="w-4 h-4 text-red-500" />
+                            <span>[ ABORT ]</span>
                           </Button>
                         )}
                         <Button
                           type="submit"
-                          className={`${editingEventId ? 'flex-1 bg-gradient-to-r from-gold to-yellow-600 text-black font-bold' : 'w-full bg-gradient-to-r from-maroon to-red-700 text-white font-bold'} py-6 rounded-2xl shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2`}
+                          className={`${editingEventId ? 'flex-1 bg-gradient-to-r from-gold to-yellow-600 text-black font-extrabold shadow-[0_0_20px_rgba(255,170,0,0.3)]' : 'w-full bg-gradient-to-r from-red-950 via-maroon to-red-950 text-gold hover:text-white font-extrabold border border-gold/30 shadow-[0_0_20px_rgba(128,0,32,0.4)]'} font-mono text-xs tracking-wider py-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 uppercase`}
                         >
                           {editingEventId ? (
                             <>
-                              <Edit className="w-5 h-5 text-black" />
-                              <span>Save Changes</span>
+                              <Edit className="w-4 h-4 text-black" />
+                              <span>[ REWRITE DATA ]</span>
                             </>
                           ) : (
                             <>
-                              <Plus className="w-5 h-5 text-gold" />
-                              <span>Deploy Event</span>
+                              <Plus className="w-4 h-4 text-gold" />
+                              <span>[ INJECT CHRONOS NODE ]</span>
                             </>
                           )}
                         </Button>
@@ -774,27 +930,38 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
               <div className="lg:col-span-7 space-y-6">
                 {/* Search Header */}
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gold/60" />
                   <Input
                     type="text"
                     value={eventSearch}
                     onChange={e => setEventSearch(e.target.value)}
-                    placeholder="Search existing events by title or location..."
-                    className="bg-white/5 border-white/10 pl-12 py-6 rounded-2xl focus:ring-2 focus:ring-gold focus:border-gold w-full text-white"
+                    placeholder="QUERY CORE LEDGER BY TITLE OR LOCATION..."
+                    className="bg-black/60 border-red-500/20 pl-12 py-6 rounded-xl focus:ring-1 focus:ring-gold focus:border-gold w-full text-gold font-mono placeholder-red-950 text-xs tracking-widest shadow-[inset_0_0_10px_rgba(0,0,0,0.8)]"
                   />
+                  <div className="absolute top-0 right-4 bottom-0 flex items-center pointer-events-none font-mono text-[9px] text-gray-500 tracking-wider">
+                    [ LEDGER FILTER ]
+                  </div>
                 </div>
 
-                <Card className="bg-white/5 border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
+                <Card className="bg-[#05010a]/90 border border-red-500/20 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,0,68,0.05)] relative group">
+                  <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-gold/40 pointer-events-none"></div>
+                  <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-gold/40 pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-gold/40 pointer-events-none"></div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-gold/40 pointer-events-none"></div>
+                  
+                  <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-maroon via-gold to-maroon opacity-80"></div>
+                  
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between font-mono">
                       <div>
-                        <CardTitle className="text-xl font-bold text-white">Existing Events</CardTitle>
-                        <CardDescription className="text-gray-400 text-xs">Manage currently active events ({filteredEvents.length}).</CardDescription>
+                        <div className="text-[9px] text-rose-500 tracking-[0.2em] font-black uppercase mb-1">[ ACTIVE CHRONOLOGY FEEDS ]</div>
+                        <CardTitle className="text-lg font-bold text-white uppercase tracking-wider">Temporal Ledger Registers</CardTitle>
+                        <CardDescription className="text-gray-400 text-xs mt-0.5">Monitoring live network Chronos nodes ({filteredEvents.length} indexes).</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="p-0">
-                    <div className="max-h-[600px] overflow-y-auto divide-y divide-white/5 custom-scrollbar">
+                    <div className="max-h-[600px] overflow-y-auto divide-y divide-red-950/20 custom-scrollbar font-mono">
                       <AnimatePresence initial={false}>
                         {filteredEvents.map((event) => (
                           <motion.div
@@ -803,20 +970,29 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 20 }}
                             transition={{ duration: 0.3 }}
-                            className="flex items-center gap-4 p-5 hover:bg-white/5 transition-colors duration-300"
+                            className="flex items-center gap-4 p-5 hover:bg-red-950/10 transition-colors duration-300 relative group/row border-b border-red-950/15"
                           >
-                            <div className="w-16 h-12 rounded bg-gray-800 border border-white/10 overflow-hidden flex-shrink-0 flex items-center justify-center shadow-md">
+                            {/* Hover overlay highlights */}
+                            <div className="absolute inset-y-0 left-0 w-1 bg-gold opacity-0 group-hover/row:opacity-100 transition-opacity duration-300"></div>
+                            
+                            <div className="w-16 h-12 rounded bg-[#020005] border border-red-500/20 overflow-hidden flex-shrink-0 flex items-center justify-center shadow-md relative shadow-[inset_0_0_10px_rgba(255,0,0,0.4)]">
                               {event.image ? (
                                 <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
                               ) : (
-                                <ImageIcon className="w-4 h-4 text-gray-600" />
+                                <ImageIcon className="w-4 h-4 text-rose-500/60" />
                               )}
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-bold text-white text-sm truncate leading-snug">{event.title}</h4>
-                              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-400 mt-1">
-                                <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-gold/80" /> {event.date || 'No Date'}</span>
-                                {event.location && <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-gold/80" /> {event.location}</span>}
+                            
+                            <div className="flex-1 min-w-0 font-mono">
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-extrabold text-white text-xs truncate uppercase tracking-widest leading-snug">{event.title}</h4>
+                                <span className="text-[8px] bg-red-950/50 text-rose-400 border border-red-500/20 px-1.5 py-0.5 rounded uppercase font-black tracking-widest shrink-0 scale-90">
+                                  {event.id}
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-gray-500 mt-1.5">
+                                <span className="flex items-center gap-1 text-[10px]"><Calendar className="w-3.5 h-3.5 text-gold/70" /> {event.date || 'UNSPECIFIED'}</span>
+                                {event.location && <span className="flex items-center gap-1 text-[10px]"><MapPin className="w-3.5 h-3.5 text-gold/70 animate-pulse" /> {event.location}</span>}
                               </div>
                             </div>
                             <div className="flex gap-2 flex-shrink-0">
@@ -827,7 +1003,7 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                                 className={`rounded-xl w-10 h-10 border transition-all duration-300 flex items-center justify-center ${editingEventId === event.id ? 'bg-gold border-gold text-black shadow-lg shadow-gold/20' : 'border-gold/20 bg-gold/10 text-gold hover:bg-gold hover:text-black'}`}
                                 title="Edit Event"
                               >
-                                <Edit className="w-4 h-4" />
+                                <Edit className="w-3.5 h-3.5" />
                               </Button>
                               <Button
                                 variant="destructive"
@@ -836,16 +1012,16 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                                 className="rounded-xl w-10 h-10 border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300 flex items-center justify-center"
                                 title="Delete Event"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </Button>
                             </div>
                           </motion.div>
                         ))}
                       </AnimatePresence>
                       {filteredEvents.length === 0 && (
-                        <div className="py-16 text-center text-gray-500">
-                          <Calendar className="w-10 h-10 mx-auto mb-3 opacity-30 text-gold" />
-                          <p className="text-sm">No events found matching your search.</p>
+                        <div className="py-16 text-center text-gray-500 font-mono">
+                          <Calendar className="w-10 h-10 mx-auto mb-3 opacity-30 text-gold animate-bounce" />
+                          <p className="text-xs tracking-widest">[ NO CHRONOLOGY INDEXES DETECTED ]</p>
                         </div>
                       )}
                     </div>
@@ -860,72 +1036,80 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
             <div className="grid lg:grid-cols-12 gap-8">
               {/* Form Section (left) */}
               <div className="lg:col-span-5">
-                <Card className={`bg-white/5 border-white/10 rounded-3xl overflow-hidden shadow-2xl relative transition-all duration-300 ${editingBulletinId ? 'ring-2 ring-gold border-gold/50 shadow-gold/10' : ''}`}>
-                  <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-maroon to-gold"></div>
+                <Card className={`bg-[#05010a]/90 border border-red-500/20 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,0,68,0.05)] relative transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,170,0,0.1)] group ${editingBulletinId ? 'ring-2 ring-gold/60 border-gold/50 shadow-gold/10' : ''}`}>
+                  {/* Tech Cybernetic Corner Brackets */}
+                  <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-gold/50 pointer-events-none"></div>
+                  <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-gold/50 pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-gold/50 pointer-events-none"></div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-gold/50 pointer-events-none"></div>
+                  
+                  <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-maroon via-gold to-maroon opacity-80"></div>
+                  
                   <CardHeader className="pb-4">
-                    <CardTitle className="text-xl font-bold text-white">
-                      {editingBulletinId ? 'Edit Bulletin' : 'Add New Bulletin'}
+                    <div className="font-mono text-[9px] text-rose-500 tracking-[0.2em] font-black uppercase mb-1">[ HOLONET BROADCASTER ]</div>
+                    <CardTitle className="text-xl font-extrabold text-white font-mono uppercase tracking-tight">
+                      {editingBulletinId ? 'Edit Broadcast' : 'Publish Bulletin'}
                     </CardTitle>
                     <CardDescription className="text-gray-400 text-xs">
-                      {editingBulletinId ? 'Modify the fields below to update this bulletin.' : 'Link a PDF bulletin file from your Google Drive storage.'}
+                      {editingBulletinId ? 'Re-align the Holonet data array coefficients.' : 'Deploy a new digital bulletin release directly onto the Holonet network.'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleAddBulletin} className="space-y-4 text-gray-300">
                       <div className="space-y-1.5">
-                        <Label htmlFor="b_title" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Bulletin Title *</Label>
+                        <Label htmlFor="b_title" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">BULLETIN TITLE *</Label>
                         <Input
                           id="b_title"
                           value={bulletinForm.title}
                           onChange={e => setBulletinForm({ ...bulletinForm, title: e.target.value })}
-                          placeholder="e.g., November 2025 Edition"
-                          className="bg-white/5 border-white/10 rounded-xl"
+                          placeholder="e.g., NOVEMBER 2025 EDITION"
+                          className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-955"
                           required
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="b_date" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Identifier (Date/Month) *</Label>
+                        <Label htmlFor="b_date" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">CHRONOLOGY IDENTIFIER *</Label>
                         <Input
                           id="b_date"
                           value={bulletinForm.date}
                           onChange={e => setBulletinForm({ ...bulletinForm, date: e.target.value })}
                           placeholder="e.g., November-2025"
-                          className="bg-white/5 border-white/10 rounded-xl"
+                          className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-955 font-mono"
                           required
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="b_fileId" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Google Drive File ID *</Label>
+                        <Label htmlFor="b_fileId" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">GOOGLE DRIVE ASSET ID *</Label>
                         <Input
                           id="b_fileId"
                           value={bulletinForm.fileId}
                           onChange={e => setBulletinForm({ ...bulletinForm, fileId: e.target.value })}
                           placeholder="e.g., 1HRRqhiuJIrOzChxt..."
-                          className="bg-white/5 border-white/10 rounded-xl"
+                          className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-955 font-mono text-xs"
                           required
                         />
-                        <p className="text-[10px] text-gray-500 leading-tight">
-                          ⚠️ Ensure the file share setting is set to **"Anyone with the link can view"** in Google Drive.
+                        <p className="text-[9px] text-gray-500 leading-tight font-sans">
+                          ⚠️ Ensure the Google Drive asset link permissions are configured to **"Anyone with the link can view"**.
                         </p>
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="b_coverImage" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Cover Image URL</Label>
+                        <Label htmlFor="b_coverImage" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">COVER POSTER PATH/URL</Label>
                         <Input
                           id="b_coverImage"
                           value={bulletinForm.coverImage}
                           onChange={e => setBulletinForm({ ...bulletinForm, coverImage: e.target.value })}
-                          placeholder="e.g., /bulletin-covers/november.png or https://..."
-                          className="bg-white/5 border-white/10 rounded-xl"
+                          placeholder="e.g., /bulletin-covers/november.png"
+                          className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-955 text-xs font-mono"
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="b_content" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Summary / Content</Label>
+                        <Label htmlFor="b_content" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">BULLETIN ABSTRACT / CONTENT</Label>
                         <Textarea
                           id="b_content"
                           value={bulletinForm.content}
                           onChange={e => setBulletinForm({ ...bulletinForm, content: e.target.value })}
-                          placeholder="Summarize the key announcements in this edition..."
-                          className="bg-white/5 border-white/10 rounded-xl min-h-[100px]"
+                          placeholder="Summarize key announcements in this broadcast data packet..."
+                          className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-955 min-h-[90px]"
                         />
                       </div>
 
@@ -934,25 +1118,25 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                           <Button
                             type="button"
                             onClick={cancelEditBulletin}
-                            className="flex-1 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 font-semibold py-6 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2"
+                            className="flex-1 bg-[#1a000a] border border-red-500/20 hover:bg-red-950/40 text-rose-400 hover:text-white font-mono text-xs font-bold py-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
                           >
-                            <X className="w-5 h-5 text-red-400" />
-                            <span>Cancel</span>
+                            <X className="w-4 h-4 text-red-500" />
+                            <span>[ ABORT ]</span>
                           </Button>
                         )}
                         <Button
                           type="submit"
-                          className={`${editingBulletinId ? 'flex-1 bg-gradient-to-r from-gold to-yellow-600 text-black font-bold' : 'w-full bg-gradient-to-r from-maroon to-red-700 text-white font-bold'} py-6 rounded-2xl shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2`}
+                          className={`${editingBulletinId ? 'flex-1 bg-gradient-to-r from-gold to-yellow-600 text-black font-extrabold shadow-[0_0_20px_rgba(255,170,0,0.3)]' : 'w-full bg-gradient-to-r from-red-950 via-maroon to-red-950 text-gold hover:text-white font-extrabold border border-gold/30 shadow-[0_0_20px_rgba(128,0,32,0.4)]'} font-mono text-xs tracking-wider py-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 uppercase`}
                         >
                           {editingBulletinId ? (
                             <>
-                              <Edit className="w-5 h-5 text-black" />
-                              <span>Save Changes</span>
+                              <Edit className="w-4 h-4 text-black" />
+                              <span>[ REWRITE BROADCAST ]</span>
                             </>
                           ) : (
                             <>
-                              <Plus className="w-5 h-5 text-gold" />
-                              <span>Publish Bulletin</span>
+                              <Plus className="w-4 h-4 text-gold" />
+                              <span>[ BROADCAST TO HOLONET ]</span>
                             </>
                           )}
                         </Button>
@@ -966,27 +1150,38 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
               <div className="lg:col-span-7 space-y-6">
                 {/* Search Header */}
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gold/60" />
                   <Input
                     type="text"
                     value={bulletinSearch}
                     onChange={e => setBulletinSearch(e.target.value)}
-                    placeholder="Search bulletins by title, identifier..."
-                    className="bg-white/5 border-white/10 pl-12 py-6 rounded-2xl focus:ring-2 focus:ring-gold focus:border-gold w-full text-white"
+                    placeholder="QUERY HOLONET REGISTRY BY TITLE OR IDENTIFIER..."
+                    className="bg-black/60 border-red-500/20 pl-12 py-6 rounded-xl focus:ring-1 focus:ring-gold focus:border-gold w-full text-gold font-mono placeholder-red-955 text-xs tracking-widest shadow-[inset_0_0_10px_rgba(0,0,0,0.8)]"
                   />
+                  <div className="absolute top-0 right-4 bottom-0 flex items-center pointer-events-none font-mono text-[9px] text-gray-500 tracking-wider">
+                    [ BROADCAST FILTER ]
+                  </div>
                 </div>
 
-                <Card className="bg-white/5 border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
+                <Card className="bg-[#05010a]/90 border border-red-500/20 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,0,68,0.05)] relative group">
+                  <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-gold/40 pointer-events-none"></div>
+                  <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-gold/40 pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-gold/40 pointer-events-none"></div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-gold/40 pointer-events-none"></div>
+                  
+                  <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-maroon via-gold to-maroon opacity-80"></div>
+                  
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between font-mono">
                       <div>
-                        <CardTitle className="text-xl font-bold text-white">Existing Bulletins</CardTitle>
-                        <CardDescription className="text-gray-400 text-xs">Manage published monthly bulletins ({filteredBulletins.length}).</CardDescription>
+                        <div className="text-[9px] text-rose-500 tracking-[0.2em] font-black uppercase mb-1">[ DETECTED DATA SIGNALS ]</div>
+                        <CardTitle className="text-lg font-bold text-white uppercase tracking-wider font-mono">Holonet Node Registers</CardTitle>
+                        <CardDescription className="text-gray-400 text-xs mt-0.5">Actively monitoring published monthly bulletins ({filteredBulletins.length} registers).</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="p-0">
-                    <div className="max-h-[600px] overflow-y-auto divide-y divide-white/5 custom-scrollbar">
+                    <div className="max-h-[600px] overflow-y-auto divide-y divide-red-950/20 custom-scrollbar font-mono">
                       <AnimatePresence initial={false}>
                         {filteredBulletins.map((bulletin) => (
                           <motion.div
@@ -995,20 +1190,28 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 20 }}
                             transition={{ duration: 0.3 }}
-                            className="flex items-center gap-4 p-5 hover:bg-white/5 transition-colors duration-300"
+                            className="flex items-center gap-4 p-5 hover:bg-red-950/10 transition-colors duration-300 relative group/row border-b border-red-950/15"
                           >
-                             <div className="w-12 h-16 rounded bg-gray-900 border border-white/10 overflow-hidden flex-shrink-0 flex items-center justify-center text-gold shadow-md aspect-[3/4]">
+                            <div className="absolute inset-y-0 left-0 w-1 bg-gold opacity-0 group-hover/row:opacity-100 transition-opacity duration-300"></div>
+                            
+                            <div className="w-12 h-16 rounded bg-[#020005] border border-red-500/20 overflow-hidden flex-shrink-0 flex items-center justify-center text-gold shadow-md aspect-[3/4] relative shadow-[inset_0_0_10px_rgba(255,0,0,0.3)]">
                               {bulletin.coverImage ? (
                                 <img src={bulletin.coverImage} alt={bulletin.title} className="w-full h-full object-cover" />
                               ) : (
-                                <Newspaper className="w-5 h-5" />
+                                <Newspaper className="w-5 h-5 text-gold/60" />
                               )}
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-bold text-white text-sm truncate leading-snug">{bulletin.title}</h4>
-                              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-400 mt-1">
-                                <span className="flex items-center gap-1 font-mono text-[10px] text-gray-500">ID: {bulletin.fileId}</span>
-                                <span className="flex items-center gap-1 text-[11px] bg-white/5 border border-white/5 px-2 py-0.5 rounded-full text-gold/80">{bulletin.date}</span>
+                            
+                            <div className="flex-1 min-w-0 font-mono">
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-extrabold text-white text-xs truncate uppercase tracking-widest leading-snug">{bulletin.title}</h4>
+                                <span className="text-[8px] bg-red-950/50 text-rose-400 border border-red-500/20 px-1.5 py-0.5 rounded uppercase font-black tracking-widest shrink-0 scale-90">
+                                  {bulletin.id}
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-gray-500 mt-2">
+                                <span className="flex items-center gap-1 font-mono text-[9px] text-rose-500/60 font-semibold tracking-wider">REF: {bulletin.fileId.slice(0, 10)}...</span>
+                                <span className="flex items-center gap-1 text-[9px] bg-red-950/40 border border-red-500/20 px-2 py-0.5 rounded-full text-gold font-bold uppercase tracking-widest">{bulletin.date}</span>
                               </div>
                             </div>
                             <div className="flex gap-2 flex-shrink-0">
@@ -1019,7 +1222,7 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                                 className={`rounded-xl w-10 h-10 border transition-all duration-300 flex items-center justify-center ${editingBulletinId === bulletin.id ? 'bg-gold border-gold text-black shadow-lg shadow-gold/20' : 'border-gold/20 bg-gold/10 text-gold hover:bg-gold hover:text-black'}`}
                                 title="Edit Bulletin"
                               >
-                                <Edit className="w-4 h-4" />
+                                <Edit className="w-3.5 h-3.5" />
                               </Button>
                               <Button
                                 variant="destructive"
@@ -1028,16 +1231,16 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                                 className="rounded-xl w-10 h-10 border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300 flex items-center justify-center"
                                 title="Delete Bulletin"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </Button>
                             </div>
                           </motion.div>
                         ))}
                       </AnimatePresence>
                       {filteredBulletins.length === 0 && (
-                        <div className="py-16 text-center text-gray-500">
-                          <Newspaper className="w-10 h-10 mx-auto mb-3 opacity-30 text-gold" />
-                          <p className="text-sm">No bulletins found matching your search.</p>
+                        <div className="py-16 text-center text-gray-500 font-mono">
+                          <Newspaper className="w-10 h-10 mx-auto mb-3 opacity-30 text-gold animate-bounce" />
+                          <p className="text-xs tracking-widest">[ NO HOLONET NODE SIGNALS DETECTED ]</p>
                         </div>
                       )}
                     </div>
@@ -1052,71 +1255,92 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
             <div className="grid lg:grid-cols-12 gap-8">
               {/* Form Section (left) */}
               <div className="lg:col-span-5">
-                <Card className={`bg-white/5 border-white/10 rounded-3xl overflow-hidden shadow-2xl relative transition-all duration-300 ${editingTeamId ? 'ring-2 ring-gold border-gold/50 shadow-gold/10' : ''}`}>
-                  <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-maroon to-gold"></div>
+                <Card className={`bg-[#05010a]/90 border border-red-500/20 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,0,68,0.05)] relative group transition-all duration-300 ${editingTeamId ? 'ring-1 ring-gold shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/50' : ''}`}>
+                  <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-gold/40 pointer-events-none"></div>
+                  <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-gold/40 pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-gold/40 pointer-events-none"></div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-gold/40 pointer-events-none"></div>
+                  
+                  <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-maroon via-gold to-maroon opacity-80"></div>
+                  
                   <CardHeader className="pb-4">
-                    <CardTitle className="text-xl font-bold text-white">
-                      {editingTeamId ? 'Edit Team Member' : 'Add Team Member'}
+                    <div className="font-mono text-[9px] text-rose-500 tracking-[0.2em] font-black uppercase mb-1">[ ROSTER RECRUIT TERMINAL ]</div>
+                    <CardTitle className="text-xl font-extrabold text-white font-mono uppercase tracking-tight">
+                      {editingTeamId ? 'Modify Officer Commission' : 'Commission Command Officer'}
                     </CardTitle>
-                    <CardDescription className="text-gray-400 text-xs">
-                      {editingTeamId ? 'Modify the fields below to update this team member.' : 'Publish a new team card onto the leadership roster.'}
+                    <CardDescription className="text-gray-400 text-xs font-mono">
+                      {editingTeamId ? 'Re-calibrate credentials for this legion roster agent.' : 'Enlist a new officer to command active club sectors.'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleAddTeamMember} className="space-y-4 text-gray-300">
                       <div className="space-y-1.5">
-                        <Label htmlFor="m_name" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Full Name *</Label>
+                        <Label htmlFor="m_name" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">OFFICER IDENTIFIER / NAME *</Label>
                         <Input
                           id="m_name"
                           value={teamForm.name}
                           onChange={e => setTeamForm({ ...teamForm, name: e.target.value })}
                           placeholder="e.g., Rtr. Sanjay K"
-                          className="bg-white/5 border-white/10 rounded-xl"
+                          className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-955 text-xs font-mono"
                           required
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="m_position" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Position / Role *</Label>
+                        <Label htmlFor="m_position" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">ASSIGNED ROLE / SECTOR *</Label>
                         <Input
                           id="m_position"
                           value={teamForm.position}
                           onChange={e => setTeamForm({ ...teamForm, position: e.target.value })}
                           placeholder="e.g., DESIGN CHAIR"
-                          className="bg-white/5 border-white/10 rounded-xl"
+                          className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-955 text-xs font-mono"
                           required
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="m_image" className="text-xs uppercase font-semibold text-gray-400 tracking-wider">Profile Photo URL</Label>
+                        <Label htmlFor="m_image" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">PORTRAIT VISUAL SIGNAL DATA (URL)</Label>
                         <Input
                           id="m_image"
                           value={teamForm.image}
                           onChange={e => setTeamForm({ ...teamForm, image: e.target.value })}
                           placeholder="https://res.cloudinary.com/..."
-                          className="bg-white/5 border-white/10 rounded-xl"
+                          className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-955 text-xs font-mono"
                         />
-                        <p className="text-[10px] text-gray-500">
-                          Leave empty to use a standard KPRCAS Rotaract placeholder logo.
+                        <p className="text-[9px] text-gray-500 font-mono tracking-wide mt-1">
+                          Leave empty to deploy standard KPRCAS Rotaract crest identity.
                         </p>
                       </div>
 
                       {/* Interactive Premium Card Preview */}
-                      <div className="border border-white/10 rounded-3xl p-6 bg-white/5 mt-6 relative overflow-hidden flex flex-col items-center">
-                        <div className="absolute top-2 left-3 text-[10px] font-bold text-gold/80 uppercase tracking-widest">
-                          Live Roster Preview
+                      <div className="border border-red-500/20 rounded-2xl p-6 bg-[#0c0014]/60 mt-6 relative overflow-hidden flex flex-col items-center group/preview shadow-[inset_0_0_20px_rgba(255,0,68,0.05)]">
+                        <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-gold/40"></div>
+                        <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-gold/40"></div>
+                        <div className="absolute top-2 left-3 text-[9px] font-mono font-bold text-gold/80 uppercase tracking-[0.2em]">
+                          [ ROSTER TELEMETRY PREVIEW ]
                         </div>
-                        <div className="w-28 h-28 mx-auto mt-2 mb-4 rounded-full overflow-hidden border-4 border-maroon/30 shadow-xl flex items-center justify-center bg-gray-900 flex-shrink-0">
-                          {teamForm.image ? (
-                            <img src={teamForm.image} alt={teamForm.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <User className="w-12 h-12 text-gray-600" />
-                          )}
+                        
+                        {/* Futuristic Hologram Ring */}
+                        <div className="relative w-28 h-28 mx-auto mt-4 mb-4 flex-shrink-0 flex items-center justify-center">
+                          {/* Pulsing scanner circle */}
+                          <div className="absolute inset-0 rounded-full border border-red-500/20 animate-ping opacity-45"></div>
+                          {/* Outer Rotating HUD Bracket */}
+                          <div className="absolute inset-[-6px] rounded-full border-2 border-dashed border-gold/40 animate-[spin_20s_linear_infinite]"></div>
+                          {/* Inner glowing cyber circle */}
+                          <div className="absolute inset-0 rounded-full border-[3px] border-double border-maroon/80 shadow-[0_0_15px_rgba(128,0,32,0.6)] overflow-hidden bg-black/60 flex items-center justify-center">
+                            {teamForm.image ? (
+                              <img src={teamForm.image} alt={teamForm.name} className="w-full h-full object-cover group-hover/preview:scale-110 transition-transform duration-500" />
+                            ) : (
+                              <User className="w-10 h-10 text-rose-500/40 animate-pulse" />
+                            )}
+                          </div>
+                          {/* Horizontal scanline laser */}
+                          <div className="absolute left-0 right-0 h-[2px] bg-red-500/80 shadow-[0_0_8px_#ff003c] animate-[bounce_3s_infinite] pointer-events-none opacity-60"></div>
                         </div>
-                        <h4 className="text-base font-bold text-white text-center leading-snug">
-                          {teamForm.name || 'Rtr. Member Name'}
+                        
+                        <h4 className="text-sm font-bold text-white text-center leading-snug uppercase tracking-widest font-mono">
+                          {teamForm.name || 'Officer Candidate'}
                         </h4>
-                        <p className="text-xs text-gold/90 font-semibold tracking-wider uppercase text-center mt-1">
-                          {teamForm.position || 'ROLE / POSITION'}
+                        <p className="text-[10px] text-gold font-extrabold tracking-[0.25em] uppercase text-center mt-2.5 bg-red-950/40 border border-red-500/25 px-3 py-1 rounded">
+                          {teamForm.position || 'ROLE / SECTOR'}
                         </p>
                       </div>
 
@@ -1125,25 +1349,25 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                           <Button
                             type="button"
                             onClick={cancelEditTeamMember}
-                            className="flex-1 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 font-semibold py-6 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2"
+                            className="flex-1 bg-[#1a000a] border border-red-500/20 hover:bg-red-950/40 text-rose-400 hover:text-white font-mono text-xs font-bold py-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
                           >
-                            <X className="w-5 h-5 text-red-400" />
-                            <span>Cancel</span>
+                            <X className="w-4 h-4 text-red-500" />
+                            <span>[ ABORT ]</span>
                           </Button>
                         )}
                         <Button
                           type="submit"
-                          className={`${editingTeamId ? 'flex-1 bg-gradient-to-r from-gold to-yellow-600 text-black font-bold' : 'w-full bg-gradient-to-r from-maroon to-red-700 text-white font-bold'} py-6 rounded-2xl shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2`}
+                          className={`${editingTeamId ? 'flex-1 bg-gradient-to-r from-gold to-yellow-600 text-black font-extrabold shadow-[0_0_20px_rgba(255,170,0,0.3)]' : 'w-full bg-gradient-to-r from-red-950 via-maroon to-red-950 text-gold hover:text-white font-extrabold border border-gold/30 shadow-[0_0_20px_rgba(128,0,32,0.4)]'} font-mono text-xs tracking-wider py-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 uppercase`}
                         >
                           {editingTeamId ? (
                             <>
-                              <Edit className="w-5 h-5 text-black" />
-                              <span>Save Changes</span>
+                              <Edit className="w-4 h-4 text-black" />
+                              <span>[ REWRITE REGISTER ]</span>
                             </>
                           ) : (
                             <>
-                              <Plus className="w-5 h-5 text-gold" />
-                              <span>Deploy Team Member</span>
+                              <Plus className="w-4 h-4 text-gold" />
+                              <span>[ COMMISSION OFFICER ]</span>
                             </>
                           )}
                         </Button>
@@ -1157,27 +1381,38 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
               <div className="lg:col-span-7 space-y-6">
                 {/* Search Header */}
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gold/60" />
                   <Input
                     type="text"
                     value={teamSearch}
                     onChange={e => setTeamSearch(e.target.value)}
-                    placeholder="Search roster by name or position..."
-                    className="bg-white/5 border-white/10 pl-12 py-6 rounded-2xl focus:ring-2 focus:ring-gold focus:border-gold w-full text-white"
+                    placeholder="QUERY ROSTER REGISTRY BY NAME OR POSITION..."
+                    className="bg-black/60 border-red-500/20 pl-12 py-6 rounded-xl focus:ring-1 focus:ring-gold focus:border-gold w-full text-gold font-mono placeholder-red-955 text-xs tracking-widest shadow-[inset_0_0_10px_rgba(0,0,0,0.8)]"
                   />
+                  <div className="absolute top-0 right-4 bottom-0 flex items-center pointer-events-none font-mono text-[9px] text-gray-500 tracking-wider">
+                    [ OFFICER FILTER ]
+                  </div>
                 </div>
 
-                <Card className="bg-white/5 border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
+                <Card className="bg-[#05010a]/90 border border-red-500/20 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,0,68,0.05)] relative group">
+                  <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-gold/40 pointer-events-none"></div>
+                  <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-gold/40 pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-gold/40 pointer-events-none"></div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-gold/40 pointer-events-none"></div>
+                  
+                  <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-maroon via-gold to-maroon opacity-80"></div>
+                  
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between font-mono">
                       <div>
-                        <CardTitle className="text-xl font-bold text-white">Dynamic Roster</CardTitle>
-                        <CardDescription className="text-gray-400 text-xs">Manage currently active roster members ({filteredTeamMembers.length}).</CardDescription>
+                        <div className="text-[9px] text-rose-500 tracking-[0.2em] font-black uppercase mb-1">[ DETECTED LIFEFORMS ]</div>
+                        <CardTitle className="text-lg font-bold text-white uppercase tracking-wider font-mono">Tactical Legion Ledger</CardTitle>
+                        <CardDescription className="text-gray-400 text-xs mt-0.5">Actively monitoring commissioned active roster officers ({filteredTeamMembers.length} entities).</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="p-0">
-                    <div className="max-h-[600px] overflow-y-auto divide-y divide-white/5 custom-scrollbar">
+                    <div className="max-h-[600px] overflow-y-auto divide-y divide-red-950/20 custom-scrollbar font-mono">
                       <AnimatePresence initial={false}>
                         {filteredTeamMembers.map((member) => (
                           <motion.div
@@ -1186,18 +1421,33 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 20 }}
                             transition={{ duration: 0.3 }}
-                            className="flex items-center gap-4 p-5 hover:bg-white/5 transition-colors duration-300"
+                            className="flex items-center gap-4 p-5 hover:bg-red-950/10 transition-colors duration-300 relative group/row border-b border-red-950/15"
                           >
-                            <div className="w-12 h-12 rounded-full overflow-hidden border border-white/10 bg-gray-800 flex-shrink-0 flex items-center justify-center">
-                              {member.image ? (
-                                <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
-                              ) : (
-                                <User className="w-5 h-5 text-gray-600" />
-                              )}
+                            <div className="absolute inset-y-0 left-0 w-1 bg-gold opacity-0 group-hover/row:opacity-100 transition-opacity duration-300"></div>
+                            
+                            {/* Futuristic Officer Frame */}
+                            <div className="relative w-12 h-12 flex-shrink-0 flex items-center justify-center">
+                              {/* Pulsing signal ring around picture */}
+                              <div className="absolute inset-0 rounded-full border border-red-500/20 group-hover/row:border-gold/50 transition-colors duration-300 group-hover/row:scale-105"></div>
+                              <div className="w-10 h-10 rounded-full overflow-hidden border border-maroon/40 bg-[#020005] flex items-center justify-center relative shadow-[inset_0_0_8px_rgba(255,0,0,0.4)]">
+                                {member.image ? (
+                                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <User className="w-4 h-4 text-rose-500/40" />
+                                )}
+                              </div>
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-bold text-white text-sm truncate leading-snug">{member.name}</h4>
-                              <p className="text-xs text-gold font-semibold uppercase tracking-wider mt-0.5">{member.position}</p>
+                            
+                            <div className="flex-1 min-w-0 font-mono">
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-extrabold text-white text-xs truncate uppercase tracking-widest leading-snug">{member.name}</h4>
+                                <span className="text-[8px] bg-red-950/50 text-rose-400 border border-red-500/20 px-1.5 py-0.5 rounded uppercase font-black tracking-widest shrink-0 scale-90">
+                                  {member.id}
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-gray-500 mt-2">
+                                <span className="flex items-center gap-1 text-[9px] bg-red-950/40 border border-red-500/20 px-2 py-0.5 rounded-full text-gold font-bold uppercase tracking-widest">{member.position}</span>
+                              </div>
                             </div>
                             <div className="flex gap-2 flex-shrink-0">
                               <Button
@@ -1205,27 +1455,27 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                                 size="icon"
                                 onClick={() => startEditTeamMember(member)}
                                 className={`rounded-xl w-10 h-10 border transition-all duration-300 flex items-center justify-center ${editingTeamId === member.id ? 'bg-gold border-gold text-black shadow-lg shadow-gold/20' : 'border-gold/20 bg-gold/10 text-gold hover:bg-gold hover:text-black'}`}
-                                title="Edit Team Member"
+                                title="Edit Officer"
                               >
-                                <Edit className="w-4 h-4" />
+                                <Edit className="w-3.5 h-3.5" />
                               </Button>
                               <Button
                                 variant="destructive"
                                 size="icon"
                                 onClick={() => handleDeleteTeamMember(member.id)}
                                 className="rounded-xl w-10 h-10 border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300 flex items-center justify-center"
-                                title="Delete Team Member"
+                                title="Decommission Officer"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </Button>
                             </div>
                           </motion.div>
                         ))}
                       </AnimatePresence>
                       {filteredTeamMembers.length === 0 && (
-                        <div className="py-16 text-center text-gray-500">
-                          <Users className="w-10 h-10 mx-auto mb-3 opacity-30 text-gold" />
-                          <p className="text-sm">No team members found matching your search.</p>
+                        <div className="py-16 text-center text-gray-500 font-mono">
+                          <Users className="w-10 h-10 mx-auto mb-3 opacity-30 text-gold animate-pulse" />
+                          <p className="text-xs tracking-widest">[ NO COGNITIVE OFFICERS DETECTED ]</p>
                         </div>
                       )}
                     </div>
