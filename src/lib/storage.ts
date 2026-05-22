@@ -533,6 +533,192 @@ const initialTeamMembers: TeamMemberType[] = [
     name: 'Rtr. Vishnu Prasad',
     image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411662/vishnu_prasad_x8dh8n.jpg',
     position: 'MEMBERSHIP DIRECTOR '
+  },
+  {
+    id: 't11',
+    name: 'Dr. K.P. Ramasamy',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411671/Chairman_sir_mcs6ns.avif',
+    position: 'Chairman'
+  },
+  {
+    id: 't12',
+    name: 'Dr. Geetha .P',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411672/principal_mam_gzmnvm.jpg',
+    position: 'Principal'
+  },
+  {
+    id: 't13',
+    name: 'Dr. Vinayak SP',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411699/staff_coordinator_u61x5h.jpg',
+    position: 'Head Staff Coordinator'
+  },
+  {
+    id: 't14',
+    name: 'Rtr. Sanjith Kumar Sri Krishnan',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411667/sanjith_yfeoyr.jpg',
+    position: 'President'
+  },
+  {
+    id: 't15',
+    name: 'Rtr. Haripriya',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411703/team-member-haripriya_gj96fq.jpg',
+    position: 'Secretary Administration'
+  },
+  {
+    id: 't16',
+    name: 'Rtr. Mounesh',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411701/mounish_kblucw.jpg',
+    position: 'Secretary – Communication'
+  },
+  {
+    id: 't17',
+    name: 'Rtr.Saran G',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755412967/team-member-saran_rhfrcq.jpg',
+    position: 'Vice President'
+  },
+  {
+    id: 't18',
+    name: 'Rtr. Pratheesh',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755413221/prateesh_xfstxd.jpg',
+    position: 'Special Aid to the President'
+  },
+  {
+    id: 't19',
+    name: 'Rtr. Netra',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411704/team-member-netra_obbhqr.jpg',
+    position: 'Joint Secretary'
+  },
+  {
+    id: 't20',
+    name: 'Rtr. Sanjay Harish',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411708/team-member-sanjay_lpxwng.jpg',
+    position: 'Past President'
+  },
+  {
+    id: 't21',
+    name: 'Rtr. Midun',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411704/team-member-midun_gxbwsp.jpg',
+    position: 'Treasurer'
+  },
+  {
+    id: 't22',
+    name: 'Rtr. Prabhagar S',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411707/team-member-prabhagar_x5ggfk.jpg',
+    position: 'Community Service Director'
+  },
+  {
+    id: 't23',
+    name: 'Rtr. Mirthula R',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411704/team-member-mirthural_shkrm3.jpg',
+    position: 'International Service Director'
+  },
+  {
+    id: 't24',
+    name: 'Rtr. Indupriya S',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411703/team-member-indupriya_emom2c.jpg',
+    position: 'Community Service Chair'
+  },
+  {
+    id: 't25',
+    name: 'Rtr. Monisha',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411704/team-member-monisha_jpfpnu.jpg',
+    position: 'Chair – District Priority Projects'
+  },
+  {
+    id: 't26',
+    name: 'Rtr. Rithanya L',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755413228/rithanaya_m5iwib.jpg',
+    position: 'Director – Professional Services'
+  },
+  {
+    id: 't27',
+    name: 'Rtr. Anuvarshini K.M',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411699/team-member-anuvarshini_dp3vxl.jpg',
+    position: 'Director – Reporting and Grievance'
+  },
+  {
+    id: 't28',
+    name: 'Rtr. Sivaharini K.',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411666/sivaharini_ze7s9y.jpg',
+    position: 'Chair – Grievances and Reporting'
+  },
+  {
+    id: 't29',
+    name: 'Rtr. Srinithi',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411666/Srinith_zb8k5t.jpg',
+    position: 'Club Service Chair'
+  },
+  {
+    id: 't30',
+    name: 'Rtr. Priyanka J. K',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411663/JK_priyanka_hit03k.jpg',
+    position: 'Chair – All Operations'
+  },
+  {
+    id: 't31',
+    name: 'Rtr. Naren',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411704/team-member-naren_ntcxpk.jpg',
+    position: 'International Service Director'
+  },
+  {
+    id: 't32',
+    name: 'Rtr. Prajjeeith',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411707/team-member-prajjeeith_ckmlxz.jpg',
+    position: 'District Priority Projects Director'
+  },
+  {
+    id: 't33',
+    name: 'Rtr. Deepana S.',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411662/deepana_wqphgt.jpg',
+    position: 'Chair of Professional Services'
+  },
+  {
+    id: 't34',
+    name: 'Rtr. Miruthula Sri',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411664/mirthal_sri_hmns70.jpg',
+    position: 'International Service Chair'
+  },
+  {
+    id: 't35',
+    name: 'Rtr. Dharaneesh',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755413218/Dharanessh_fowipx.jpg',
+    position: 'Treasurer'
+  },
+  {
+    id: 't36',
+    name: 'Rtr. Brindha P',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755413216/Brinda_uk2jgf.jpg',
+    position: 'Director – Professional Services'
+  },
+  {
+    id: 't37',
+    name: 'Rtr. Pavithra KS',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755413219/Pavithra_utrapb.jpg',
+    position: 'Chair – Interact–Rotaract Relationship'
+  },
+  {
+    id: 't38',
+    name: 'Rtr. Praveen',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411664/praveen_l0psb8.jpg',
+    position: 'Club Service Director'
+  },
+  {
+    id: 't39',
+    name: 'Rtr. Sanjay D',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411667/Sanjay_f8kema.jpg',
+    position: 'All Avenue Chair'
+  },
+  {
+    id: 't40',
+    name: 'Rtr. Rashvandh A',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411665/rashvandh_vkgvm4.jpg',
+    position: 'Web Chair'
+  },
+  {
+    id: 't41',
+    name: 'Rtr. Dharsan Sastikesh S.P',
+    image: 'https://res.cloudinary.com/drmwtmeg3/image/upload/v1755411662/Darshan_jnxkak.jpg',
+    position: 'Public Relations Chair'
   }
 ];
 
@@ -540,7 +726,13 @@ export const getTeamMembers = (): TeamMemberType[] => {
   const stored = localStorage.getItem(TEAM_MEMBERS_KEY);
   if (stored) {
     try {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      // Migration: If the stored roster is older or missing all core members (length less than 20), migrate to include all 41 members
+      if (Array.isArray(parsed) && parsed.length < 20) {
+        saveTeamMembers(initialTeamMembers);
+        return initialTeamMembers;
+      }
+      return parsed;
     } catch (e) {
       console.error('Failed to parse team members from local storage', e);
     }

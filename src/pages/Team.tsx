@@ -57,7 +57,6 @@ const Team = () => {
     });
 
     const result: MemberType[] = [];
-    const processedStaticKeys = new Set<string>();
 
     dynamicMembers.forEach(dm => {
       const dmKey = dm.name.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -84,7 +83,6 @@ const Team = () => {
           badges: [dm.position, ...existing.badges.filter(b => b !== existing.badges[0])],
           category: category === 'member' ? existing.category : category,
         });
-        processedStaticKeys.add(dmKey);
       } else {
         let hash = 0;
         for (let i = 0; i < dm.id.length; i++) {
@@ -100,13 +98,6 @@ const Team = () => {
           achievements: [],
           keyHighlights: []
         });
-      }
-    });
-
-    membersData.forEach(m => {
-      const key = m.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-      if (!processedStaticKeys.has(key)) {
-        result.push(m);
       }
     });
 
