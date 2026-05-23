@@ -841,18 +841,27 @@ const readDb = () => {
     const raw = fs.readFileSync(DB_PATH, 'utf-8');
     const parsed = JSON.parse(raw);
     
-    // Migration: If the teamMembers list in database.json is old/legacy (e.g. less than 20 items), merge/overwrite it
-    if (parsed && (!parsed.teamMembers || parsed.teamMembers.length < 20)) {
-      parsed.teamMembers = defaultData.teamMembers;
-      fs.writeFileSync(DB_PATH, JSON.stringify(parsed, null, 2), 'utf-8');
-      console.log('Migrated server database teamMembers to include all core team members.');
-    }
-
-    // Migration: If the events list in database.json is older (e.g. less than 50 items), merge/overwrite it
-    if (parsed && (!parsed.events || parsed.events.length < 50)) {
-      parsed.events = defaultData.events;
-      fs.writeFileSync(DB_PATH, JSON.stringify(parsed, null, 2), 'utf-8');
-      console.log('Migrated server database events to include all new events.');
+    // Migration: Only fill missing root keys with default data if they don't exist at all.
+    // Do NOT perform threshold length checks, as items deleted by admin will be below threshold and shouldn't be reset.
+    let needsWrite = false;
+    if (parsed) {
+      if (!parsed.teamMembers) {
+        parsed.teamMembers = defaultData.teamMembers;
+        needsWrite = true;
+      }
+      if (!parsed.events) {
+        parsed.events = defaultData.events;
+        needsWrite = true;
+      }
+      if (!parsed.bulletins) {
+        parsed.bulletins = defaultData.bulletins;
+        needsWrite = true;
+      }
+      
+      if (needsWrite) {
+        fs.writeFileSync(DB_PATH, JSON.stringify(parsed, null, 2), 'utf-8');
+        console.log('Initialized missing root keys in server database.');
+      }
     }
     
     return parsed;

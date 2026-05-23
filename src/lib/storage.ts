@@ -592,29 +592,25 @@ export const getEvents = (): EventType[] => {
   const stored = localStorage.getItem(EVENTS_KEY);
   if (stored) {
     try {
-      const parsed = JSON.parse(stored);
-      // Migration: If the stored events list is older (fewer than 50 events), automatically migrate it
-      if (Array.isArray(parsed) && parsed.length < 50) {
-        saveEvents(initialEvents);
-        return initialEvents;
-      }
-      return parsed;
+      return JSON.parse(stored);
     } catch (e) {
       console.error('Failed to parse events from local storage', e);
     }
   }
-  // Initialize if empty
+  // Initialize if empty (local cache only)
   saveEvents(initialEvents);
   return initialEvents;
 };
 
-export const saveEvents = (events: EventType[]) => {
+export const saveEvents = (events: EventType[], syncToServer = false) => {
   localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
-  fetch('/api/events', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(events)
-  }).catch(e => console.warn('Backend server unreachable, saved to local cache only.', e));
+  if (syncToServer) {
+    fetch('/api/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(events)
+    }).catch(e => console.warn('Backend server unreachable, saved to local cache only.', e));
+  }
 };
 
 export const getBulletins = (): BulletinType[] => {
@@ -626,18 +622,20 @@ export const getBulletins = (): BulletinType[] => {
       console.error('Failed to parse bulletins from local storage', e);
     }
   }
-  // Initialize if empty
+  // Initialize if empty (local cache only)
   saveBulletins(initialBulletins);
   return initialBulletins;
 };
 
-export const saveBulletins = (bulletins: BulletinType[]) => {
+export const saveBulletins = (bulletins: BulletinType[], syncToServer = false) => {
   localStorage.setItem(BULLETINS_KEY, JSON.stringify(bulletins));
-  fetch('/api/bulletins', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(bulletins)
-  }).catch(e => console.warn('Backend server unreachable, saved to local cache only.', e));
+  if (syncToServer) {
+    fetch('/api/bulletins', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bulletins)
+    }).catch(e => console.warn('Backend server unreachable, saved to local cache only.', e));
+  }
 };
 
 const initialTeamMembers: TeamMemberType[] = [
@@ -893,28 +891,25 @@ export const getTeamMembers = (): TeamMemberType[] => {
   const stored = localStorage.getItem(TEAM_MEMBERS_KEY);
   if (stored) {
     try {
-      const parsed = JSON.parse(stored);
-      // Migration: If the stored roster is older or missing all core members (length less than 20), migrate to include all 41 members
-      if (Array.isArray(parsed) && parsed.length < 20) {
-        saveTeamMembers(initialTeamMembers);
-        return initialTeamMembers;
-      }
-      return parsed;
+      return JSON.parse(stored);
     } catch (e) {
       console.error('Failed to parse team members from local storage', e);
     }
   }
+  // Initialize if empty (local cache only)
   saveTeamMembers(initialTeamMembers);
   return initialTeamMembers;
 };
 
-export const saveTeamMembers = (members: TeamMemberType[]) => {
+export const saveTeamMembers = (members: TeamMemberType[], syncToServer = false) => {
   localStorage.setItem(TEAM_MEMBERS_KEY, JSON.stringify(members));
-  fetch('/api/team', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(members)
-  }).catch(e => console.warn('Backend server unreachable, saved to local cache only.', e));
+  if (syncToServer) {
+    fetch('/api/team', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(members)
+    }).catch(e => console.warn('Backend server unreachable, saved to local cache only.', e));
+  }
 };
 
 // Background sync task to pull fresh database data from the Express server
@@ -928,35 +923,10 @@ export const syncWithBackend = async () => {
       const eventsData = await eventsRes.json();
       if (eventsData && Array.isArray(eventsData)) {
         const storedStr = localStorage.getItem(EVENTS_KEY);
-        let localEvents: EventType[] = [];
-        if (storedStr) {
-          try {
-            localEvents = JSON.parse(storedStr);
-          } catch(e) {}
-        }
-        
-        const mergedEvents = [...eventsData];
-        let hasNewLocalEvents = false;
-        
-        localEvents.forEach(localE => {
-          if (!mergedEvents.some(serverE => serverE.id === localE.id)) {
-            mergedEvents.push(localE);
-            hasNewLocalEvents = true;
-          }
-        });
-        
-        const freshStr = JSON.stringify(mergedEvents);
+        const freshStr = JSON.stringify(eventsData);
         if (storedStr !== freshStr) {
           localStorage.setItem(EVENTS_KEY, freshStr);
           hasUpdated = true;
-          
-          if (hasNewLocalEvents) {
-            fetch('/api/events', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: freshStr
-            }).catch(e => console.warn('Failed to sync merged events to server', e));
-          }
         }
       }
     }
@@ -967,35 +937,10 @@ export const syncWithBackend = async () => {
       const bulletinsData = await bulletinsRes.json();
       if (bulletinsData && Array.isArray(bulletinsData)) {
         const storedStr = localStorage.getItem(BULLETINS_KEY);
-        let localBulletins: BulletinType[] = [];
-        if (storedStr) {
-          try {
-            localBulletins = JSON.parse(storedStr);
-          } catch(e) {}
-        }
-        
-        const mergedBulletins = [...bulletinsData];
-        let hasNewLocalBulletins = false;
-        
-        localBulletins.forEach(localB => {
-          if (!mergedBulletins.some(serverB => serverB.id === localB.id)) {
-            mergedBulletins.push(localB);
-            hasNewLocalBulletins = true;
-          }
-        });
-        
-        const freshStr = JSON.stringify(mergedBulletins);
+        const freshStr = JSON.stringify(bulletinsData);
         if (storedStr !== freshStr) {
           localStorage.setItem(BULLETINS_KEY, freshStr);
           hasUpdated = true;
-          
-          if (hasNewLocalBulletins) {
-            fetch('/api/bulletins', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: freshStr
-            }).catch(e => console.warn('Failed to sync merged bulletins to server', e));
-          }
         }
       }
     }
@@ -1006,35 +951,10 @@ export const syncWithBackend = async () => {
       const teamData = await teamRes.json();
       if (teamData && Array.isArray(teamData)) {
         const storedStr = localStorage.getItem(TEAM_MEMBERS_KEY);
-        let localTeam: TeamMemberType[] = [];
-        if (storedStr) {
-          try {
-            localTeam = JSON.parse(storedStr);
-          } catch(e) {}
-        }
-        
-        const mergedTeam = [...teamData];
-        let hasNewLocalTeam = false;
-        
-        localTeam.forEach(localT => {
-          if (!mergedTeam.some(serverT => serverT.id === localT.id)) {
-            mergedTeam.push(localT);
-            hasNewLocalTeam = true;
-          }
-        });
-        
-        const freshStr = JSON.stringify(mergedTeam);
+        const freshStr = JSON.stringify(teamData);
         if (storedStr !== freshStr) {
           localStorage.setItem(TEAM_MEMBERS_KEY, freshStr);
           hasUpdated = true;
-          
-          if (hasNewLocalTeam) {
-            fetch('/api/team', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: freshStr
-            }).catch(e => console.warn('Failed to sync merged team to server', e));
-          }
         }
       }
     }

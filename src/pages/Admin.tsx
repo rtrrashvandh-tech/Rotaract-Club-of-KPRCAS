@@ -438,7 +438,7 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
     }
 
     setEvents(updatedEvents);
-    saveEvents(updatedEvents);
+    saveEvents(updatedEvents, true);
     setEventForm({ title: '', date: '', time: '', location: '', platform: '', image: '', description: '' });
   };
 
@@ -472,7 +472,7 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
     const eventToDelete = events.find(e => e.id === id);
     const updatedEvents = events.filter(e => e.id !== id);
     setEvents(updatedEvents);
-    saveEvents(updatedEvents);
+    saveEvents(updatedEvents, true);
     toast.success(`Deleted Event: ${eventToDelete?.title || 'Event'}`);
   };
 
@@ -523,7 +523,7 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
     }
 
     setBulletins(updatedBulletins);
-    saveBulletins(updatedBulletins);
+    saveBulletins(updatedBulletins, true);
     setBulletinForm({ title: '', date: '', content: '', fileId: '', coverImage: '' });
   };
 
@@ -554,7 +554,7 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
     const bulletinToDelete = bulletins.find(b => b.id === id);
     const updatedBulletins = bulletins.filter(b => b.id !== id);
     setBulletins(updatedBulletins);
-    saveBulletins(updatedBulletins);
+    saveBulletins(updatedBulletins, true);
     toast.success(`Deleted Bulletin: ${bulletinToDelete?.title || 'Bulletin'}`);
   };
 
@@ -586,7 +586,7 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
     }
 
     setTeamMembers(updatedMembers);
-    saveTeamMembers(updatedMembers);
+    saveTeamMembers(updatedMembers, true);
     setTeamForm({ name: '', position: '', image: '' });
   };
 
@@ -615,7 +615,7 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
     const memberToDelete = teamMembers.find(m => m.id === id);
     const updatedMembers = teamMembers.filter(m => m.id !== id);
     setTeamMembers(updatedMembers);
-    saveTeamMembers(updatedMembers);
+    saveTeamMembers(updatedMembers, true);
     toast.success(`Deleted Team Member: ${memberToDelete?.name || 'Member'}`);
   };
 
