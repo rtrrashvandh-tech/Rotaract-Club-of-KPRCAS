@@ -300,12 +300,26 @@ const Bulletin = () => {
         bulletin.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         bulletin.content.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const year = bulletin.date.split('-')[1];
+      const year = bulletin.date.split('-')[1]?.trim();
       const matchesYear = selectedYear === 'all' || year === selectedYear;
 
       return matchesSearch && matchesYear;
     });
   }, [sortedBulletins, searchQuery, selectedYear]);
+
+  const availableYears = useMemo(() => {
+    const yearsSet = new Set<string>(['2025', '2026']);
+    bulletins.forEach((bulletin) => {
+      const parts = bulletin.date.split('-');
+      const year = parts[1]?.trim();
+      if (year) {
+        yearsSet.add(year);
+      }
+    });
+    // Sort years descending so that newer editions (like 2026) appear first
+    const sorted = Array.from(yearsSet).sort((a, b) => b.localeCompare(a));
+    return ['all', ...sorted];
+  }, [bulletins]);
 
   useEffect(() => {
     const el = scrollContainerRef.current;
@@ -400,7 +414,7 @@ const Bulletin = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 w-full pb-2">
             {/* Borderless seasons row */}
             <div className="flex justify-center gap-x-8 gap-y-2">
-              {['all', '2025'].map((year) => {
+              {availableYears.map((year) => {
                 const isActive = selectedYear === year;
                 return (
                   <button
