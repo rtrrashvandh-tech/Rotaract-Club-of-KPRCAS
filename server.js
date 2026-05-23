@@ -572,13 +572,16 @@ const defaultData = {
     }
   ],
   bulletins: [
-    { id: 'b1', title: 'July 2025', date: 'July-2025', content: 'Bulletin for July 2025', fileId: '1HRRqhiuJIrOzChxt-SfaaFnOWuq-jrdg', coverImage: '/bulletin-covers/july.png' },
-    { id: 'b2', title: 'August 2025', date: 'August-2025', content: 'Bulletin for August 2025', fileId: '1wRTNBYPr2gLsgTdL-Cz4hsdbngBLDqHl', coverImage: '/bulletin-covers/august.png' },
-    { id: 'b3', title: 'September 2025', date: 'September-2025', content: 'Bulletin for September 2025', fileId: '1Fy5mcdadNAo2_u4BOdRK19HCxo_4H5xN', coverImage: '/bulletin-covers/september.png' },
-    { id: 'b4', title: 'October 2025', date: 'October-2025', content: 'Bulletin for October 2025', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/october.png' },
-    { id: 'b5', title: 'November 2025', date: 'November-2025', content: 'Bulletin for November 2025', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/november.png' },
-    { id: 'b6', title: 'December 2025', date: 'December-2025', content: 'Official monthly updates, activities, and achievements summary.', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/november.png' },
-    { id: 'b7', title: 'January 2026', date: 'January-2026', content: 'Official monthly updates, activities, and achievements summary.', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/november.png' }
+    { id: 'b_1779561822551', title: 'APRIL 2026', date: 'April-2026', content: '', fileId: '1nuQCK1wlpEVWr8OdNhBW2Q2AnId4iryT', coverImage: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1779548254/Screenshot_2026-05-23_202717_to5dih.png' },
+    { id: 'b_1779561764345', title: 'MARCH 2026 ', date: 'March-2026', content: '', fileId: '1lVdntXMY9yf6wH73-OTUBuf4RRtWzl52', coverImage: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1779547663/Screenshot_2026-05-23_201729_isge0z.png' },
+    { id: 'b_1779561715605', title: 'FEBUARY 2026 ', date: 'Febuary-2026', content: '', fileId: '1K9c0G0_faZE73WTJthWRhXCZo3iIIWdt', coverImage: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1779547581/Screenshot_2026-05-23_201559_xfne9m.png' },
+    { id: 'b1', title: 'July 2025', date: 'July-2025', content: 'Bulletin for July 2025', fileId: '1HRRqhiuJIrOzChxt-SfaaFnOWuq-jrdg', coverImage: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1779550532/Screenshot_2026-05-23_210518_noyfg0.png' },
+    { id: 'b2', title: 'August 2025', date: 'August-2025', content: 'Bulletin for August 2025', fileId: '1wRTNBYPr2gLsgTdL-Cz4hsdbngBLDqHl', coverImage: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1779550477/Screenshot_2026-05-23_210417_gtwwfy.png' },
+    { id: 'b3', title: 'September 2025', date: 'September-2025', content: 'Bulletin for September 2025', fileId: '1Fy5mcdadNAo2_u4BOdRK19HCxo_4H5xN', coverImage: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1779550361/Screenshot_2026-05-23_210222_ryepvn.png' },
+    { id: 'b4', title: 'October 2025', date: 'October-2025', content: 'Bulletin for October 2025', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1779462067/Screenshot_2026-05-22_203014_wn1hwv.png' },
+    { id: 'b5', title: 'November 2025', date: 'November-2025', content: 'Bulletin for November 2025', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1779550256/Screenshot_2026-05-23_210020_tnhs7q.png' },
+    { id: 'b6', title: 'December 2025', date: 'December-2025', content: 'Official monthly updates, activities, and achievements summary.', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1779546558/Screenshot_2026-05-23_195606_gzlj1z.png' },
+    { id: 'b7', title: 'January 2026', date: 'January-2026', content: 'Official monthly updates, activities, and achievements summary.', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1779461915/Screenshot_2026-05-22_202600_trdlbp.png' }
   ],
   teamMembers: [
     {

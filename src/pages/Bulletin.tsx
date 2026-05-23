@@ -65,6 +65,7 @@ const monthOrder: Record<string, number> = {
   'december': 12,
   'january': 1,
   'february': 2,
+  'febuary': 2,
   'march': 3,
   'april': 4,
   'may': 5,
