@@ -583,8 +583,9 @@ const initialBulletins: BulletinType[] = [
   { id: 'b2', title: 'August 2025', date: 'August-2025', content: 'Bulletin for August 2025', fileId: '1wRTNBYPr2gLsgTdL-Cz4hsdbngBLDqHl', coverImage: '/bulletin-covers/august.png' },
   { id: 'b3', title: 'September 2025', date: 'September-2025', content: 'Bulletin for September 2025', fileId: '1Fy5mcdadNAo2_u4BOdRK19HCxo_4H5xN', coverImage: '/bulletin-covers/september.png' },
   { id: 'b4', title: 'October 2025', date: 'October-2025', content: 'Bulletin for October 2025', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/october.png' },
-  // Let's reuse October fileId for November as a placeholder for the hardcoded one without fileId
-  { id: 'b5', title: 'November 2025', date: 'November-2025', content: 'Bulletin for November 2025', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/november.png' }
+  { id: 'b5', title: 'November 2025', date: 'November-2025', content: 'Bulletin for November 2025', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/november.png' },
+  { id: 'b6', title: 'December 2025', date: 'December-2025', content: 'Official monthly updates, activities, and achievements summary.', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/november.png' },
+  { id: 'b7', title: 'January 2026', date: 'January-2026', content: 'Official monthly updates, activities, and achievements summary.', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/november.png' }
 ];
 
 export const getEvents = (): EventType[] => {
@@ -925,12 +926,37 @@ export const syncWithBackend = async () => {
     const eventsRes = await fetch('/api/events');
     if (eventsRes.ok) {
       const eventsData = await eventsRes.json();
-      if (eventsData && Array.isArray(eventsData) && eventsData.length > 0) {
+      if (eventsData && Array.isArray(eventsData)) {
         const storedStr = localStorage.getItem(EVENTS_KEY);
-        const freshStr = JSON.stringify(eventsData);
+        let localEvents: EventType[] = [];
+        if (storedStr) {
+          try {
+            localEvents = JSON.parse(storedStr);
+          } catch(e) {}
+        }
+        
+        const mergedEvents = [...eventsData];
+        let hasNewLocalEvents = false;
+        
+        localEvents.forEach(localE => {
+          if (!mergedEvents.some(serverE => serverE.id === localE.id)) {
+            mergedEvents.push(localE);
+            hasNewLocalEvents = true;
+          }
+        });
+        
+        const freshStr = JSON.stringify(mergedEvents);
         if (storedStr !== freshStr) {
           localStorage.setItem(EVENTS_KEY, freshStr);
           hasUpdated = true;
+          
+          if (hasNewLocalEvents) {
+            fetch('/api/events', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: freshStr
+            }).catch(e => console.warn('Failed to sync merged events to server', e));
+          }
         }
       }
     }
@@ -939,12 +965,37 @@ export const syncWithBackend = async () => {
     const bulletinsRes = await fetch('/api/bulletins');
     if (bulletinsRes.ok) {
       const bulletinsData = await bulletinsRes.json();
-      if (bulletinsData && Array.isArray(bulletinsData) && bulletinsData.length > 0) {
+      if (bulletinsData && Array.isArray(bulletinsData)) {
         const storedStr = localStorage.getItem(BULLETINS_KEY);
-        const freshStr = JSON.stringify(bulletinsData);
+        let localBulletins: BulletinType[] = [];
+        if (storedStr) {
+          try {
+            localBulletins = JSON.parse(storedStr);
+          } catch(e) {}
+        }
+        
+        const mergedBulletins = [...bulletinsData];
+        let hasNewLocalBulletins = false;
+        
+        localBulletins.forEach(localB => {
+          if (!mergedBulletins.some(serverB => serverB.id === localB.id)) {
+            mergedBulletins.push(localB);
+            hasNewLocalBulletins = true;
+          }
+        });
+        
+        const freshStr = JSON.stringify(mergedBulletins);
         if (storedStr !== freshStr) {
           localStorage.setItem(BULLETINS_KEY, freshStr);
           hasUpdated = true;
+          
+          if (hasNewLocalBulletins) {
+            fetch('/api/bulletins', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: freshStr
+            }).catch(e => console.warn('Failed to sync merged bulletins to server', e));
+          }
         }
       }
     }
@@ -953,12 +1004,37 @@ export const syncWithBackend = async () => {
     const teamRes = await fetch('/api/team');
     if (teamRes.ok) {
       const teamData = await teamRes.json();
-      if (teamData && Array.isArray(teamData) && teamData.length > 0) {
+      if (teamData && Array.isArray(teamData)) {
         const storedStr = localStorage.getItem(TEAM_MEMBERS_KEY);
-        const freshStr = JSON.stringify(teamData);
+        let localTeam: TeamMemberType[] = [];
+        if (storedStr) {
+          try {
+            localTeam = JSON.parse(storedStr);
+          } catch(e) {}
+        }
+        
+        const mergedTeam = [...teamData];
+        let hasNewLocalTeam = false;
+        
+        localTeam.forEach(localT => {
+          if (!mergedTeam.some(serverT => serverT.id === localT.id)) {
+            mergedTeam.push(localT);
+            hasNewLocalTeam = true;
+          }
+        });
+        
+        const freshStr = JSON.stringify(mergedTeam);
         if (storedStr !== freshStr) {
           localStorage.setItem(TEAM_MEMBERS_KEY, freshStr);
           hasUpdated = true;
+          
+          if (hasNewLocalTeam) {
+            fetch('/api/team', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: freshStr
+            }).catch(e => console.warn('Failed to sync merged team to server', e));
+          }
         }
       }
     }

@@ -576,7 +576,9 @@ const defaultData = {
     { id: 'b2', title: 'August 2025', date: 'August-2025', content: 'Bulletin for August 2025', fileId: '1wRTNBYPr2gLsgTdL-Cz4hsdbngBLDqHl', coverImage: '/bulletin-covers/august.png' },
     { id: 'b3', title: 'September 2025', date: 'September-2025', content: 'Bulletin for September 2025', fileId: '1Fy5mcdadNAo2_u4BOdRK19HCxo_4H5xN', coverImage: '/bulletin-covers/september.png' },
     { id: 'b4', title: 'October 2025', date: 'October-2025', content: 'Bulletin for October 2025', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/october.png' },
-    { id: 'b5', title: 'November 2025', date: 'November-2025', content: 'Bulletin for November 2025', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/november.png' }
+    { id: 'b5', title: 'November 2025', date: 'November-2025', content: 'Bulletin for November 2025', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/november.png' },
+    { id: 'b6', title: 'December 2025', date: 'December-2025', content: 'Official monthly updates, activities, and achievements summary.', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/november.png' },
+    { id: 'b7', title: 'January 2026', date: 'January-2026', content: 'Official monthly updates, activities, and achievements summary.', fileId: '1JoC-BbeoHBoKWpdUvatnVwBRrd1n8Ui1', coverImage: '/bulletin-covers/november.png' }
   ],
   teamMembers: [
     {
