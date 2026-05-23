@@ -592,7 +592,23 @@ export const getEvents = (): EventType[] => {
   const stored = localStorage.getItem(EVENTS_KEY);
   if (stored) {
     try {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      // Migration: Ensure newly added hardcoded initial events are merged for existing local caches
+      if (Array.isArray(parsed)) {
+        let updated = false;
+        const merged = [...parsed];
+        initialEvents.forEach(initE => {
+          if (!merged.some(e => e.id === initE.id)) {
+            merged.push(initE);
+            updated = true;
+          }
+        });
+        if (updated) {
+          saveEvents(merged);
+          return merged;
+        }
+      }
+      return parsed;
     } catch (e) {
       console.error('Failed to parse events from local storage', e);
     }
@@ -617,7 +633,23 @@ export const getBulletins = (): BulletinType[] => {
   const stored = localStorage.getItem(BULLETINS_KEY);
   if (stored) {
     try {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      // Migration: Ensure newly added hardcoded initial bulletins are merged for existing local caches
+      if (Array.isArray(parsed)) {
+        let updated = false;
+        const merged = [...parsed];
+        initialBulletins.forEach(initB => {
+          if (!merged.some(b => b.id === initB.id)) {
+            merged.push(initB);
+            updated = true;
+          }
+        });
+        if (updated) {
+          saveBulletins(merged);
+          return merged;
+        }
+      }
+      return parsed;
     } catch (e) {
       console.error('Failed to parse bulletins from local storage', e);
     }
@@ -891,7 +923,23 @@ export const getTeamMembers = (): TeamMemberType[] => {
   const stored = localStorage.getItem(TEAM_MEMBERS_KEY);
   if (stored) {
     try {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      // Migration: Ensure newly added hardcoded initial team members are merged for existing local caches
+      if (Array.isArray(parsed)) {
+        let updated = false;
+        const merged = [...parsed];
+        initialTeamMembers.forEach(initT => {
+          if (!merged.some(t => t.id === initT.id)) {
+            merged.push(initT);
+            updated = true;
+          }
+        });
+        if (updated) {
+          saveTeamMembers(merged);
+          return merged;
+        }
+      }
+      return parsed;
     } catch (e) {
       console.error('Failed to parse team members from local storage', e);
     }
