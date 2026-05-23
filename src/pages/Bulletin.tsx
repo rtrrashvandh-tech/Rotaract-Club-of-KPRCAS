@@ -72,7 +72,7 @@ const monthOrder: Record<string, number> = {
 };
 
 const getBulletinTimestamp = (dateStr: string) => {
-  const parts = dateStr.toLowerCase().split('-');
+  const parts = dateStr.toLowerCase().split('-').map(p => p.trim());
   const month = parts[0];
   const year = parseInt(parts[1]) || 2025;
   const monthNum = monthOrder[month] || 0;
