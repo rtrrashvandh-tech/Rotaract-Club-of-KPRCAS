@@ -44,8 +44,7 @@ import {
   ShieldCheck,
   Radio,
   Tv,
-  Camera,
-  Scan
+  Camera
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -243,6 +242,27 @@ const calculateCorrelation = (vec1: number[], vec2: number[]): number => {
   if (den1 === 0 || den2 === 0) return 0;
   return num / Math.sqrt(den1 * den2);
 };
+
+// Custom high-security vector targeting scan icon to prevent Lucide resolution bugs
+const Scan = ({ className }: { className?: string }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+    <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+    <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+    <path d="M3 17v2a2 2 0 0 0 2 2h2" />
+    <path d="M8 12h8" />
+    <path d="M12 8v8" />
+  </svg>
+);
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
