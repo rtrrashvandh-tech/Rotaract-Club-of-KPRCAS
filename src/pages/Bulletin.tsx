@@ -31,11 +31,29 @@ const pdfFiles = {
 };
 
 // --- Helper functions ---
-const getPdfViewerUrl = (fileId: string) =>
-  `https://drive.google.com/file/d/${fileId}/preview`;
+const extractGoogleDriveId = (urlOrId: string): string => {
+  if (!urlOrId) return '';
+  const trimmed = urlOrId.trim();
+  const fileDMatch = trimmed.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  if (fileDMatch && fileDMatch[1]) {
+    return fileDMatch[1];
+  }
+  const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9-_]+)/);
+  if (idParamMatch && idParamMatch[1]) {
+    return idParamMatch[1];
+  }
+  return trimmed;
+};
 
-const getPdfDownloadUrl = (fileId: string) =>
-  `https://drive.google.com/uc?export=download&id=${fileId}`;
+const getPdfViewerUrl = (fileId: string) => {
+  const cleanId = extractGoogleDriveId(fileId);
+  return `https://drive.google.com/file/d/${cleanId}/preview`;
+};
+
+const getPdfDownloadUrl = (fileId: string) => {
+  const cleanId = extractGoogleDriveId(fileId);
+  return `https://drive.google.com/uc?export=download&id=${cleanId}`;
+};
 
 // --- Date sorting helper ---
 const monthOrder: Record<string, number> = {

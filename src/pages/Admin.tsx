@@ -476,6 +476,21 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
     toast.success(`Deleted Event: ${eventToDelete?.title || 'Event'}`);
   };
 
+  // --- Google Drive Link/ID Extraction Helper ---
+  const extractGoogleDriveId = (urlOrId: string): string => {
+    if (!urlOrId) return '';
+    const trimmed = urlOrId.trim();
+    const fileDMatch = trimmed.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (fileDMatch && fileDMatch[1]) {
+      return fileDMatch[1];
+    }
+    const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9-_]+)/);
+    if (idParamMatch && idParamMatch[1]) {
+      return idParamMatch[1];
+    }
+    return trimmed;
+  };
+
   // --- Add/Edit Bulletin Handler ---
   const handleAddBulletin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -484,17 +499,23 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
       return;
     }
 
+    const cleanFileId = extractGoogleDriveId(bulletinForm.fileId);
+    const cleanedBulletinForm = {
+      ...bulletinForm,
+      fileId: cleanFileId
+    };
+
     let updatedBulletins: BulletinType[];
 
     if (editingBulletinId) {
       updatedBulletins = bulletins.map(b =>
-        b.id === editingBulletinId ? { ...bulletinForm, id: editingBulletinId } : b
+        b.id === editingBulletinId ? { ...cleanedBulletinForm, id: editingBulletinId } : b
       );
       setEditingBulletinId(null);
-      toast.success(`Bulletin "${bulletinForm.title}" updated successfully!`);
+      toast.success(`Bulletin "${cleanedBulletinForm.title}" updated successfully!`);
     } else {
       const newBulletin: BulletinType = {
-        ...bulletinForm,
+        ...cleanedBulletinForm,
         id: `b_${Date.now()}`
       };
       updatedBulletins = [newBulletin, ...bulletins];
@@ -1290,17 +1311,19 @@ export const saveTeamMembers = (members: TeamMemberType[]) => {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="b_fileId" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">GOOGLE DRIVE ASSET ID *</Label>
+                        <Label htmlFor="b_fileId" className="text-xs uppercase font-bold text-gold tracking-widest font-mono">GOOGLE DRIVE SHARE LINK OR ASSET ID *</Label>
                         <Input
                           id="b_fileId"
                           value={bulletinForm.fileId}
                           onChange={e => setBulletinForm({ ...bulletinForm, fileId: e.target.value })}
-                          placeholder="e.g., 1HRRqhiuJIrOzChxt..."
+                          placeholder="Paste full Google Drive Link or File ID..."
                           className="bg-black/40 border-red-500/20 text-white rounded-xl focus:ring-1 focus:ring-gold focus:border-gold placeholder-red-955 font-mono text-xs"
                           required
                         />
                         <p className="text-[9px] text-gray-500 leading-tight font-sans">
-                          ⚠️ Ensure the Google Drive asset link permissions are configured to **"Anyone with the link can view"**.
+                          💡 You can paste the **entire Google Drive Share Link** or just the File ID. We will extract the ID automatically.
+                          <br />
+                          ⚠️ Crucial: Make sure the file sharing in Google Drive is set to **"Anyone with the link can view"**.
                         </p>
                       </div>
                       <div className="space-y-1.5">
