@@ -252,4 +252,28 @@ All colors MUST be HSL.
     linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
   animation: cyber-grid-movement 20s linear infinite;
+}
+
+@keyframes scan-horizontal {
+  0% {
+    left: 15%;
+  }
+  50% {
+    left: 85%;
+  }
+  100% {
+    left: 15%;
+  }
+}
+
+@keyframes scan-vertical {
+  0% {
+    top: 15%;
+  }
+  50% {
+    top: 85%;
+  }
+  100% {
+    top: 15%;
+  }
 }

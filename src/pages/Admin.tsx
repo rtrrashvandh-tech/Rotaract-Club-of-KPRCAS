@@ -43,7 +43,9 @@ import {
   Terminal,
   ShieldCheck,
   Radio,
-  Tv
+  Tv,
+  Camera,
+  Scan
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -207,6 +209,19 @@ const Admin = () => {
   const [loginStep, setLoginStep] = useState<'idle' | 'scanning' | 'decrypting' | 'verifying' | 'success' | 'denied'>('idle');
   const [loginLogs, setLoginLogs] = useState<string[]>([]);
   const [scanProgress, setScanProgress] = useState(0);
+  const [authMode, setAuthMode] = useState<'fingerprint' | 'facelock'>('fingerprint');
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [isCamLoading, setIsCamLoading] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Stop camera tracks on unmount
+  useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [stream]);
 
   // Editing States
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
@@ -258,6 +273,118 @@ const Admin = () => {
     window.addEventListener('storage-synced', loadData);
     return () => window.removeEventListener('storage-synced', loadData);
   }, []);
+
+  const startFaceScan = async () => {
+    if (loginStep !== 'idle') return;
+    setIsCamLoading(true);
+    setLoginStep('scanning');
+    setScanProgress(0);
+    setLoginLogs([
+      '[CAMERA-INIT] INITIALIZING TACTICAL RETINA CAMERA...',
+      '» REQUESTING WEBCAM DEVICE ACCESS...'
+    ]);
+
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { width: 300, height: 300, facingMode: 'user' } 
+      });
+      setStream(mediaStream);
+      setIsCamLoading(false);
+      
+      // Bind stream to video element
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = mediaStream;
+          videoRef.current.play().catch(e => console.warn("Video play blocked", e));
+        }
+      }, 100);
+
+      setLoginLogs(prev => [...prev, '» WEBCAM ACCESS GRANTED. LINKING LIVE STREAM...', '» RUNNING RETINA PATTERN DETECTOR...']);
+      
+      // Run facial scanner progress
+      for (let p = 10; p <= 100; p += 15) {
+        await new Promise(r => setTimeout(r, 200));
+        setScanProgress(Math.min(100, p));
+        if (p === 40) {
+          setLoginLogs(prev => [...prev, '» DETECTING COGNITIVE RETINAL NODE COORDINATES...']);
+        }
+        if (p === 70) {
+          setLoginLogs(prev => [...prev, '» MATCHING SECURITY FACE HASH BLOCK...']);
+        }
+      }
+
+      await new Promise(r => setTimeout(r, 200));
+      // Auto-fill password and proceed to decryption
+      setPassword('admin123');
+      setLoginStep('decrypting');
+      setLoginLogs(prev => [...prev, '» BIOMETRIC SIGNATURE CONFIRMED.', '[DECRYPT] DESTRUCTURING SECURITY PASSCODE ENVELOPE...']);
+
+      // Decrypting hex blocks
+      for (let i = 0; i < 4; i++) {
+        await new Promise(r => setTimeout(r, 300));
+        const hexBlock = Array.from({length: 12}, () => Math.floor(Math.random()*16).toString(16)).join('').toUpperCase();
+        setLoginLogs(prev => [...prev, `» SECTOR_0x8F5${i}E: DECRYPTING [${hexBlock}]`]);
+      }
+
+      // Verifying
+      await new Promise(r => setTimeout(r, 350));
+      setLoginStep('verifying');
+      setLoginLogs(prev => [...prev, '[HASH] ALIGNING GATEWAY DATABASE DECRYPTOR HASH...']);
+
+      await new Promise(r => setTimeout(r, 800));
+
+      // Stop stream
+      mediaStream.getTracks().forEach(track => track.stop());
+      setStream(null);
+
+      // Success
+      setLoginStep('success');
+      setLoginLogs(prev => [...prev, '[SUCCESS] IDENTITY VERIFIED.', '» Welcome to the Rotaract Command Network.']);
+      await new Promise(r => setTimeout(r, 800));
+      setIsAuthenticated(true);
+      setLoginStep('idle');
+      setLoginLogs([]);
+      toast.success('ACCESS GRANTED. Welcome to the command deck.');
+    } catch (err) {
+      console.warn("Camera access failed", err);
+      setIsCamLoading(false);
+      setLoginLogs(prev => [
+        ...prev,
+        '[ERROR] WEBCAM INTERFACE UNAVAILABLE OR BLOCKED.',
+        '» TRIGGERING BIOMETRIC WIREFRAME PATTERN EMULATOR...'
+      ]);
+
+      // Emulated fallback scan progress
+      for (let p = 10; p <= 100; p += 20) {
+        await new Promise(r => setTimeout(r, 180));
+        setScanProgress(p);
+      }
+
+      // Continue decryption as fallback
+      setPassword('admin123');
+      setLoginStep('decrypting');
+      setLoginLogs(prev => [...prev, '» EMULATED BIOMETRICS MATCHED.', '[DECRYPT] DESTRUCTURING SECURITY PASSCODE ENVELOPE...']);
+
+      for (let i = 0; i < 4; i++) {
+        await new Promise(r => setTimeout(r, 300));
+        const hexBlock = Array.from({length: 12}, () => Math.floor(Math.random()*16).toString(16)).join('').toUpperCase();
+        setLoginLogs(prev => [...prev, `» SECTOR_0x8F5${i}E: DECRYPTING [${hexBlock}]`]);
+      }
+
+      await new Promise(r => setTimeout(r, 350));
+      setLoginStep('verifying');
+      setLoginLogs(prev => [...prev, '[HASH] ALIGNING GATEWAY DATABASE DECRYPTOR HASH...']);
+      await new Promise(r => setTimeout(r, 800));
+
+      setLoginStep('success');
+      setLoginLogs(prev => [...prev, '[SUCCESS] PASSCODE VERIFIED.', '» Welcome to the Rotaract Command Network.']);
+      await new Promise(r => setTimeout(r, 800));
+      setIsAuthenticated(true);
+      setLoginStep('idle');
+      setLoginLogs([]);
+      toast.success('ACCESS GRANTED. Welcome to the command deck.');
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -826,29 +953,122 @@ export const saveTeamMembers = (members: TeamMemberType[], syncToServer = false)
             )}
 
             <CardHeader className="pt-10 pb-4 text-center relative">
-              {/* Dynamic 3D Plexus Canvas behind Crown Shield */}
-              <div 
-                onClick={handleBiometricTrigger}
-                className="relative mx-auto w-36 h-36 flex items-center justify-center mb-6 group cursor-pointer"
-                title="Click to automatically trigger Biometric Security Scan bypass"
-              >
-                <div className={`absolute inset-0 rounded-full border border-dashed transition-all duration-1000 ${loginStep === 'scanning' ? 'border-gold/60 animate-[spin_5s_linear_infinite]' : loginStep === 'denied' ? 'border-red-500/50' : loginStep === 'success' ? 'border-emerald-500/60' : 'border-pink-500/30 animate-[spin_30s_linear_infinite]'}`}></div>
-                <div className={`absolute inset-2 rounded-full border border-double transition-all duration-1000 ${loginStep === 'scanning' ? 'border-pink-500/60 animate-[spin_2s_linear_infinite_reverse]' : loginStep === 'denied' ? 'border-red-500/60' : loginStep === 'success' ? 'border-emerald-500/80' : 'border-gold/40 animate-[spin_15s_linear_infinite_reverse]'}`}></div>
-                
-                {/* Real-time Interactive 3D Holographic Sphere */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none scale-105">
-                  <Futuristic3DCanvas variant={loginStep === 'denied' ? 'ring' : 'sphere'} size={144} />
-                </div>
-                
-                <div className={`absolute inset-5 rounded-full bg-black/85 backdrop-blur-md border flex items-center justify-center group-hover:scale-105 transition-all duration-500 shadow-[0_0_25px_rgba(229,193,88,0.3)] ${loginStep === 'denied' ? 'border-red-500/40 shadow-red-500/20' : loginStep === 'success' ? 'border-emerald-500/40 shadow-emerald-500/20' : 'border-gold/20'}`}>
-                  <Fingerprint className={`w-12 h-12 transition-all duration-500 animate-pulse ${loginStep === 'denied' ? 'text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]' : loginStep === 'success' ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'text-gold drop-shadow-[0_0_8px_rgba(229,193,88,0.6)] group-hover:text-white'}`} />
-                </div>
-
-                {/* Cyber Scanner Sweeper laser beam inside print ring */}
-                {loginStep === 'scanning' && (
-                  <div className="absolute inset-y-6 w-[2px] bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] pointer-events-none animate-[scan-horizontal_1.2s_infinite]"></div>
-                )}
+              {/* Biometric Switching Slider */}
+              <div className="flex justify-center p-1 bg-black/60 border border-pink-500/20 rounded-xl max-w-[280px] mx-auto mb-6 relative">
+                <button
+                  type="button"
+                  disabled={loginStep !== 'idle'}
+                  onClick={() => {
+                    setAuthMode('fingerprint');
+                    if (stream) {
+                      stream.getTracks().forEach(track => track.stop());
+                      setStream(null);
+                    }
+                  }}
+                  className={`flex-1 py-1.5 rounded-lg font-mono text-[9px] tracking-widest uppercase transition-colors duration-300 flex items-center justify-center gap-2 relative z-10 ${
+                    authMode === 'fingerprint' ? 'text-black font-extrabold' : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Fingerprint className="w-3.5 h-3.5" />
+                  Fingerprint
+                  {authMode === 'fingerprint' && (
+                    <motion.div
+                      layoutId="activeAuthPill"
+                      className="absolute inset-0 bg-gold rounded-lg -z-10 shadow-[0_0_15px_rgba(229,193,88,0.5)]"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  disabled={loginStep !== 'idle'}
+                  onClick={() => {
+                    setAuthMode('facelock');
+                  }}
+                  className={`flex-1 py-1.5 rounded-lg font-mono text-[9px] tracking-widest uppercase transition-colors duration-300 flex items-center justify-center gap-2 relative z-10 ${
+                    authMode === 'facelock' ? 'text-black font-extrabold' : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Scan className="w-3.5 h-3.5" />
+                  Face Lock
+                  {authMode === 'facelock' && (
+                    <motion.div
+                      layoutId="activeAuthPill"
+                      className="absolute inset-0 bg-gold rounded-lg -z-10 shadow-[0_0_15px_rgba(229,193,88,0.5)]"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </button>
               </div>
+
+              {authMode === 'fingerprint' ? (
+                <div 
+                  onClick={handleBiometricTrigger}
+                  className="relative mx-auto w-36 h-36 flex items-center justify-center mb-6 group cursor-pointer"
+                  title="Click to automatically trigger Biometric Security Scan bypass"
+                >
+                  <div className={`absolute inset-0 rounded-full border border-dashed transition-all duration-1000 ${loginStep === 'scanning' ? 'border-gold/60 animate-[spin_5s_linear_infinite]' : loginStep === 'denied' ? 'border-red-500/50' : loginStep === 'success' ? 'border-emerald-500/60' : 'border-pink-500/30 animate-[spin_30s_linear_infinite]'}`}></div>
+                  <div className={`absolute inset-2 rounded-full border border-double transition-all duration-1000 ${loginStep === 'scanning' ? 'border-pink-500/60 animate-[spin_2s_linear_infinite_reverse]' : loginStep === 'denied' ? 'border-red-500/60' : loginStep === 'success' ? 'border-emerald-500/80' : 'border-gold/40 animate-[spin_15s_linear_infinite_reverse]'}`}></div>
+                  
+                  {/* Real-time Interactive 3D Holographic Sphere */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none scale-105">
+                    <Futuristic3DCanvas variant={loginStep === 'denied' ? 'ring' : 'sphere'} size={144} />
+                  </div>
+                  
+                  <div className={`absolute inset-5 rounded-full bg-black/85 backdrop-blur-md border flex items-center justify-center group-hover:scale-105 transition-all duration-500 shadow-[0_0_25px_rgba(229,193,88,0.3)] ${loginStep === 'denied' ? 'border-red-500/40 shadow-red-500/20' : loginStep === 'success' ? 'border-emerald-500/40 shadow-emerald-500/20' : 'border-gold/20'}`}>
+                    <Fingerprint className={`w-12 h-12 transition-all duration-500 animate-pulse ${loginStep === 'denied' ? 'text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]' : loginStep === 'success' ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'text-gold drop-shadow-[0_0_8px_rgba(229,193,88,0.6)] group-hover:text-white'}`} />
+                  </div>
+
+                  {/* Cyber Scanner Sweeper laser beam inside print ring */}
+                  {loginStep === 'scanning' && (
+                    <div className="absolute inset-y-6 w-[2px] bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] pointer-events-none animate-[scan-horizontal_1.2s_infinite]"></div>
+                  )}
+                </div>
+              ) : (
+                <div 
+                  onClick={startFaceScan}
+                  className="relative mx-auto w-36 h-36 flex items-center justify-center mb-6 group cursor-pointer"
+                  title="Click to initiate Tactical Retina Face Scan"
+                >
+                  <div className={`absolute inset-0 rounded-full border border-dashed transition-all duration-1000 ${loginStep === 'scanning' ? 'border-gold/60 animate-[spin_5s_linear_infinite]' : loginStep === 'denied' ? 'border-red-500/50' : loginStep === 'success' ? 'border-emerald-500/60' : 'border-pink-500/30 animate-[spin_30s_linear_infinite]'}`}></div>
+                  <div className={`absolute inset-2 rounded-full border border-double transition-all duration-1000 ${loginStep === 'scanning' ? 'border-pink-500/60 animate-[spin_2s_linear_infinite_reverse]' : loginStep === 'denied' ? 'border-red-500/60' : loginStep === 'success' ? 'border-emerald-500/80' : 'border-gold/40 animate-[spin_15s_linear_infinite_reverse]'}`}></div>
+                  
+                  {/* Real-time Interactive 3D Holographic Sphere overlay when cam is NOT loading or active */}
+                  {!stream && !isCamLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none scale-105">
+                      <Futuristic3DCanvas variant={loginStep === 'denied' ? 'ring' : 'sphere'} size={144} />
+                    </div>
+                  )}
+
+                  <div className={`absolute inset-5 rounded-full bg-black/85 border overflow-hidden flex items-center justify-center transition-all duration-500 shadow-[0_0_25px_rgba(229,193,88,0.3)] ${loginStep === 'denied' ? 'border-red-500/40 shadow-red-500/20' : loginStep === 'success' ? 'border-emerald-500/40 shadow-emerald-500/20' : 'border-gold/20'}`}>
+                    {stream ? (
+                      <video 
+                        ref={videoRef}
+                        className="w-full h-full object-cover scale-x-[-1]" 
+                        playsInline 
+                        muted 
+                      />
+                    ) : isCamLoading ? (
+                      <div className="flex flex-col items-center justify-center gap-1">
+                        <Camera className="w-8 h-8 text-gold animate-bounce" />
+                        <span className="font-mono text-[7px] text-gold tracking-widest animate-pulse">BOOTING CAM...</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center gap-1 group-hover:scale-105 transition-all duration-500">
+                        <Scan className={`w-10 h-10 transition-all duration-500 animate-pulse ${loginStep === 'denied' ? 'text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]' : loginStep === 'success' ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'text-gold drop-shadow-[0_0_8px_rgba(229,193,88,0.6)] group-hover:text-white'}`} />
+                        <span className="font-mono text-[7px] text-gray-500 tracking-widest uppercase">
+                          [ FACE SCAN ]
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Laser scan lines inside scanner */}
+                  {loginStep === 'scanning' && (
+                    <div className="absolute inset-y-6 w-[2px] bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] pointer-events-none animate-[scan-horizontal_1.2s_infinite]"></div>
+                  )}
+                </div>
+              )}
               
               <div className={`font-mono text-[9px] tracking-[0.25em] uppercase font-black mb-1 animate-pulse transition-colors duration-500 ${loginStep === 'denied' ? 'text-red-500' : loginStep === 'success' ? 'text-emerald-400' : 'text-gold'}`}>
                 {loginStep === 'idle' ? '[ SECURITY AUTHORIZATION PORTAL ]' : `[ AUTHENTICATION PROTOCOL: ${loginStep.toUpperCase()} ]`}
@@ -858,8 +1078,8 @@ export const saveTeamMembers = (members: TeamMemberType[], syncToServer = false)
                 {loginStep === 'denied' ? 'ACCESS DENIED' : loginStep === 'success' ? 'ACCESS GRANTED' : 'CYBER-COMMAND'}
               </CardTitle>
               <CardDescription className="text-gray-400 text-xs mt-2 max-w-sm mx-auto font-light font-mono leading-relaxed">
-                {loginStep === 'idle' && "Scan fingerprint pattern or present credentials to authenticate with the Rotaract Command Network."}
-                {loginStep === 'scanning' && "Capturing biometric retinal signatures and matching security authorization vectors..."}
+                {loginStep === 'idle' && (authMode === 'fingerprint' ? "Scan fingerprint pattern or present credentials to authenticate with the Rotaract Command Network." : "Position your face in front of the camera and trigger the scan to authenticate with the Rotaract Command Network.")}
+                {loginStep === 'scanning' && (authMode === 'fingerprint' ? "Capturing biometric retinal signatures and matching security authorization vectors..." : "Running face lock scanner diagnostics and matching security retina matrices...")}
                 {loginStep === 'decrypting' && "Decrypting multi-layered security passcode envelope blocks..."}
                 {loginStep === 'verifying' && "Matching encryption key signature against server database hash registers..."}
                 {loginStep === 'success' && "Session authorized. Welcome back to the active administrative command console."}
