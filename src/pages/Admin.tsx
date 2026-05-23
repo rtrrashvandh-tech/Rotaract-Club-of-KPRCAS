@@ -286,7 +286,17 @@ const Admin = () => {
   const [isRegCamLoading, setIsRegCamLoading] = useState(false);
   const [capturedFaceImg, setCapturedFaceImg] = useState<string | null>(null);
   const [capturedFaceVector, setCapturedFaceVector] = useState<number[] | null>(null);
-  const [registeredFaceImg, setRegisteredFaceImg] = useState<string | null>(() => localStorage.getItem('admin_face_lock_img'));
+  const [registeredFaceImg, setRegisteredFaceImg] = useState<string | null>(() => {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      try {
+        return localStorage.getItem('admin_face_lock_img');
+      } catch (e) {
+        console.warn("localStorage is unavailable", e);
+        return null;
+      }
+    }
+    return null;
+  });
   const regVideoRef = useRef<HTMLVideoElement>(null);
 
   // Stop camera tracks on unmount
