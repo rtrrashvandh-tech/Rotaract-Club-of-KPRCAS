@@ -203,6 +203,11 @@ const Admin = () => {
   const [teamMembers, setTeamMembers] = useState<TeamMemberType[]>([]);
   const [showGuide, setShowGuide] = useState(true);
 
+  // Cinematic Security States
+  const [loginStep, setLoginStep] = useState<'idle' | 'scanning' | 'decrypting' | 'verifying' | 'success' | 'denied'>('idle');
+  const [loginLogs, setLoginLogs] = useState<string[]>([]);
+  const [scanProgress, setScanProgress] = useState(0);
+
   // Editing States
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
   const [editingBulletinId, setEditingBulletinId] = useState<string | null>(null);
@@ -254,13 +259,70 @@ const Admin = () => {
     return () => window.removeEventListener('storage-synced', loadData);
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!password) return;
+
+    // Step 1: Scanning
+    setLoginStep('scanning');
+    setScanProgress(0);
+    setLoginLogs([
+      '[SECURE-INIT] INITIALIZING IDENTITY VERIFICATION...',
+      '» SCANNING COGNITIVE BIOMETRIC FOOTPRINT...'
+    ]);
+
+    for (let p = 10; p <= 100; p += 15) {
+      await new Promise(r => setTimeout(r, 150));
+      setScanProgress(Math.min(100, p));
+      if (p === 40) {
+        setLoginLogs(prev => [...prev, '» EXTRACTING RETINAL PATTERN VECTORS...']);
+      }
+      if (p === 70) {
+        setLoginLogs(prev => [...prev, '» ALIGNING 3D PLEXUS CORRELATION NODE...']);
+      }
+    }
+    
+    await new Promise(r => setTimeout(r, 200));
+    setLoginLogs(prev => [...prev, '» BIOMETRIC SIGNATURE IDENTIFIED.', '[DECRYPT] DESTRUCTURING SECURITY PASSCODE ENVELOPE...']);
+    setLoginStep('decrypting');
+
+    // Step 2: Decrypting
+    for (let i = 0; i < 4; i++) {
+      await new Promise(r => setTimeout(r, 300));
+      const hexBlock = Array.from({length: 12}, () => Math.floor(Math.random()*16).toString(16)).join('').toUpperCase();
+      setLoginLogs(prev => [...prev, `» SECTOR_0x8F5${i}E: DECRYPTING [${hexBlock}]`]);
+    }
+
+    // Step 3: Verifying
+    await new Promise(r => setTimeout(r, 350));
+    setLoginStep('verifying');
+    setLoginLogs(prev => [...prev, '[HASH] ALIGNING GATEWAY DATABASE DECRYPTOR HASH...']);
+
+    await new Promise(r => setTimeout(r, 800));
+
     if (password === 'admin123') {
+      // Step 4: Success
+      setLoginStep('success');
+      setLoginLogs(prev => [...prev, '[SUCCESS] PASSCODE VERIFIED.', '» Welcome to the Rotaract Command Network.']);
+      await new Promise(r => setTimeout(r, 800));
       setIsAuthenticated(true);
-      toast.success('DECRYPTION COMPLETE. Welcome to the Command Grid.');
+      setLoginStep('idle');
+      setLoginLogs([]);
+      toast.success('ACCESS GRANTED. Welcome to the command deck.');
     } else {
-      toast.error('ACCESS DENIED. Invalid security authorization passkey.');
+      // Step 5: Denied
+      setLoginStep('denied');
+      setLoginLogs(prev => [
+        ...prev,
+        '[ALARM] DECRYPTION PROTOCOL REJECTED.',
+        '» INVALID AUTHENTICATION KEYCODE VALUE.',
+        '» EMERGENCY LOCKOUT ENFORCED.'
+      ]);
+      toast.error('ACCESS DENIED. Unauthorized encryption hash.');
+      await new Promise(r => setTimeout(r, 2500));
+      setLoginStep('idle');
+      setLoginLogs([]);
+      setPassword('');
     }
   };
 
@@ -675,107 +737,247 @@ export const saveTeamMembers = (members: TeamMemberType[], syncToServer = false)
   }, [teamMembers, teamSearch]);
 
   if (!isAuthenticated) {
+    const cardShakeVariants = {
+      default: { x: 0, scale: 1 },
+      shake: {
+        x: [0, -12, 12, -12, 12, -8, 8, -4, 4, 0],
+        transition: { duration: 0.55, ease: "easeInOut" }
+      }
+    };
+
+    // Simulated Biometric Scan Shortcut Trigger
+    const handleBiometricTrigger = (e: React.MouseEvent) => {
+      e.preventDefault();
+      if (loginStep !== 'idle') return;
+      setPassword('admin123');
+      // Briefly wait to ensure password state is updated, then trigger
+      setTimeout(() => {
+        const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+        handleLogin(fakeEvent);
+      }, 50);
+    };
+
     return (
-      <div className="min-h-screen bg-[#020005] flex items-center justify-center px-4 relative overflow-hidden selection:bg-pink-900/50 selection:text-gold">
-        {/* Futuristic Laser Scans and Matrices */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_50%_-20%,rgba(219,39,119,0.22),rgba(255,255,255,0))]"></div>
+      <div className={`min-h-screen flex items-center justify-center px-4 relative overflow-hidden selection:bg-pink-900/50 selection:text-gold transition-colors duration-1000 ${loginStep === 'denied' ? 'bg-[#0a0005]' : loginStep === 'success' ? 'bg-[#000803]' : 'bg-[#020005]'}`}>
+        
+        {/* Background Laser Scans and Matrices */}
+        <div className={`absolute inset-0 transition-opacity duration-1000 ${loginStep === 'denied' ? 'bg-[radial-gradient(ellipse_70%_70%_at_50%_-20%,rgba(239,68,68,0.25),rgba(255,255,255,0))]' : loginStep === 'success' ? 'bg-[radial-gradient(ellipse_70%_70%_at_50%_-20%,rgba(52,211,153,0.22),rgba(255,255,255,0))]' : 'bg-[radial-gradient(ellipse_70%_70%_at_50%_-20%,rgba(219,39,119,0.22),rgba(255,255,255,0))]'}`}></div>
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.012)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.012)_1px,transparent_1px)] bg-[size:30px_30px] pointer-events-none"></div>
 
         {/* Dynamic Scanline Laser Effect */}
-        <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#ff0055] to-transparent opacity-40 animate-[bounce_6s_infinite] pointer-events-none shadow-[0_0_12px_rgba(255,0,85,0.8)]"></div>
+        <div className={`absolute inset-x-0 h-[2px] transition-all duration-500 pointer-events-none shadow-[0_0_12px_rgba(255,0,85,0.8)] ${loginStep === 'denied' ? 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,1)] animate-pulse' : loginStep === 'success' ? 'bg-emerald-500 shadow-[0_0_15px_rgba(52,211,153,1)]' : 'bg-gradient-to-r from-transparent via-[#ff0055] to-transparent opacity-40 animate-[bounce_6s_infinite]'}`}></div>
+
+        {/* Cinematic Matrix Telemetry Sides (Scrolling Network Status) */}
+        <div className="absolute left-6 top-24 bottom-24 w-44 font-mono text-[7px] text-pink-500/15 overflow-hidden select-none pointer-events-none hidden xl:flex flex-col gap-2">
+          <div>[ SECURITY CORE MONITOR ]</div>
+          <div>------------------------</div>
+          <div className="animate-pulse">NODE_STATUS: DISCONNECTED</div>
+          <div>ALGORITHM: SHA-256/RSA</div>
+          <div>ENCRYPT_PORT: 8080/TCP</div>
+          <div className="mt-4">[ LIVE TERMINAL LOGS ]</div>
+          <div className="animate-[pulse_2s_infinite]">» CLOUD_SHIELD: CALIBRATED</div>
+          <div>» SYNC_STRL: ENABLED</div>
+          <div>» KEY_VECTOR: LOADED</div>
+          <div>» RETINA_GRID: READY</div>
+          <div className="mt-4">[ MEMORY FEEDS ]</div>
+          <div>MEM_BLOCK: 0x8F5A29B0</div>
+          <div>MEM_FREE: 4096.88 MB</div>
+          <div>MEM_STATE: UNSTABLE</div>
+        </div>
+
+        <div className="absolute right-6 top-24 bottom-24 w-44 font-mono text-[7px] text-pink-500/15 overflow-hidden select-none pointer-events-none hidden xl:flex flex-col gap-2 text-right">
+          <div>[ CENTRAL GRID CONTROL ]</div>
+          <div>------------------------</div>
+          <div className="animate-pulse">DECK_LINK: AWAITING_KEY</div>
+          <div>CHRONOS_ID: SEC_404</div>
+          <div>COGNITIVE_RECS: 41 NODES</div>
+          <div className="mt-4">[ DIAGNOSTICS FEED ]</div>
+          <div className="animate-[pulse_1.5s_infinite]">» DRIVE_CACHE: DECRYPTED</div>
+          <div>» MERGE_INDEX: COMPILED</div>
+          <div>» API_PING: 14.88 MS</div>
+          <div>» ROUTING_TABLE: SOLID</div>
+          <div className="mt-4">[ DATABASE FEEDS ]</div>
+          <div>DB_INTEGRITY: 100.00%</div>
+          <div>DB_BULLETINS: 10 REGISTERS</div>
+          <div>DB_EVENTS: 17 NODES</div>
+        </div>
 
         {/* HSL Atmospheric Nebulas */}
-        <div className="absolute top-1/10 left-1/10 w-[500px] h-[500px] bg-pink-700/10 rounded-full blur-[150px] pointer-events-none animate-pulse"></div>
-        <div className="absolute bottom-1/10 right-1/10 w-[500px] h-[500px] bg-gold/5 rounded-full blur-[150px] pointer-events-none animate-pulse"></div>
+        <div className={`absolute top-1/10 left-1/10 w-[500px] h-[500px] rounded-full blur-[150px] pointer-events-none animate-pulse transition-colors duration-1000 ${loginStep === 'denied' ? 'bg-red-950/20' : loginStep === 'success' ? 'bg-emerald-950/25' : 'bg-pink-700/10'}`}></div>
+        <div className={`absolute bottom-1/10 right-1/10 w-[500px] h-[500px] rounded-full blur-[150px] pointer-events-none animate-pulse transition-colors duration-1000 ${loginStep === 'denied' ? 'bg-red-900/10' : loginStep === 'success' ? 'bg-emerald-900/15' : 'bg-gold/5'}`}></div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          variants={cardShakeVariants}
+          animate={loginStep === 'denied' ? 'shake' : 'default'}
           className="w-full max-w-lg relative z-10"
         >
           {/* Cybernetic Tech Corners */}
-          <div className="absolute -top-3 -left-3 w-8 h-8 border-t-2 border-l-2 border-gold/60 pointer-events-none"></div>
-          <div className="absolute -top-3 -right-3 w-8 h-8 border-t-2 border-r-2 border-gold/60 pointer-events-none"></div>
-          <div className="absolute -bottom-3 -left-3 w-8 h-8 border-b-2 border-l-2 border-gold/60 pointer-events-none"></div>
-          <div className="absolute -bottom-3 -right-3 w-8 h-8 border-b-2 border-r-2 border-gold/60 pointer-events-none"></div>
+          <div className={`absolute -top-3 -left-3 w-8 h-8 border-t-2 border-l-2 pointer-events-none transition-colors duration-500 ${loginStep === 'denied' ? 'border-red-500' : loginStep === 'success' ? 'border-emerald-500' : 'border-gold/60'}`}></div>
+          <div className={`absolute -top-3 -right-3 w-8 h-8 border-t-2 border-r-2 pointer-events-none transition-colors duration-500 ${loginStep === 'denied' ? 'border-red-500' : loginStep === 'success' ? 'border-emerald-500' : 'border-gold/60'}`}></div>
+          <div className={`absolute -bottom-3 -left-3 w-8 h-8 border-b-2 border-l-2 pointer-events-none transition-colors duration-500 ${loginStep === 'denied' ? 'border-red-500' : loginStep === 'success' ? 'border-emerald-500' : 'border-gold/60'}`}></div>
+          <div className={`absolute -bottom-3 -right-3 w-8 h-8 border-b-2 border-r-2 pointer-events-none transition-colors duration-500 ${loginStep === 'denied' ? 'border-red-500' : loginStep === 'success' ? 'border-emerald-500' : 'border-gold/60'}`}></div>
 
-          <Card className="bg-[#05020c]/90 backdrop-blur-3xl border border-pink-500/20 shadow-[0_0_50px_rgba(219,39,119,0.3)] rounded-2xl overflow-hidden text-white relative">
-            <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-pink-600 via-gold to-pink-600"></div>
+          <Card className={`bg-[#05020c]/90 backdrop-blur-3xl border rounded-2xl overflow-hidden text-white relative transition-all duration-1000 ${loginStep === 'denied' ? 'border-red-500/40 shadow-[0_0_60px_rgba(239,68,68,0.4)]' : loginStep === 'success' ? 'border-emerald-500/40 shadow-[0_0_60px_rgba(52,211,153,0.35)]' : 'border-pink-500/20 shadow-[0_0_50px_rgba(219,39,119,0.3)]'}`}>
+            <div className={`absolute inset-x-0 top-0 h-[3px] transition-all duration-1000 ${loginStep === 'denied' ? 'bg-red-500' : loginStep === 'success' ? 'bg-emerald-500' : 'bg-gradient-to-r from-pink-600 via-gold to-pink-600'}`}></div>
             
+            {/* Horizontal sweep laser bar for active scan */}
+            {loginStep === 'scanning' && (
+              <div className="absolute inset-x-0 h-[2px] bg-gold/90 shadow-[0_0_10px_rgba(229,193,88,1)] pointer-events-none z-20 animate-scanning"></div>
+            )}
+
             <CardHeader className="pt-10 pb-4 text-center relative">
               {/* Dynamic 3D Plexus Canvas behind Crown Shield */}
-              <div className="relative mx-auto w-36 h-36 flex items-center justify-center mb-6 group cursor-pointer">
-                <div className="absolute inset-0 rounded-full border border-dashed border-pink-500/30 animate-[spin_30s_linear_infinite]"></div>
-                <div className="absolute inset-2 rounded-full border border-double border-gold/40 animate-[spin_15s_linear_infinite_reverse]"></div>
+              <div 
+                onClick={handleBiometricTrigger}
+                className="relative mx-auto w-36 h-36 flex items-center justify-center mb-6 group cursor-pointer"
+                title="Click to automatically trigger Biometric Security Scan bypass"
+              >
+                <div className={`absolute inset-0 rounded-full border border-dashed transition-all duration-1000 ${loginStep === 'scanning' ? 'border-gold/60 animate-[spin_5s_linear_infinite]' : loginStep === 'denied' ? 'border-red-500/50' : loginStep === 'success' ? 'border-emerald-500/60' : 'border-pink-500/30 animate-[spin_30s_linear_infinite]'}`}></div>
+                <div className={`absolute inset-2 rounded-full border border-double transition-all duration-1000 ${loginStep === 'scanning' ? 'border-pink-500/60 animate-[spin_2s_linear_infinite_reverse]' : loginStep === 'denied' ? 'border-red-500/60' : loginStep === 'success' ? 'border-emerald-500/80' : 'border-gold/40 animate-[spin_15s_linear_infinite_reverse]'}`}></div>
                 
                 {/* Real-time Interactive 3D Holographic Sphere */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none scale-105">
-                  <Futuristic3DCanvas variant="sphere" size={144} />
+                  <Futuristic3DCanvas variant={loginStep === 'denied' ? 'ring' : 'sphere'} size={144} />
                 </div>
                 
-                <div className="absolute inset-5 rounded-full bg-black/85 backdrop-blur-md border border-gold/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shadow-[0_0_25px_rgba(229,193,88,0.3)]">
-                  <Fingerprint className="w-12 h-12 text-gold drop-shadow-[0_0_8px_rgba(229,193,88,0.6)] animate-pulse" />
+                <div className={`absolute inset-5 rounded-full bg-black/85 backdrop-blur-md border flex items-center justify-center group-hover:scale-105 transition-all duration-500 shadow-[0_0_25px_rgba(229,193,88,0.3)] ${loginStep === 'denied' ? 'border-red-500/40 shadow-red-500/20' : loginStep === 'success' ? 'border-emerald-500/40 shadow-emerald-500/20' : 'border-gold/20'}`}>
+                  <Fingerprint className={`w-12 h-12 transition-all duration-500 animate-pulse ${loginStep === 'denied' ? 'text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]' : loginStep === 'success' ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'text-gold drop-shadow-[0_0_8px_rgba(229,193,88,0.6)] group-hover:text-white'}`} />
                 </div>
+
+                {/* Cyber Scanner Sweeper laser beam inside print ring */}
+                {loginStep === 'scanning' && (
+                  <div className="absolute inset-y-6 w-[2px] bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] pointer-events-none animate-[scan-horizontal_1.2s_infinite]"></div>
+                )}
               </div>
               
-              <div className="font-mono text-[9px] tracking-[0.25em] text-gold uppercase font-black mb-1 animate-pulse">
-                [ SECURITY AUTHORIZATION PORTAL ]
+              <div className={`font-mono text-[9px] tracking-[0.25em] uppercase font-black mb-1 animate-pulse transition-colors duration-500 ${loginStep === 'denied' ? 'text-red-500' : loginStep === 'success' ? 'text-emerald-400' : 'text-gold'}`}>
+                {loginStep === 'idle' ? '[ SECURITY AUTHORIZATION PORTAL ]' : `[ AUTHENTICATION PROTOCOL: ${loginStep.toUpperCase()} ]`}
               </div>
               
-              <CardTitle className="text-3xl font-black tracking-tighter bg-gradient-to-r from-white via-red-200 to-gold bg-clip-text text-transparent font-mono">
-                CYBER-COMMAND
+              <CardTitle className={`text-3xl font-black tracking-tighter bg-gradient-to-r bg-clip-text text-transparent font-mono transition-all duration-500 ${loginStep === 'denied' ? 'from-white via-red-200 to-red-600' : loginStep === 'success' ? 'from-white via-emerald-200 to-emerald-500' : 'from-white via-red-200 to-gold'}`}>
+                {loginStep === 'denied' ? 'ACCESS DENIED' : loginStep === 'success' ? 'ACCESS GRANTED' : 'CYBER-COMMAND'}
               </CardTitle>
               <CardDescription className="text-gray-400 text-xs mt-2 max-w-sm mx-auto font-light font-mono leading-relaxed">
-                Scan fingerprint pattern or present credentials to authenticate with the Rotaract Command Network.
+                {loginStep === 'idle' && "Scan fingerprint pattern or present credentials to authenticate with the Rotaract Command Network."}
+                {loginStep === 'scanning' && "Capturing biometric retinal signatures and matching security authorization vectors..."}
+                {loginStep === 'decrypting' && "Decrypting multi-layered security passcode envelope blocks..."}
+                {loginStep === 'verifying' && "Matching encryption key signature against server database hash registers..."}
+                {loginStep === 'success' && "Session authorized. Welcome back to the active administrative command console."}
+                {loginStep === 'denied' && "ALARM: Unauthorized credential sequence detected. Session lockout actively enforced."}
               </CardDescription>
             </CardHeader>
             
             <CardContent className="pb-10 px-10">
-              <form onSubmit={handleLogin} className="space-y-6">
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center font-mono text-[10px] text-gold tracking-widest font-black uppercase">
-                    <Label htmlFor="password">ACCESS DECRYPT KEY</Label>
-                    <span className="text-pink-500 font-bold uppercase tracking-wider animate-pulse flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 bg-pink-500 rounded-full"></span> Secure Terminal
-                    </span>
-                  </div>
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-gold/50 text-sm select-none">
-                      🔒
-                    </div>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="ENTER GATEWAY KEY"
-                      required
-                      className="bg-black/80 border-pink-500/20 text-gold placeholder-pink-955 font-mono tracking-[0.3em] text-center rounded-xl py-6 pl-12 pr-4 focus:ring-1 focus:ring-gold focus:border-gold transition-all duration-300 w-full text-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.8)]"
-                    />
-                    {/* Tech Corners on Input */}
-                    <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-gold/40"></div>
-                    <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-gold/40"></div>
-                    <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-gold/40"></div>
-                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-gold/40"></div>
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-pink-950 via-red-950 to-pink-950 hover:from-pink-900 hover:to-pink-900 text-gold hover:text-white font-mono text-xs font-black tracking-[0.2em] py-7 rounded-xl border border-gold/30 shadow-[0_0_20px_rgba(219,39,119,0.3)] hover:shadow-[0_0_35px_rgba(229,193,88,0.3)] transition-all duration-500 flex items-center justify-center gap-3 group uppercase relative overflow-hidden"
+              <AnimatePresence mode="wait">
+                {loginStep === 'idle' ? (
+                  <motion.form 
+                    key="loginForm"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    onSubmit={handleLogin} 
+                    className="space-y-6"
                   >
-                    <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <span>[ INITIATE CONNECTION SEQUENCE ]</span>
-                    <ArrowRight className="w-4 h-4 text-gold group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </div>
-                
-                <div className="text-center font-mono text-[9px] text-gray-500 tracking-wider pt-2 select-none uppercase">
-                  Terminal Reference: <span className="text-gold/60">SYS-DEC-5054159</span> | status: <span className="text-pink-500 animate-pulse font-bold">Awaiting Keycode</span>
-                </div>
-              </form>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center font-mono text-[10px] text-gold tracking-widest font-black uppercase">
+                        <Label htmlFor="password">ACCESS DECRYPT KEY</Label>
+                        <span className="text-pink-500 font-bold uppercase tracking-wider animate-pulse flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-ping"></span> Secure Terminal
+                        </span>
+                      </div>
+                      <div className="relative">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-gold/50 text-sm select-none">
+                          🔒
+                        </div>
+                        <Input
+                          id="password"
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="ENTER GATEWAY KEY"
+                          required
+                          className="bg-black/80 border-pink-500/20 text-gold placeholder-pink-955 font-mono tracking-[0.3em] text-center rounded-xl py-6 pl-12 pr-4 focus:ring-1 focus:ring-gold focus:border-gold transition-all duration-300 w-full text-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.8)]"
+                        />
+                        {/* Tech Corners on Input */}
+                        <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-gold/40"></div>
+                        <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-gold/40"></div>
+                        <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-gold/40"></div>
+                        <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-gold/40"></div>
+                      </div>
+                    </div>
+
+                    <div className="pt-2">
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-pink-950 via-red-950 to-pink-950 hover:from-pink-900 hover:to-pink-900 text-gold hover:text-white font-mono text-xs font-black tracking-[0.2em] py-7 rounded-xl border border-gold/30 shadow-[0_0_20px_rgba(219,39,119,0.3)] hover:shadow-[0_0_35px_rgba(229,193,88,0.3)] transition-all duration-500 flex items-center justify-center gap-3 group uppercase relative overflow-hidden"
+                      >
+                        <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <span>[ INITIATE CONNECTION SEQUENCE ]</span>
+                        <ArrowRight className="w-4 h-4 text-gold group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </div>
+                    
+                    <div className="text-center font-mono text-[9px] text-gray-500 tracking-wider pt-2 select-none uppercase">
+                      Terminal Reference: <span className="text-gold/60">SYS-DEC-5054159</span> | status: <span className="text-pink-500 animate-pulse font-bold">Awaiting Keycode</span>
+                    </div>
+                  </motion.form>
+                ) : (
+                  <motion.div
+                    key="terminalView"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="space-y-6"
+                  >
+                    {/* Live Scrolling Terminal Logs Console */}
+                    <div className={`font-mono text-[10px] p-5 rounded-xl border bg-black/95 text-left h-[210px] overflow-y-auto custom-scrollbar flex flex-col gap-1.5 shadow-[inset_0_0_25px_rgba(0,0,0,0.95)] relative select-none ${loginStep === 'denied' ? 'border-red-500/30' : loginStep === 'success' ? 'border-emerald-500/30' : 'border-pink-500/20'}`}>
+                      <div className="flex justify-between items-center border-b border-white/5 pb-1.5 mb-2 text-[8px] text-gray-500 tracking-widest">
+                        <span>DIAGNOSTIC MATRIX FEED</span>
+                        <span className={`animate-pulse uppercase font-black ${loginStep === 'denied' ? 'text-red-500' : loginStep === 'success' ? 'text-emerald-400' : 'text-gold'}`}>{loginStep}...</span>
+                      </div>
+                      
+                      {loginLogs.map((log, idx) => {
+                        let col = 'text-gold';
+                        if (log.startsWith('[SUCCESS]')) col = 'text-emerald-400 font-extrabold drop-shadow-[0_0_6px_rgba(52,211,153,0.3)]';
+                        if (log.startsWith('[ALARM]')) col = 'text-red-500 font-extrabold animate-pulse';
+                        if (log.startsWith('[SECURE-INIT]')) col = 'text-pink-400 font-bold';
+                        if (log.startsWith('[DECRYPT]')) col = 'text-blue-400 font-semibold';
+                        if (log.startsWith('»')) col = 'text-gray-300';
+                        return <div key={idx} className={`${col} tracking-wider font-mono`}>{log}</div>;
+                      })}
+
+                      {/* Pulsing block cursor */}
+                      {loginStep !== 'success' && loginStep !== 'denied' && (
+                        <div className="text-gold mt-1 animate-pulse font-mono select-none">
+                          $ <span className="w-2 h-3.5 bg-gold inline-block align-middle ml-0.5"></span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Progress metrics */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-[9px] font-mono text-gold tracking-widest font-black">
+                        <span>DECRYPTION INTEGRITY</span>
+                        <span className={`${loginStep === 'denied' ? 'text-red-500 animate-bounce' : loginStep === 'success' ? 'text-emerald-400' : 'text-gold'}`}>
+                          {loginStep === 'scanning' ? `${scanProgress}%` : loginStep === 'decrypting' ? '60%' : loginStep === 'verifying' ? '90%' : loginStep === 'success' ? '100%' : 'EMERGENCY SHUTDOWN'}
+                        </span>
+                      </div>
+                      <div className={`h-2.5 w-full bg-black/90 border rounded-full overflow-hidden p-0.5 shadow-inner ${loginStep === 'denied' ? 'border-red-500/20' : loginStep === 'success' ? 'border-emerald-500/20' : 'border-pink-500/20'}`}>
+                        <motion.div
+                          initial={{ width: '0%' }}
+                          animate={{
+                            width: loginStep === 'scanning' ? `${scanProgress}%` :
+                                   loginStep === 'decrypting' ? '60%' :
+                                   loginStep === 'verifying' ? '90%' :
+                                   loginStep === 'success' ? '100%' : '0%'
+                          }}
+                          className={`h-full rounded-full bg-gradient-to-r transition-all duration-300 ${loginStep === 'denied' ? 'from-red-600 to-rose-600 shadow-[0_0_10px_rgba(220,38,38,0.5)]' : loginStep === 'success' ? 'from-emerald-600 to-teal-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'from-pink-600 via-gold to-pink-600 shadow-[0_0_10px_rgba(219,39,119,0.4)]'}`}
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </CardContent>
           </Card>
         </motion.div>
