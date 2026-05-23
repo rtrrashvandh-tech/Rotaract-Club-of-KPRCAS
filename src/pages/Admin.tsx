@@ -197,6 +197,53 @@ const Futuristic3DCanvas: React.FC<{ variant?: 'sphere' | 'plexus' | 'ring'; siz
   return <canvas ref={canvasRef} className="opacity-60 pointer-events-none mix-blend-screen animate-pulse" />;
 };
 
+// Grayscale vector generator (downscales frame to 40x40 to capture spatial layout and features)
+const getGrayscaleVector = (videoEl: HTMLVideoElement): { vector: number[], dataUrl: string } => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 40;
+  canvas.height = 40;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return { vector: [], dataUrl: '' };
+  
+  // Draw mirrored video frame
+  ctx.translate(40, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(videoEl, 0, 0, 40, 40);
+  
+  const dataUrl = canvas.toDataURL('image/png');
+  const imgData = ctx.getImageData(0, 0, 40, 40);
+  const data = imgData.data;
+  const vector: number[] = [];
+  
+  for (let i = 0; i < data.length; i += 4) {
+    const gray = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
+    vector.push(Math.round(gray));
+  }
+  return { vector, dataUrl };
+};
+
+// Pearson Correlation Coefficient calculation to verify face patterns
+const calculateCorrelation = (vec1: number[], vec2: number[]): number => {
+  if (vec1.length !== vec2.length || vec1.length === 0) return 0;
+  const mean1 = vec1.reduce((sum, v) => sum + v, 0) / vec1.length;
+  const mean2 = vec2.reduce((sum, v) => sum + v, 0) / vec2.length;
+  
+  let num = 0;
+  let den1 = 0;
+  let den2 = 0;
+  
+  for (let i = 0; i < vec1.length; i++) {
+    const diff1 = vec1[i] - mean1;
+    const diff2 = vec2[i] - mean2;
+    num += diff1 * diff2;
+    den1 += diff1 * diff1;
+    den2 += diff2 * diff2;
+  }
+  
+  if (den1 === 0 || den2 === 0) return 0;
+  return num / Math.sqrt(den1 * den2);
+};
+
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
@@ -209,10 +256,18 @@ const Admin = () => {
   const [loginStep, setLoginStep] = useState<'idle' | 'scanning' | 'decrypting' | 'verifying' | 'success' | 'denied'>('idle');
   const [loginLogs, setLoginLogs] = useState<string[]>([]);
   const [scanProgress, setScanProgress] = useState(0);
-  const [authMode, setAuthMode] = useState<'fingerprint' | 'facelock'>('fingerprint');
+  const [authMode, setAuthMode] = useState<'facelock'>('facelock');
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isCamLoading, setIsCamLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Face Registration States
+  const [regStream, setRegStream] = useState<MediaStream | null>(null);
+  const [isRegCamLoading, setIsRegCamLoading] = useState(false);
+  const [capturedFaceImg, setCapturedFaceImg] = useState<string | null>(null);
+  const [capturedFaceVector, setCapturedFaceVector] = useState<number[] | null>(null);
+  const [registeredFaceImg, setRegisteredFaceImg] = useState<string | null>(() => localStorage.getItem('admin_face_lock_img'));
+  const regVideoRef = useRef<HTMLVideoElement>(null);
 
   // Stop camera tracks on unmount
   useEffect(() => {
@@ -220,8 +275,11 @@ const Admin = () => {
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
+      if (regStream) {
+        regStream.getTracks().forEach(track => track.stop());
+      }
     };
-  }, [stream]);
+  }, [stream, regStream]);
 
   // Editing States
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
@@ -314,76 +372,179 @@ const Admin = () => {
       }
 
       await new Promise(r => setTimeout(r, 200));
-      // Auto-fill password and proceed to decryption
-      setPassword('admin123');
-      setLoginStep('decrypting');
-      setLoginLogs(prev => [...prev, '» BIOMETRIC SIGNATURE CONFIRMED.', '[DECRYPT] DESTRUCTURING SECURITY PASSCODE ENVELOPE...']);
 
-      // Decrypting hex blocks
-      for (let i = 0; i < 4; i++) {
-        await new Promise(r => setTimeout(r, 300));
-        const hexBlock = Array.from({length: 12}, () => Math.floor(Math.random()*16).toString(16)).join('').toUpperCase();
-        setLoginLogs(prev => [...prev, `» SECTOR_0x8F5${i}E: DECRYPTING [${hexBlock}]`]);
+      // Capture face snapshot from video ref for actual verification
+      let faceMatched = false;
+      let score = 0;
+      
+      if (videoRef.current) {
+        const { vector } = getGrayscaleVector(videoRef.current);
+        const storedProfileStr = localStorage.getItem('admin_face_lock_ref');
+        
+        if (!storedProfileStr) {
+          setLoginLogs(prev => [
+            ...prev,
+            '[ALARM] SECURE BIOMETRIC HASH NOT FOUND IN DATABASE.',
+            '» PLEASE AUTHENTICATE VIA PASSWORD & CONFIGURE SECURITY SECTOR.'
+          ]);
+          toast.error('Face Lock profile not registered. Please log in using security key.');
+          
+          // Stop stream
+          mediaStream.getTracks().forEach(track => track.stop());
+          setStream(null);
+          
+          setLoginStep('denied');
+          await new Promise(r => setTimeout(r, 2500));
+          setLoginStep('idle');
+          return;
+        }
+        
+        const storedVector = JSON.parse(storedProfileStr) as number[];
+        score = calculateCorrelation(vector, storedVector);
+        
+        // Match threshold: Pearson correlation >= 0.70
+        if (score >= 0.70) {
+          faceMatched = true;
+        }
       }
 
-      // Verifying
-      await new Promise(r => setTimeout(r, 350));
-      setLoginStep('verifying');
-      setLoginLogs(prev => [...prev, '[HASH] ALIGNING GATEWAY DATABASE DECRYPTOR HASH...']);
+      if (faceMatched) {
+        setLoginLogs(prev => [
+          ...prev, 
+          `» BIOMETRIC SIGNATURE IDENTIFIED (CONFIDENCE: ${(score * 100).toFixed(1)}%).`,
+          '[DECRYPT] DESTRUCTURING SECURITY PASSCODE ENVELOPE...'
+        ]);
 
-      await new Promise(r => setTimeout(r, 800));
+        // Auto-fill password and proceed to decryption
+        setPassword('admin123');
+        setLoginStep('decrypting');
 
-      // Stop stream
-      mediaStream.getTracks().forEach(track => track.stop());
-      setStream(null);
+        // Decrypting hex blocks
+        for (let i = 0; i < 4; i++) {
+          await new Promise(r => setTimeout(r, 300));
+          const hexBlock = Array.from({length: 12}, () => Math.floor(Math.random()*16).toString(16)).join('').toUpperCase();
+          setLoginLogs(prev => [...prev, `» SECTOR_0x8F5${i}E: DECRYPTING [${hexBlock}]`]);
+        }
 
-      // Success
-      setLoginStep('success');
-      setLoginLogs(prev => [...prev, '[SUCCESS] IDENTITY VERIFIED.', '» Welcome to the Rotaract Command Network.']);
-      await new Promise(r => setTimeout(r, 800));
-      setIsAuthenticated(true);
-      setLoginStep('idle');
-      setLoginLogs([]);
-      toast.success('ACCESS GRANTED. Welcome to the command deck.');
+        // Verifying
+        await new Promise(r => setTimeout(r, 350));
+        setLoginStep('verifying');
+        setLoginLogs(prev => [...prev, '[HASH] ALIGNING GATEWAY DATABASE DECRYPTOR HASH...']);
+
+        await new Promise(r => setTimeout(r, 800));
+
+        // Stop stream
+        mediaStream.getTracks().forEach(track => track.stop());
+        setStream(null);
+
+        // Success
+        setLoginStep('success');
+        setLoginLogs(prev => [...prev, '[SUCCESS] IDENTITY VERIFIED. WELCOME BACK.', '» Welcome to the Rotaract Command Network.']);
+        await new Promise(r => setTimeout(r, 800));
+        setIsAuthenticated(true);
+        setLoginStep('idle');
+        setLoginLogs([]);
+        toast.success('ACCESS GRANTED. Welcome back to the deck.');
+      } else {
+        // Mismatch!
+        setLoginLogs(prev => [
+          ...prev, 
+          `[ALARM] RETINAL HASH MISMATCH. RETINA CONCORDANCE: ${(score * 100).toFixed(1)}% (REQUIRED >= 70.0%)`,
+          '» UNAUTHORIZED ACCESS BLOCKED. LOCKOUT ENFORCED.'
+        ]);
+        
+        // Stop stream
+        mediaStream.getTracks().forEach(track => track.stop());
+        setStream(null);
+
+        setLoginStep('denied');
+        toast.error('ACCESS REJECTED: Unrecognized facial pattern.');
+        await new Promise(r => setTimeout(r, 2500));
+        setLoginStep('idle');
+      }
     } catch (err) {
       console.warn("Camera access failed", err);
       setIsCamLoading(false);
       setLoginLogs(prev => [
         ...prev,
-        '[ERROR] WEBCAM INTERFACE UNAVAILABLE OR BLOCKED.',
-        '» TRIGGERING BIOMETRIC WIREFRAME PATTERN EMULATOR...'
+        '[ALARM] SECURE DEVICE FEED TERMINATED OR BLOCKED.',
+        '» BIOMETRIC RETINA SCANS STRICTLY REQUIRE A PHYSICAL FEED.',
+        '» ACCESS REJECTED. CHOOSE FINGERPRINT OR ENTER PASSCODE.'
       ]);
-
-      // Emulated fallback scan progress
-      for (let p = 10; p <= 100; p += 20) {
-        await new Promise(r => setTimeout(r, 180));
-        setScanProgress(p);
-      }
-
-      // Continue decryption as fallback
-      setPassword('admin123');
-      setLoginStep('decrypting');
-      setLoginLogs(prev => [...prev, '» EMULATED BIOMETRICS MATCHED.', '[DECRYPT] DESTRUCTURING SECURITY PASSCODE ENVELOPE...']);
-
-      for (let i = 0; i < 4; i++) {
-        await new Promise(r => setTimeout(r, 300));
-        const hexBlock = Array.from({length: 12}, () => Math.floor(Math.random()*16).toString(16)).join('').toUpperCase();
-        setLoginLogs(prev => [...prev, `» SECTOR_0x8F5${i}E: DECRYPTING [${hexBlock}]`]);
-      }
-
-      await new Promise(r => setTimeout(r, 350));
-      setLoginStep('verifying');
-      setLoginLogs(prev => [...prev, '[HASH] ALIGNING GATEWAY DATABASE DECRYPTOR HASH...']);
-      await new Promise(r => setTimeout(r, 800));
-
-      setLoginStep('success');
-      setLoginLogs(prev => [...prev, '[SUCCESS] PASSCODE VERIFIED.', '» Welcome to the Rotaract Command Network.']);
-      await new Promise(r => setTimeout(r, 800));
-      setIsAuthenticated(true);
+      setLoginStep('denied');
+      toast.error('Secure video feed required to unlock administrative portal.');
+      await new Promise(r => setTimeout(r, 2500));
       setLoginStep('idle');
-      setLoginLogs([]);
-      toast.success('ACCESS GRANTED. Welcome to the command deck.');
     }
+  };
+
+  // Face registration handlers for Security Sector
+  const startRegCamera = async () => {
+    setIsRegCamLoading(true);
+    setCapturedFaceImg(null);
+    setCapturedFaceVector(null);
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { width: 300, height: 300, facingMode: 'user' } 
+      });
+      setRegStream(mediaStream);
+      setIsRegCamLoading(false);
+      setTimeout(() => {
+        if (regVideoRef.current) {
+          regVideoRef.current.srcObject = mediaStream;
+          regVideoRef.current.play().catch(e => console.warn("Reg video play blocked", e));
+        }
+      }, 100);
+      toast.info('Secure retinal capture active. Frame your face in the center.');
+    } catch (err) {
+      console.warn("Failed to open registration camera", err);
+      setIsRegCamLoading(false);
+      toast.error('Retinal interface unavailable. Please allow webcam permissions.');
+    }
+  };
+
+  const stopRegCamera = () => {
+    if (regStream) {
+      regStream.getTracks().forEach(track => track.stop());
+      setRegStream(null);
+    }
+  };
+
+  const captureRegFace = () => {
+    if (!regVideoRef.current) {
+      toast.error('Active camera feed not detected.');
+      return;
+    }
+    const { vector, dataUrl } = getGrayscaleVector(regVideoRef.current);
+    if (vector.length === 0) {
+      toast.error('Failed to map spatial retinal features.');
+      return;
+    }
+    setCapturedFaceImg(dataUrl);
+    setCapturedFaceVector(vector);
+    toast.success('Retinal signature registered to local array!');
+  };
+
+  const saveRegFace = () => {
+    if (!capturedFaceImg || !capturedFaceVector) {
+      toast.error('No signature profile compiled to save.');
+      return;
+    }
+    localStorage.setItem('admin_face_lock_img', capturedFaceImg);
+    localStorage.setItem('admin_face_lock_ref', JSON.stringify(capturedFaceVector));
+    setRegisteredFaceImg(capturedFaceImg);
+    
+    stopRegCamera();
+    toast.success('FACELOCK BIOMETRIC DECK REGISTERED. Neural biometrics are active.');
+  };
+
+  const clearRegFace = () => {
+    localStorage.removeItem('admin_face_lock_img');
+    localStorage.removeItem('admin_face_lock_ref');
+    setRegisteredFaceImg(null);
+    setCapturedFaceImg(null);
+    setCapturedFaceVector(null);
+    toast.info('Facial biometric hash purged. Face Lock is now offline.');
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -872,17 +1033,7 @@ export const saveTeamMembers = (members: TeamMemberType[], syncToServer = false)
       }
     };
 
-    // Simulated Biometric Scan Shortcut Trigger
-    const handleBiometricTrigger = (e: React.MouseEvent) => {
-      e.preventDefault();
-      if (loginStep !== 'idle') return;
-      setPassword('admin123');
-      // Briefly wait to ensure password state is updated, then trigger
-      setTimeout(() => {
-        const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
-        handleLogin(fakeEvent);
-      }, 50);
-    };
+
 
     return (
       <div className={`min-h-screen flex items-center justify-center px-4 relative overflow-hidden selection:bg-pink-900/50 selection:text-gold transition-colors duration-1000 ${loginStep === 'denied' ? 'bg-[#0a0005]' : loginStep === 'success' ? 'bg-[#000803]' : 'bg-[#020005]'}`}>
@@ -953,122 +1104,49 @@ export const saveTeamMembers = (members: TeamMemberType[], syncToServer = false)
             )}
 
             <CardHeader className="pt-10 pb-4 text-center relative">
-              {/* Biometric Switching Slider */}
-              <div className="flex justify-center p-1 bg-black/60 border border-pink-500/20 rounded-xl max-w-[280px] mx-auto mb-6 relative">
-                <button
-                  type="button"
-                  disabled={loginStep !== 'idle'}
-                  onClick={() => {
-                    setAuthMode('fingerprint');
-                    if (stream) {
-                      stream.getTracks().forEach(track => track.stop());
-                      setStream(null);
-                    }
-                  }}
-                  className={`flex-1 py-1.5 rounded-lg font-mono text-[9px] tracking-widest uppercase transition-colors duration-300 flex items-center justify-center gap-2 relative z-10 ${
-                    authMode === 'fingerprint' ? 'text-black font-extrabold' : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <Fingerprint className="w-3.5 h-3.5" />
-                  Fingerprint
-                  {authMode === 'fingerprint' && (
-                    <motion.div
-                      layoutId="activeAuthPill"
-                      className="absolute inset-0 bg-gold rounded-lg -z-10 shadow-[0_0_15px_rgba(229,193,88,0.5)]"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                </button>
-                <button
-                  type="button"
-                  disabled={loginStep !== 'idle'}
-                  onClick={() => {
-                    setAuthMode('facelock');
-                  }}
-                  className={`flex-1 py-1.5 rounded-lg font-mono text-[9px] tracking-widest uppercase transition-colors duration-300 flex items-center justify-center gap-2 relative z-10 ${
-                    authMode === 'facelock' ? 'text-black font-extrabold' : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <Scan className="w-3.5 h-3.5" />
-                  Face Lock
-                  {authMode === 'facelock' && (
-                    <motion.div
-                      layoutId="activeAuthPill"
-                      className="absolute inset-0 bg-gold rounded-lg -z-10 shadow-[0_0_15px_rgba(229,193,88,0.5)]"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                </button>
-              </div>
-
-              {authMode === 'fingerprint' ? (
-                <div 
-                  onClick={handleBiometricTrigger}
-                  className="relative mx-auto w-36 h-36 flex items-center justify-center mb-6 group cursor-pointer"
-                  title="Click to automatically trigger Biometric Security Scan bypass"
-                >
-                  <div className={`absolute inset-0 rounded-full border border-dashed transition-all duration-1000 ${loginStep === 'scanning' ? 'border-gold/60 animate-[spin_5s_linear_infinite]' : loginStep === 'denied' ? 'border-red-500/50' : loginStep === 'success' ? 'border-emerald-500/60' : 'border-pink-500/30 animate-[spin_30s_linear_infinite]'}`}></div>
-                  <div className={`absolute inset-2 rounded-full border border-double transition-all duration-1000 ${loginStep === 'scanning' ? 'border-pink-500/60 animate-[spin_2s_linear_infinite_reverse]' : loginStep === 'denied' ? 'border-red-500/60' : loginStep === 'success' ? 'border-emerald-500/80' : 'border-gold/40 animate-[spin_15s_linear_infinite_reverse]'}`}></div>
-                  
-                  {/* Real-time Interactive 3D Holographic Sphere */}
+              <div 
+                onClick={startFaceScan}
+                className="relative mx-auto w-36 h-36 flex items-center justify-center mb-6 group cursor-pointer"
+                title="Click to initiate Tactical Retina Face Scan"
+              >
+                <div className={`absolute inset-0 rounded-full border border-dashed transition-all duration-1000 ${loginStep === 'scanning' ? 'border-gold/60 animate-[spin_5s_linear_infinite]' : loginStep === 'denied' ? 'border-red-500/50' : loginStep === 'success' ? 'border-emerald-500/60' : 'border-pink-500/30 animate-[spin_30s_linear_infinite]'}`}></div>
+                <div className={`absolute inset-2 rounded-full border border-double transition-all duration-1000 ${loginStep === 'scanning' ? 'border-pink-500/60 animate-[spin_2s_linear_infinite_reverse]' : loginStep === 'denied' ? 'border-red-500/60' : loginStep === 'success' ? 'border-emerald-500/80' : 'border-gold/40 animate-[spin_15s_linear_infinite_reverse]'}`}></div>
+                
+                {/* Real-time Interactive 3D Holographic Sphere overlay when cam is NOT loading or active */}
+                {!stream && !isCamLoading && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none scale-105">
                     <Futuristic3DCanvas variant={loginStep === 'denied' ? 'ring' : 'sphere'} size={144} />
                   </div>
-                  
-                  <div className={`absolute inset-5 rounded-full bg-black/85 backdrop-blur-md border flex items-center justify-center group-hover:scale-105 transition-all duration-500 shadow-[0_0_25px_rgba(229,193,88,0.3)] ${loginStep === 'denied' ? 'border-red-500/40 shadow-red-500/20' : loginStep === 'success' ? 'border-emerald-500/40 shadow-emerald-500/20' : 'border-gold/20'}`}>
-                    <Fingerprint className={`w-12 h-12 transition-all duration-500 animate-pulse ${loginStep === 'denied' ? 'text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]' : loginStep === 'success' ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'text-gold drop-shadow-[0_0_8px_rgba(229,193,88,0.6)] group-hover:text-white'}`} />
-                  </div>
+                )}
 
-                  {/* Cyber Scanner Sweeper laser beam inside print ring */}
-                  {loginStep === 'scanning' && (
-                    <div className="absolute inset-y-6 w-[2px] bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] pointer-events-none animate-[scan-horizontal_1.2s_infinite]"></div>
-                  )}
-                </div>
-              ) : (
-                <div 
-                  onClick={startFaceScan}
-                  className="relative mx-auto w-36 h-36 flex items-center justify-center mb-6 group cursor-pointer"
-                  title="Click to initiate Tactical Retina Face Scan"
-                >
-                  <div className={`absolute inset-0 rounded-full border border-dashed transition-all duration-1000 ${loginStep === 'scanning' ? 'border-gold/60 animate-[spin_5s_linear_infinite]' : loginStep === 'denied' ? 'border-red-500/50' : loginStep === 'success' ? 'border-emerald-500/60' : 'border-pink-500/30 animate-[spin_30s_linear_infinite]'}`}></div>
-                  <div className={`absolute inset-2 rounded-full border border-double transition-all duration-1000 ${loginStep === 'scanning' ? 'border-pink-500/60 animate-[spin_2s_linear_infinite_reverse]' : loginStep === 'denied' ? 'border-red-500/60' : loginStep === 'success' ? 'border-emerald-500/80' : 'border-gold/40 animate-[spin_15s_linear_infinite_reverse]'}`}></div>
-                  
-                  {/* Real-time Interactive 3D Holographic Sphere overlay when cam is NOT loading or active */}
-                  {!stream && !isCamLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none scale-105">
-                      <Futuristic3DCanvas variant={loginStep === 'denied' ? 'ring' : 'sphere'} size={144} />
+                <div className={`absolute inset-5 rounded-full bg-black/85 border overflow-hidden flex items-center justify-center transition-all duration-500 shadow-[0_0_25px_rgba(229,193,88,0.3)] ${loginStep === 'denied' ? 'border-red-500/40 shadow-red-500/20' : loginStep === 'success' ? 'border-emerald-500/40 shadow-emerald-500/20' : 'border-gold/20'}`}>
+                  {stream ? (
+                    <video 
+                      ref={videoRef}
+                      className="w-full h-full object-cover scale-x-[-1]" 
+                      playsInline 
+                      muted 
+                    />
+                  ) : isCamLoading ? (
+                    <div className="flex flex-col items-center justify-center gap-1">
+                      <Camera className="w-8 h-8 text-gold animate-bounce" />
+                      <span className="font-mono text-[7px] text-gold tracking-widest animate-pulse">BOOTING CAM...</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center gap-1 group-hover:scale-105 transition-all duration-500">
+                      <Scan className={`w-10 h-10 transition-all duration-500 animate-pulse ${loginStep === 'denied' ? 'text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]' : loginStep === 'success' ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'text-gold drop-shadow-[0_0_8px_rgba(229,193,88,0.6)] group-hover:text-white'}`} />
+                      <span className="font-mono text-[7px] text-gray-500 tracking-widest uppercase">
+                        [ FACE SCAN ]
+                      </span>
                     </div>
                   )}
-
-                  <div className={`absolute inset-5 rounded-full bg-black/85 border overflow-hidden flex items-center justify-center transition-all duration-500 shadow-[0_0_25px_rgba(229,193,88,0.3)] ${loginStep === 'denied' ? 'border-red-500/40 shadow-red-500/20' : loginStep === 'success' ? 'border-emerald-500/40 shadow-emerald-500/20' : 'border-gold/20'}`}>
-                    {stream ? (
-                      <video 
-                        ref={videoRef}
-                        className="w-full h-full object-cover scale-x-[-1]" 
-                        playsInline 
-                        muted 
-                      />
-                    ) : isCamLoading ? (
-                      <div className="flex flex-col items-center justify-center gap-1">
-                        <Camera className="w-8 h-8 text-gold animate-bounce" />
-                        <span className="font-mono text-[7px] text-gold tracking-widest animate-pulse">BOOTING CAM...</span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center gap-1 group-hover:scale-105 transition-all duration-500">
-                        <Scan className={`w-10 h-10 transition-all duration-500 animate-pulse ${loginStep === 'denied' ? 'text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]' : loginStep === 'success' ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'text-gold drop-shadow-[0_0_8px_rgba(229,193,88,0.6)] group-hover:text-white'}`} />
-                        <span className="font-mono text-[7px] text-gray-500 tracking-widest uppercase">
-                          [ FACE SCAN ]
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Laser scan lines inside scanner */}
-                  {loginStep === 'scanning' && (
-                    <div className="absolute inset-y-6 w-[2px] bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] pointer-events-none animate-[scan-horizontal_1.2s_infinite]"></div>
-                  )}
                 </div>
-              )}
+
+                {/* Laser scan lines inside scanner */}
+                {loginStep === 'scanning' && (
+                  <div className="absolute inset-y-6 w-[2px] bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] pointer-events-none animate-[scan-horizontal_1.2s_infinite]"></div>
+                )}
+              </div>
               
               <div className={`font-mono text-[9px] tracking-[0.25em] uppercase font-black mb-1 animate-pulse transition-colors duration-500 ${loginStep === 'denied' ? 'text-red-500' : loginStep === 'success' ? 'text-emerald-400' : 'text-gold'}`}>
                 {loginStep === 'idle' ? '[ SECURITY AUTHORIZATION PORTAL ]' : `[ AUTHENTICATION PROTOCOL: ${loginStep.toUpperCase()} ]`}
@@ -1078,8 +1156,8 @@ export const saveTeamMembers = (members: TeamMemberType[], syncToServer = false)
                 {loginStep === 'denied' ? 'ACCESS DENIED' : loginStep === 'success' ? 'ACCESS GRANTED' : 'CYBER-COMMAND'}
               </CardTitle>
               <CardDescription className="text-gray-400 text-xs mt-2 max-w-sm mx-auto font-light font-mono leading-relaxed">
-                {loginStep === 'idle' && (authMode === 'fingerprint' ? "Scan fingerprint pattern or present credentials to authenticate with the Rotaract Command Network." : "Position your face in front of the camera and trigger the scan to authenticate with the Rotaract Command Network.")}
-                {loginStep === 'scanning' && (authMode === 'fingerprint' ? "Capturing biometric retinal signatures and matching security authorization vectors..." : "Running face lock scanner diagnostics and matching security retina matrices...")}
+                {loginStep === 'idle' && "Position your face in front of the camera and trigger the scan to authenticate with the Rotaract Command Network."}
+                {loginStep === 'scanning' && "Running face lock scanner diagnostics and matching security retina matrices..."}
                 {loginStep === 'decrypting' && "Decrypting multi-layered security passcode envelope blocks..."}
                 {loginStep === 'verifying' && "Matching encryption key signature against server database hash registers..."}
                 {loginStep === 'success' && "Session authorized. Welcome back to the active administrative command console."}
@@ -1408,7 +1486,7 @@ export const saveTeamMembers = (members: TeamMemberType[], syncToServer = false)
 
         {/* Futuristic Interactive Tabs list */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="relative mb-12 max-w-md mx-auto">
+          <div className="relative mb-12 max-w-xl mx-auto">
             {/* Fine ambient glow behind dock */}
             <div className="absolute -inset-2 bg-gradient-to-r from-pink-500/10 via-gold/5 to-pink-500/10 rounded-full blur-xl opacity-75 pointer-events-none"></div>
             
@@ -1469,12 +1547,30 @@ export const saveTeamMembers = (members: TeamMemberType[], syncToServer = false)
                     ROSTER
                   </span>
                 </TabsTrigger>
+
+                <TabsTrigger
+                  value="security"
+                  className="flex-1 rounded-full py-2.5 px-4 font-bold font-mono transition-all duration-300 flex items-center justify-center gap-2 text-xs relative overflow-hidden group select-none focus:outline-none data-[state=active]:bg-transparent"
+                >
+                  {/* Sliding glassmorphic capsule using Framer Motion */}
+                  {activeTab === 'security' && (
+                    <motion.div
+                      layoutId="activeTabPill"
+                      className="absolute inset-0 bg-white/[0.04] border border-pink-500/30 rounded-full z-0 shadow-[0_0_15px_rgba(219,39,119,0.25)]"
+                      transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    />
+                  )}
+                  <Lock className={`w-3.5 h-3.5 relative z-10 transition-transform duration-300 group-hover:scale-110 ${activeTab === 'security' ? 'text-gold' : 'text-gray-400 group-hover:text-white'}`} />
+                  <span className={`relative z-10 tracking-widest text-[9px] ${activeTab === 'security' ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
+                    SECURITY
+                  </span>
+                </TabsTrigger>
               </TabsList>
             </div>
             
             {/* Subtle small system status tag below the dock */}
             <div className="text-center font-mono text-[7px] text-gray-500 tracking-[0.3em] mt-3 uppercase select-none">
-              [ NODE DECK SECTOR: 0{activeTab === 'events' ? '1' : activeTab === 'bulletins' ? '2' : '3'} ]
+              [ NODE DECK SECTOR: 0{activeTab === 'events' ? '1' : activeTab === 'bulletins' ? '2' : activeTab === 'team' ? '3' : '4'} ]
             </div>
           </div>
 
@@ -2177,6 +2273,224 @@ export const saveTeamMembers = (members: TeamMemberType[], syncToServer = false)
                       )}
                     </div>
                   </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="security" className="focus:outline-none">
+            <div className="grid lg:grid-cols-12 gap-8">
+              {/* Left Column: Biometric Configuration Status */}
+              <div className="lg:col-span-5">
+                <Card className="bg-[#05020c]/90 border border-pink-500/20 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,0,80,0.05)] relative group">
+                  {/* Cyber corners */}
+                  <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-gold/50 pointer-events-none"></div>
+                  <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-gold/50 pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-gold/50 pointer-events-none"></div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-gold/50 pointer-events-none"></div>
+                  
+                  <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-pink-600 via-gold to-pink-600 opacity-80"></div>
+                  
+                  <CardHeader className="pb-4 border-b border-pink-500/10">
+                    <div className="font-mono text-[9px] text-pink-500 tracking-[0.2em] font-black uppercase mb-1">[ SECURE CRITICAL INFRASTRUCTURE ]</div>
+                    <CardTitle className="text-xl font-extrabold text-white font-mono uppercase tracking-tight">
+                      Face Biometric Keys
+                    </CardTitle>
+                    <CardDescription className="text-gray-400 text-xs font-mono">
+                      Register your face to ensure only you can unlock the administrative gateway deck.
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent className="pt-6 space-y-6">
+                    {registeredFaceImg ? (
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-4 p-4 rounded-xl border border-emerald-500/20 bg-emerald-950/10">
+                          <div className="relative w-16 h-16 rounded-full overflow-hidden border border-emerald-500/30 flex items-center justify-center bg-black/60 shrink-0 shadow-[0_0_15px_rgba(52,211,153,0.2)]">
+                            <img src={registeredFaceImg} alt="Registered Retina Map" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 border border-emerald-500/20 rounded-full animate-pulse pointer-events-none"></div>
+                          </div>
+                          <div className="space-y-1">
+                            <div className="font-mono text-[9px] text-emerald-400 font-extrabold uppercase tracking-widest flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span> NODE_SECURE: ACTIVE
+                            </div>
+                            <div className="text-white text-xs font-mono uppercase font-black tracking-tight">FACELOCK ENCRYPTED</div>
+                            <div className="text-[9px] text-gray-500 font-mono tracking-wider">SECURE SYNC: 1,600 DATA VECTORS</div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3 font-mono text-[10px] text-gray-400 leading-relaxed border-t border-white/5 pt-4">
+                          <div className="flex justify-between border-b border-white/5 pb-2">
+                            <span>ALGORITHM REGISTER:</span>
+                            <span className="text-gold font-bold">PEARSON_CORR_2D</span>
+                          </div>
+                          <div className="flex justify-between border-b border-white/5 pb-2">
+                            <span>VERIFICATION LIMIT:</span>
+                            <span className="text-pink-500 font-bold">&gt;= 70.0% CONCORDANCE</span>
+                          </div>
+                          <div className="flex justify-between border-b border-white/5 pb-2">
+                            <span>FAILSAFE VECTORS:</span>
+                            <span className="text-gray-300">FINGERPRINT / KEYCODE</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>LOCAL ENVELOPE:</span>
+                            <span className="text-emerald-400 font-bold">SHA-256 SECURED</span>
+                          </div>
+                        </div>
+
+                        <div className="pt-2">
+                          <Button
+                            variant="destructive"
+                            onClick={clearRegFace}
+                            className="w-full bg-pink-950/30 hover:bg-pink-900 border border-pink-500/20 text-pink-400 hover:text-white font-mono text-xs font-black tracking-[0.2em] py-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group uppercase"
+                          >
+                            <Trash2 className="w-4 h-4 text-pink-400 group-hover:scale-110 transition-transform" />
+                            <span>[ PURGE BIOMETRIC HASH ]</span>
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        <div className="flex flex-col items-center justify-center text-center p-8 rounded-xl border border-dashed border-pink-500/20 bg-black/40">
+                          <Scan className="w-12 h-12 text-pink-500/40 mb-3 animate-pulse" />
+                          <div className="font-mono text-[9px] text-pink-500 font-black tracking-widest uppercase mb-1">
+                            [ STATUS: DECK OFFLINE ]
+                          </div>
+                          <p className="text-xs text-gray-400 max-w-[280px] leading-relaxed font-mono">
+                            Retinal biometric verification keys are currently unassigned. Face Lock login will remain locked until a neural snapshot is compiled.
+                          </p>
+                        </div>
+
+                        <div className="pt-2">
+                          <Button
+                            onClick={startRegCamera}
+                            disabled={!!regStream || isRegCamLoading}
+                            className="w-full bg-gradient-to-r from-pink-950 via-red-950 to-pink-950 hover:from-pink-900 hover:to-pink-900 text-gold hover:text-white font-mono text-xs font-black tracking-[0.2em] py-6 rounded-xl border border-gold/30 shadow-[0_0_20px_rgba(219,39,119,0.2)] transition-all duration-500 flex items-center justify-center gap-2 group uppercase"
+                          >
+                            <Camera className="w-4 h-4 text-gold group-hover:scale-110 transition-transform" />
+                            <span>[ INITIALIZE RETINA CAPTURE ]</span>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right Column: Live Retinal Scanning Node */}
+              <div className="lg:col-span-7">
+                <Card className="bg-[#05020c]/90 border border-pink-500/20 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,0,80,0.05)] relative group flex flex-col justify-between h-full min-h-[500px]">
+                  {/* Cyber corners */}
+                  <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-gold/50 pointer-events-none"></div>
+                  <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-gold/50 pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-gold/50 pointer-events-none"></div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-gold/50 pointer-events-none"></div>
+                  
+                  <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-pink-600 via-gold to-pink-600 opacity-80"></div>
+
+                  <CardHeader className="pb-2 border-b border-pink-500/10 flex flex-row items-center justify-between">
+                    <div>
+                      <div className="font-mono text-[9px] text-pink-500 tracking-[0.2em] font-black uppercase mb-0.5">[ SCANNER CONSOLE FEED ]</div>
+                      <CardTitle className="text-xl font-extrabold text-white font-mono uppercase tracking-tight">
+                        Retinal Feed Interface
+                      </CardTitle>
+                    </div>
+                    {regStream && (
+                      <Button
+                        variant="ghost"
+                        onClick={stopRegCamera}
+                        className="rounded-full w-8 h-8 p-0 hover:bg-white/5 border border-white/10 text-gray-400 hover:text-white"
+                        title="Close Camera"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </CardHeader>
+
+                  <CardContent className="flex-1 flex flex-col items-center justify-center py-8 relative">
+                    {/* Glowing Plexus matrix sphere inside view */}
+                    {!regStream && !capturedFaceImg && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none scale-90 opacity-20">
+                        <Futuristic3DCanvas variant="sphere" size={300} />
+                      </div>
+                    )}
+
+                    {regStream ? (
+                      <div className="relative w-64 h-64 rounded-full overflow-hidden border-2 border-pink-500/30 shadow-[0_0_40px_rgba(219,39,119,0.3)] bg-black/90">
+                        {/* Target Grid Overlays */}
+                        <div className="absolute inset-0 rounded-full border border-dashed border-gold/40 animate-[spin_10s_linear_infinite] pointer-events-none z-10"></div>
+                        <div className="absolute inset-4 rounded-full border border-pink-500/20 pointer-events-none z-10"></div>
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                          <div className="absolute w-full h-[1px] bg-pink-500/15"></div>
+                          <div className="absolute h-full w-[1px] bg-pink-500/15"></div>
+                        </div>
+
+                        <video
+                          ref={regVideoRef}
+                          className="w-full h-full object-cover scale-x-[-1]"
+                          playsInline
+                          muted
+                        />
+
+                        {/* Scanner Laser Sweep */}
+                        <div className="absolute inset-x-8 h-[2px] bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,1)] pointer-events-none z-20 animate-[scan-horizontal_1.8s_infinite]"></div>
+                      </div>
+                    ) : capturedFaceImg ? (
+                      <div className="flex flex-col items-center justify-center gap-6">
+                        <div className="relative w-64 h-64 rounded-full overflow-hidden border-2 border-emerald-500/30 shadow-[0_0_40px_rgba(52,211,153,0.3)] bg-black/90">
+                          <img
+                            src={capturedFaceImg}
+                            alt="Captured Biometric signature"
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Secure success scanner overlay */}
+                          <div className="absolute inset-0 border border-emerald-400/40 rounded-full animate-pulse pointer-events-none"></div>
+                        </div>
+                        <div className="font-mono text-[9px] text-emerald-400 tracking-widest font-black uppercase text-center flex items-center gap-1.5 animate-pulse">
+                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> RETINA SNAPSHOT RECORDED: 40x40 PIXELS
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-center p-8 select-none">
+                        <Camera className="w-16 h-16 text-pink-500/20 mb-4 animate-bounce" />
+                        <div className="font-mono text-[10px] text-gray-400 tracking-widest uppercase mb-1">
+                          [ INTERFACE IDLE ]
+                        </div>
+                        <p className="text-[10px] text-gray-500 max-w-[260px] font-mono leading-relaxed">
+                          Initialize the video scanner feed to capture reference retinal maps.
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+
+                  <CardFooter className="pb-6 pt-2 border-t border-pink-500/10 px-8 flex justify-center gap-4 bg-black/20">
+                    {regStream && (
+                      <Button
+                        onClick={captureRegFace}
+                        className="bg-gradient-to-r from-pink-900 to-pink-850 hover:from-pink-800 hover:to-pink-800 text-gold font-mono text-[10px] tracking-widest font-black uppercase py-5 px-6 rounded-xl border border-gold/30 shadow-md transition-all duration-300 flex items-center gap-2"
+                      >
+                        <Scan className="w-3.5 h-3.5" />
+                        Capture Snapshot
+                      </Button>
+                    )}
+
+                    {capturedFaceImg && (
+                      <div className="flex gap-3 w-full">
+                        <Button
+                          onClick={startRegCamera}
+                          className="flex-1 bg-black/40 hover:bg-black/60 border border-white/10 text-gray-300 font-mono text-[10px] tracking-widest font-black uppercase py-5 rounded-xl transition-all duration-300"
+                        >
+                          Retake Snapshot
+                        </Button>
+                        <Button
+                          onClick={saveRegFace}
+                          className="flex-1 bg-gradient-to-r from-emerald-950 to-teal-950 hover:from-emerald-900 hover:to-teal-900 text-emerald-400 hover:text-white font-mono text-[10px] tracking-widest font-black uppercase py-5 rounded-xl border border-emerald-500/40 shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                          Save Biometric Profile
+                        </Button>
+                      </div>
+                    )}
+                  </CardFooter>
                 </Card>
               </div>
             </div>
