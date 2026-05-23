@@ -173,7 +173,7 @@ const CinematicBulletinCard = ({
             </div>
 
             <h3 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight group-hover:text-gold transition-colors duration-300 uppercase tracking-tight">
-              {bulletin.title} Issue
+              {bulletin.title}
             </h3>
 
             <p className="text-gray-400 text-xs md:text-sm leading-relaxed mb-4 font-light">
