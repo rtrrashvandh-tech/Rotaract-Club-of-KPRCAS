@@ -986,29 +986,110 @@ export const saveTeamMembers = (members: TeamMemberType[], syncToServer = false)
 
         {/* Futuristic Interactive Tabs list */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-10 max-w-lg mx-auto bg-white/5 p-1.5 border border-white/10 rounded-2xl shadow-xl">
-            <TabsTrigger
-              value="events"
-              className={`rounded-xl py-3 font-semibold font-mono transition-all duration-300 flex items-center justify-center gap-2 text-xs ${activeTab === 'events' ? 'bg-gradient-to-r from-pink-700 to-red-700 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-            >
-              <Calendar className="w-4 h-4" />
-              <span>[ EVENTS ]</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="bulletins"
-              className={`rounded-xl py-3 font-semibold font-mono transition-all duration-300 flex items-center justify-center gap-2 text-xs ${activeTab === 'bulletins' ? 'bg-gradient-to-r from-pink-700 to-red-700 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-            >
-              <Newspaper className="w-4 h-4" />
-              <span>[ BULLETINS ]</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="team"
-              className={`rounded-xl py-3 font-semibold font-mono transition-all duration-300 flex items-center justify-center gap-2 text-xs ${activeTab === 'team' ? 'bg-gradient-to-r from-pink-700 to-red-700 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-            >
-              <Users className="w-4 h-4" />
-              <span>[ ROSTER ]</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="relative mb-12 max-w-2xl mx-auto">
+            {/* Outer Tech Framework / Grid line accents */}
+            <div className="absolute -inset-x-6 top-1/2 h-[1px] bg-gradient-to-r from-transparent via-pink-500/20 to-transparent pointer-events-none z-0"></div>
+            
+            {/* Telemetry Labels */}
+            <div className="flex justify-between items-center font-mono text-[8px] text-gray-500 tracking-[0.25em] px-2 mb-2 select-none uppercase z-10 relative">
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                <span>SEC_ID: DECK-HUD-01</span>
+              </span>
+              <span className="text-gold/50 animate-pulse">SYSTEM NODE: ACTIVE</span>
+              <span>INDEX: 00{activeTab === 'events' ? '1' : activeTab === 'bulletins' ? '2' : '3'}</span>
+            </div>
+
+            {/* Main unique rounded tab container */}
+            <div className="relative bg-[#05020c]/85 backdrop-blur-xl border border-pink-500/20 rounded-2xl p-1.5 shadow-[0_0_40px_rgba(219,39,119,0.15)] z-10">
+              
+              {/* Glowing outer visual corner brackets */}
+              <div className="absolute -top-[3px] -left-[3px] w-3 h-3 border-t-2 border-l-2 border-gold pointer-events-none"></div>
+              <div className="absolute -top-[3px] -right-[3px] w-3 h-3 border-t-2 border-r-2 border-gold pointer-events-none"></div>
+              <div className="absolute -bottom-[3px] -left-[3px] w-3 h-3 border-b-2 border-l-2 border-gold pointer-events-none"></div>
+              <div className="absolute -bottom-[3px] -right-[3px] w-3 h-3 border-b-2 border-r-2 border-gold pointer-events-none"></div>
+              
+              <TabsList className="grid w-full grid-cols-3 bg-transparent border-0 p-0 rounded-none gap-2 shadow-none select-none h-auto">
+                <TabsTrigger
+                  value="events"
+                  className="rounded-xl py-3.5 font-bold font-mono transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-xs relative overflow-hidden group select-none focus:outline-none data-[state=active]:bg-transparent"
+                >
+                  {/* Sliding capsule background indicator using Framer Motion */}
+                  {activeTab === 'events' && (
+                    <motion.div
+                      layoutId="activeTabPill"
+                      className="absolute inset-0 bg-gradient-to-r from-pink-900 via-red-900 to-pink-900 border border-gold/30 rounded-xl z-0 shadow-[0_0_20px_rgba(219,39,119,0.4)]"
+                      transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    />
+                  )}
+                  {/* Hover Scanline Effect */}
+                  <div className="absolute inset-x-0 h-[2px] bg-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_8px_rgba(229,193,88,1)] pointer-events-none animate-scanning"></div>
+
+                  <Calendar className={`w-4 h-4 relative z-10 transition-transform duration-300 group-hover:scale-110 ${activeTab === 'events' ? 'text-gold' : 'text-gray-400 group-hover:text-white'}`} />
+                  <span className={`relative z-10 tracking-[0.15em] text-[10px] ${activeTab === 'events' ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
+                    [ EVENTS ]
+                  </span>
+                  {/* Mini sector id */}
+                  <span className="text-[7px] text-gray-500/80 tracking-widest font-mono select-none pointer-events-none relative z-10 group-hover:text-gold/60 transition-colors uppercase">
+                    SYS.EVT.101
+                  </span>
+                </TabsTrigger>
+
+                <TabsTrigger
+                  value="bulletins"
+                  className="rounded-xl py-3.5 font-bold font-mono transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-xs relative overflow-hidden group select-none focus:outline-none data-[state=active]:bg-transparent"
+                >
+                  {/* Sliding capsule background indicator using Framer Motion */}
+                  {activeTab === 'bulletins' && (
+                    <motion.div
+                      layoutId="activeTabPill"
+                      className="absolute inset-0 bg-gradient-to-r from-pink-900 via-red-900 to-pink-900 border border-gold/30 rounded-xl z-0 shadow-[0_0_20px_rgba(219,39,119,0.4)]"
+                      transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    />
+                  )}
+                  {/* Hover Scanline Effect */}
+                  <div className="absolute inset-x-0 h-[2px] bg-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_8px_rgba(229,193,88,1)] pointer-events-none animate-scanning"></div>
+
+                  <Newspaper className={`w-4 h-4 relative z-10 transition-transform duration-300 group-hover:scale-110 ${activeTab === 'bulletins' ? 'text-gold' : 'text-gray-400 group-hover:text-white'}`} />
+                  <span className={`relative z-10 tracking-[0.15em] text-[10px] ${activeTab === 'bulletins' ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
+                    [ BULLETINS ]
+                  </span>
+                  {/* Mini sector id */}
+                  <span className="text-[7px] text-gray-500/80 tracking-widest font-mono select-none pointer-events-none relative z-10 group-hover:text-gold/60 transition-colors uppercase">
+                    SYS.BLN.202
+                  </span>
+                </TabsTrigger>
+
+                <TabsTrigger
+                  value="team"
+                  className="rounded-xl py-3.5 font-bold font-mono transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-xs relative overflow-hidden group select-none focus:outline-none data-[state=active]:bg-transparent"
+                >
+                  {/* Sliding capsule background indicator using Framer Motion */}
+                  {activeTab === 'team' && (
+                    <motion.div
+                      layoutId="activeTabPill"
+                      className="absolute inset-0 bg-gradient-to-r from-pink-900 via-red-900 to-pink-900 border border-gold/30 rounded-xl z-0 shadow-[0_0_20px_rgba(219,39,119,0.4)]"
+                      transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    />
+                  )}
+                  {/* Hover Scanline Effect */}
+                  <div className="absolute inset-x-0 h-[2px] bg-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_8px_rgba(229,193,88,1)] pointer-events-none animate-scanning"></div>
+
+                  <Users className={`w-4 h-4 relative z-10 transition-transform duration-300 group-hover:scale-110 ${activeTab === 'team' ? 'text-gold' : 'text-gray-400 group-hover:text-white'}`} />
+                  <span className={`relative z-10 tracking-[0.15em] text-[10px] ${activeTab === 'team' ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
+                    [ ROSTER ]
+                  </span>
+                  {/* Mini sector id */}
+                  <span className="text-[7px] text-gray-500/80 tracking-widest font-mono select-none pointer-events-none relative z-10 group-hover:text-gold/60 transition-colors uppercase">
+                    SYS.RST.303
+                  </span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            
+            {/* Holographic Projection Ambient Glow beneath selected tab */}
+            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-48 h-10 bg-gradient-to-t from-pink-500/5 to-transparent blur-xl pointer-events-none rounded-full"></div>
+          </div>
 
           {/* TAB 1: MANAGE EVENTS */}
           <TabsContent value="events" className="focus:outline-none">
