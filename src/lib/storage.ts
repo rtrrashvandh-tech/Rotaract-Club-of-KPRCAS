@@ -463,16 +463,6 @@ const initialEvents: EventType[] = [
     description: 'A cybersecurity awareness session teaching safe digital practices and responsible online behavior.'
   },
   {
-    id: 'e48',
-    title: 'Writing With Pride',
-    date: '2025-12-15',
-    time: '10:00 AM',
-    location: 'Tiruppur & Coimbatore',
-    platform: 'In-person',
-    image: 'https://placehold.co/800x400?text=Writing+With+Pride',
-    description: 'A community outreach initiative encouraging learning and creative expression among senior citizens.'
-  },
-  {
     id: 'e49',
     title: 'Oru Gift-uh Parcel',
     date: '2025-12-22',
@@ -607,7 +597,19 @@ export const getEvents = (): EventType[] => {
       // Migration: Ensure newly added hardcoded initial events are merged for existing local caches
       if (Array.isArray(parsed)) {
         let updated = false;
-        const merged = [...parsed];
+
+        // Remove legacy initial events that are no longer in initialEvents
+        const initialIds = new Set(initialEvents.map(e => e.id));
+        const filtered = parsed.filter(e => {
+          if (/^e\d+$/.test(e.id)) {
+            const keep = initialIds.has(e.id);
+            if (!keep) updated = true;
+            return keep;
+          }
+          return true;
+        });
+
+        const merged = [...filtered];
         initialEvents.forEach(initE => {
           if (!merged.some(e => e.id === initE.id)) {
             merged.push(initE);
@@ -618,6 +620,7 @@ export const getEvents = (): EventType[] => {
           saveEvents(merged);
           return sortEventsByDate(merged);
         }
+        return sortEventsByDate(filtered);
       }
       return sortEventsByDate(parsed);
     } catch (e) {

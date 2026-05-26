@@ -457,16 +457,6 @@ const defaultData = {
       description: 'A cybersecurity awareness session teaching safe digital practices and responsible online behavior.'
     },
     {
-      id: 'e48',
-      title: 'Writing With Pride',
-      date: '2025-12-15',
-      time: '10:00 AM',
-      location: 'Tiruppur & Coimbatore',
-      platform: 'In-person',
-      image: 'https://placehold.co/800x400?text=Writing+With+Pride',
-      description: 'A community outreach initiative encouraging learning and creative expression among senior citizens.'
-    },
-    {
       id: 'e49',
       title: 'Oru Gift-uh Parcel',
       date: '2025-12-22',

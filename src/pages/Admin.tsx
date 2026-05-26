@@ -709,7 +709,19 @@ export const getEvents = (): EventType[] => {
       // Migration: Ensure newly added hardcoded initial events are merged for existing local caches
       if (Array.isArray(parsed)) {
         let updated = false;
-        const merged = [...parsed];
+
+        // Remove legacy initial events that are no longer in initialEvents
+        const initialIds = new Set(initialEvents.map(e => e.id));
+        const filtered = parsed.filter(e => {
+          if (/^e\\d+$/.test(e.id)) {
+            const keep = initialIds.has(e.id);
+            if (!keep) updated = true;
+            return keep;
+          }
+          return true;
+        });
+
+        const merged = [...filtered];
         initialEvents.forEach(initE => {
           if (!merged.some(e => e.id === initE.id)) {
             merged.push(initE);
@@ -720,6 +732,7 @@ export const getEvents = (): EventType[] => {
           saveEvents(merged);
           return sortEventsByDate(merged);
         }
+        return sortEventsByDate(filtered);
       }
       return sortEventsByDate(parsed);
     } catch (e) {
