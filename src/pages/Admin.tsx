@@ -693,6 +693,14 @@ const initialBulletins: BulletinType[] = ${bulletinsStr};
 
 const initialTeamMembers: TeamMemberType[] = ${teamMembersStr};
 
+const sortEventsByDate = (eventsList: EventType[]): EventType[] => {
+  return [...eventsList].sort((a, b) => {
+    const dateA = a.date ? new Date(a.date).getTime() : 0;
+    const dateB = b.date ? new Date(b.date).getTime() : 0;
+    return dateA - dateB;
+  });
+};
+
 export const getEvents = (): EventType[] => {
   const stored = localStorage.getItem(EVENTS_KEY);
   if (stored) {
@@ -710,25 +718,26 @@ export const getEvents = (): EventType[] => {
         });
         if (updated) {
           saveEvents(merged);
-          return merged;
+          return sortEventsByDate(merged);
         }
       }
-      return parsed;
+      return sortEventsByDate(parsed);
     } catch (e) {
       console.error('Failed to parse events from local storage', e);
     }
   }
   saveEvents(initialEvents);
-  return initialEvents;
+  return sortEventsByDate(initialEvents);
 };
 
 export const saveEvents = (events: EventType[], syncToServer = false) => {
-  localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+  const sorted = sortEventsByDate(events);
+  localStorage.setItem(EVENTS_KEY, JSON.stringify(sorted));
   if (syncToServer) {
     fetch('/api/events', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(events)
+      body: JSON.stringify(sorted)
     }).catch(e => console.warn('Backend server unreachable, saved to local cache only.', e));
   }
 };
