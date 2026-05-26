@@ -944,7 +944,7 @@ app.post('/api/team', (req, res) => {
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // SPA Wildcard Route Fallback - rewrite all unmatched requests to index.html
-app.get('/{*splat}', (req, res) => {
+app.get('/*splat', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
