@@ -463,14 +463,6 @@ const initialEvents: EventType[] = [
     description: 'A cybersecurity awareness session teaching safe digital practices and responsible online behavior.'
   },
   {
-    id: 'e49',
-    title: 'Oru Gift-uh Parcel',
-    date: '2025-12-22',
-    platform: 'In-person',
-    image: 'https://placehold.co/800x400?text=Oru+Gift-uh+Parcel',
-    description: 'A joyful gifting initiative spreading happiness and festive cheer through thoughtful surprises and kindness.'
-  },
-  {
     id: 'e50',
     title: 'Creative Art',
     date: '2025-12-23',
@@ -556,15 +548,6 @@ const initialEvents: EventType[] = [
     platform: 'In-person',
     image: 'https://placehold.co/800x400?text=Strands+For+Smiles',
     description: 'A hair donation awareness initiative supporting cancer patients through compassion, confidence, and care.'
-  },
-  {
-    id: 'e59',
-    title: 'Vanchi',
-    date: '2026-04-10',
-    location: 'Nannilam Eco Village, Kalvarayan Hills, Salem',
-    platform: 'In-person',
-    image: 'https://placehold.co/800x400?text=Vanchi',
-    description: 'A 3-day immersive leadership camp focused on sustainability, eco-living, teamwork, and outreach activities.'
   }
 ];
 
