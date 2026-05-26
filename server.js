@@ -381,16 +381,6 @@ const defaultData = {
       description: 'Unleashing the spirit of sportsmanship! A thrilling inter-club tournament featuring cricket, football, and track events.'
     },
     {
-      id: 'e40',
-      title: 'EmpowerHer: Women in Tech',
-      date: '2026-03-08',
-      time: '10:30 AM - 12:30 PM',
-      location: 'Google Meet',
-      platform: 'Online',
-      image: 'https://res.cloudinary.com/dmwvo0u6p/image/upload/v1760285361/IMG-20250926-WA0064_knpsv9.jpg',
-      description: 'Celebrating International Women\'s Day with an expert panel sharing insights on breaking barriers and thriving in the tech industry.'
-    },
-    {
       id: 'e41',
       title: 'Green Earth Initiative',
       date: '2026-04-22',
